@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PMS-PDS-004 — Delivery schedule summary, 01–14 Dec 2026</title>
+<style>
+  @page { size: A4 landscape; margin: 6.5mm 7.5mm 5.5mm 7.5mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Sans", "Segoe UI", Arial, sans-serif; color: #1b2733; margin: 0;
+         font-size: 6.3pt; line-height: 1.18; }
+  h1 { font-size: 11.4pt; color: #0f2c4d; margin: 0 0 0.8mm 0; letter-spacing: .1px; }
+  .meta { font-size: 5.85pt; color: #44586c; margin: 0; line-height: 1.24; }
+  .meta b { color: #0f2c4d; }
+  .hd { border-bottom: 2px solid #0f2c4d; padding-bottom: 1.1mm; margin-bottom: 1.6mm; }
+  .brand { float: right; text-align: right; font-size: 5.9pt; color: #b06d00; font-weight: bold; }
+  .cols:after { content: ""; display: table; clear: both; }
+  .lft { float: left; width: 56.5%; padding-right: 2.6mm; }
+  .rgt { float: left; width: 43.5%; }
+  h2 { font-size: 7pt; color: #0f2c4d; margin: 0 0 0.9mm 0; text-transform: uppercase;
+       letter-spacing: .4px; border-left: 3px solid #b06d00; padding-left: 1.4mm; }
+  h2.sm { font-size: 6.8pt; margin-top: 1.9mm; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  th, td { border: 0.5px solid #b9c6d4; padding: 0.55mm 0.85mm; vertical-align: middle; }
+  th { background: #0f2c4d; color: #fff; font-size: 5.7pt; font-weight: bold; text-align: center; }
+  .g td { background: #0f2c4d; color: #fff; }
+  .lane { font-weight: bold; font-size: 6.1pt; color: #0f2c4d; }
+  .dev  { background: #14416f; color: #fff; font-size: 5.8pt; text-align: center; line-height: 1.15; }
+  .po   { background: #b06d00; color: #fff; font-size: 5.8pt; text-align: center; line-height: 1.15; }
+  .qa   { background: #3f7d3f; color: #fff; font-size: 5.8pt; text-align: center; line-height: 1.15;
+          font-weight: bold; }
+  .sup  { background: #f2f6fa; color: #44586c; font-size: 5.8pt; text-align: center; line-height: 1.15; }
+  .none { background: #fbfcfd; color: #a9b6c4; text-align: center; font-size: 5.8pt; }
+  .ev   { background: #fff3d6; color: #7a4b00; font-size: 5.75pt; text-align: center; font-weight: bold;
+          line-height: 1.15; }
+  .co   { background: #f0f0f0; color: #5b6770; font-size: 5.75pt; text-align: center; font-style: italic; }
+  .k    { background: #eef2f7; font-weight: bold; color: #0f2c4d; font-size: 5.9pt; }
+  td.c  { text-align: center; }
+  td.n  { font-size: 5.85pt; }
+  .gate { background: #b5122b; color: #fff; font-weight: bold; text-align: center; font-size: 6pt; }
+  .risk { background: #f6cccd; color: #8b111e; font-weight: bold; text-align: center; font-size: 6.6pt; }
+  .mid  { background: #fff3d6; color: #7a4b00; font-weight: bold; text-align: center; font-size: 6.6pt; }
+  .ok   { background: #e8f2e6; color: #28572b; font-weight: bold; text-align: center; font-size: 6.6pt; }
+  .band { background: #14416f; color: #fff; font-weight: bold; font-size: 6.1pt; }
+  .foot { margin-top: 1.5mm; border-top: 1.3px solid #0f2c4d; padding-top: 1mm; font-size: 5.75pt;
+          color: #44586c; }
+  .foot b { color: #0f2c4d; }
+  .note { border: 0.8px solid #b5122b; background: #fdf2f3; padding: 1.1mm 1.5mm; font-size: 5.9pt;
+          color: #4a1018; margin-top: 1.6mm; line-height: 1.2; }
+  .note b { color: #b5122b; }
+  ul { margin: 0.5mm 0 0 3.2mm; padding: 0; }
+  li { margin: 0 0 .35mm 0; }
+  .lg { font-size: 5.7pt; color: #44586c; margin-top: 0.9mm; }
+  .lg span { display: inline-block; padding: 0.3mm 1.2mm; margin-right: 1.4mm; border-radius: 1.2px; }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="brand">PT PPM<br>Quality Management &amp; QC</div>
+  <h1>PMS-PDS-004 &middot; Packaging Development System &mdash; delivery schedule, 01&ndash;14 December 2026</h1>
+  <div class="meta">
+    <b>Window</b> Tue 01 Dec &rarr; Mon 14 Dec 2026, 10 working days (Mon&ndash;Fri; weekends 5&ndash;6 and 12&ndash;13 Dec excluded) &nbsp;|&nbsp;
+    <b>Staffing</b> 2 consultants &mdash; PO and QA &mdash; plus the DEV build lane (2 developers, assumed staffing, not a consultant) &nbsp;|&nbsp;
+    <b>Baseline</b> PRD-PDS-001 v0.2 &middot; FSD-PDS-002 v0.2 &middot; TSD-PDS-003 v0.1, all gate-approved<br>
+    <b>Source of truth</b> the NPD flowchart; the flowchart outranks the Excel wherever they differ. Prepared 23 Nov 2026. Companion workbook: <i>PMS-PDS-004-delivery-schedule-v0.1.xlsx</i>.
+  </div>
+</div>
+
+<div class="cols">
+  <div class="lft">
+    <h2>Delivery lanes across the ten working days</h2>
+    <table>
+      <colgroup>
+        <col style="width:15%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%">
+        <col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%">
+        <col style="width:8.5%"><col style="width:8.5%"><col style="width:8.5%">
+      </colgroup>
+      <tr class="g">
+        <th>Lane</th><th>D1<br>Tue 01</th><th>D2<br>Wed 02</th><th>D3<br>Thu 03</th><th>D4<br>Fri 04</th>
+        <th>D5<br>Mon 07</th><th>D6<br>Tue 08</th><th>D7<br>Wed 09</th><th>D8<br>Thu 10</th>
+        <th>D9<br>Fri 11</th><th>D10<br>Mon 14</th>
+      </tr>
+      <tr>
+        <td class="lane">DEV<br><span style="font-weight:normal;font-size:5.8pt">build lane</span></td>
+        <td class="dev">0.3 0.4</td>
+        <td class="dev">0.4 0.7<br>1.1 1.2</td>
+        <td class="dev">1.2 1.3<br>1.4 1.5</td>
+        <td class="dev">2.1 2.2</td>
+        <td class="dev">2.2 2.3<br>2.4</td>
+        <td class="dev">2.4 2.5<br>3.1</td>
+        <td class="dev">3.1 3.2<br>3.3 3.5</td>
+        <td class="dev">3.3 3.4<br>3.5 3.6</td>
+        <td class="dev">3.6 4.1</td>
+        <td class="dev">4.1&nbsp;&raquo;</td>
+      </tr>
+      <tr>
+        <td class="lane">PO<br><span style="font-weight:normal;font-size:5.8pt">consultant</span></td>
+        <td class="po">0.1 0.2<br>0.6</td>
+        <td class="po">0.6</td>
+        <td class="po">0.6</td>
+        <td class="sup">(2.1)</td>
+        <td class="none">&mdash;</td>
+        <td class="none">&mdash;</td>
+        <td class="sup">(3.5)</td>
+        <td class="sup">(3.5)</td>
+        <td class="sup">(4.1)</td>
+        <td class="po">X.1 X.2<br>(X.3)</td>
+      </tr>
+      <tr>
+        <td class="lane">QA<br><span style="font-weight:normal;font-size:5.8pt">consultant</span></td>
+        <td class="qa">0.5<br><span style="font-weight:normal">(0.1 0.4)</span></td>
+        <td class="qa">0.5<br><span style="font-weight:normal">(1.1)</span></td>
+        <td class="qa">1.6<br><span style="font-weight:normal">(1.3)</span></td>
+        <td class="sup">(2.2)</td>
+        <td class="sup">(2.2)</td>
+        <td class="qa">2.6<br><span style="font-weight:normal">(2.5 3.1)</span></td>
+        <td class="sup">(3.3)</td>
+        <td class="sup">(3.3 3.6)</td>
+        <td class="qa">3.7<br><span style="font-weight:normal">(3.6)</span></td>
+        <td class="sup">(X.2)</td>
+      </tr>
+      <tr>
+        <td class="lane">Business<br>users</td>
+        <td class="ev">provide<br>holders</td>
+        <td class="ev">provide<br>holders</td>
+        <td class="ev">hand over<br>spec file</td>
+        <td class="none">&mdash;</td>
+        <td class="none">&mdash;</td>
+        <td class="ev">Gate 2<br>demo</td>
+        <td class="none">&mdash;</td>
+        <td class="none">&mdash;</td>
+        <td class="ev">Gate 3<br>demo</td>
+        <td class="ev">walkthrough<br>X.1</td>
+      </tr>
+      <tr>
+        <td class="lane">Gates &amp;<br>events</td>
+        <td class="ev">M-00<br>M-01</td>
+        <td class="none">&mdash;</td>
+        <td class="gate">GATE 1<br>M-02</td>
+        <td class="none">&mdash;</td>
+        <td class="none">&mdash;</td>
+        <td class="gate">GATE 2</td>
+        <td class="none">&mdash;</td>
+        <td class="none">&mdash;</td>
+        <td class="gate">GATE 3</td>
+        <td class="ev">M-06 07 08<br>X.1 X.2 X.3</td>
+      </tr>
+    </table>
+    <div class="lg">
+      <span style="background:#14416f;color:#fff">DEV</span>
+      <span style="background:#b06d00;color:#fff">PO</span>
+      <span style="background:#3f7d3f;color:#fff">QA</span>
+      <span style="background:#fff3d6;color:#7a4b00">user action</span>
+      <span style="background:#b5122b;color:#fff">gate</span>
+      <span style="background:#f0f0f0;color:#5b6770">carry-over</span>
+      bold = owns the package that day &middot; (parentheses) = supports it &middot; &raquo; continues into the follow-on window
+    </div>
+
+    <h2 class="sm">What falls outside 1&ndash;14 December, and the proposed follow-on windows</h2>
+    <table>
+      <colgroup>
+        <col style="width:17%"><col style="width:16%"><col style="width:6%"><col style="width:34%">
+        <col style="width:13%"><col style="width:14%">
+      </colgroup>
+      <tr class="g">
+        <th>Window</th><th>Dates (Mon&ndash;Fri)</th><th>WD</th><th>Scope delivered</th>
+        <th>Gate closed</th><th>Why this ordering</th>
+      </tr>
+      <tr>
+        <td class="k">W1 &mdash; this schedule</td><td class="n">Tue 01 &ndash; Mon 14 Dec 2026</td><td class="c">10</td>
+        <td class="n">Phases 0, 1, 2, 3 complete; Phase 4 started (supplier master, portal shell, isolation)</td>
+        <td class="n">Gates 1, 2, 3 + M-06&hellip;M-08</td>
+        <td class="n" style="font-size:5.5pt">Engine before portal: quotations, drawings, artwork and FAB are all approval documents</td>
+      </tr>
+      <tr>
+        <td class="k">W2 &mdash; proposal</td><td class="n">Tue 15 &ndash; Fri 18 Dec 2026</td><td class="c">4</td>
+        <td class="n">Phase 4 finish: samples, quotations, T0/T1/T2, transport &amp; application tests, colour, artwork circulation</td>
+        <td class="n">Gate 4</td>
+        <td class="n" style="font-size:5.5pt">Needs the engine signed at Gate 3; AC-C1/C2 walkthrough is the acceptance event</td>
+      </tr>
+      <tr>
+        <td class="k">W3 &mdash; proposal</td><td class="n">Mon 21 &ndash; Wed 23 Dec 2026</td><td class="c">3</td>
+        <td class="n">Phase 5: FAB with four signature blocks, standards, proofprint, scale up, branch completion, archive</td>
+        <td class="n">Gate 5</td>
+        <td class="n" style="font-size:5.5pt">FAB is the last artefact in both branches; 24&ndash;25 Dec avoided as holiday</td>
+      </tr>
+      <tr>
+        <td class="k">W4 &mdash; proposal</td><td class="n">Mon 04 &ndash; Fri 08 Jan 2027</td><td class="c">5</td>
+        <td class="n">Phase 6: nine reports, notifications and digest, scheduler install, backup rehearsal, documentation, handover</td>
+        <td class="n">Gate 6 + go-live</td>
+        <td class="n" style="font-size:5.5pt">Hardening and acceptance need a quiet week after functional sign-off</td>
+      </tr>
+      <tr>
+        <td class="band" colspan="2">Follow-on beyond the window</td>
+        <td class="band c">12</td>
+        <td class="band">Phases 4 (rest), 5, 6 &mdash; Gates 4, 5, 6</td>
+        <td class="band c">22 WD overall</td>
+        <td class="band" style="font-size:5.5pt">&asymp; 4.4 calendar weeks at the stated staffing</td>
+      </tr>
+    </table>
+    <table style="margin-top:1.4mm">
+      <colgroup>
+        <col style="width:4%"><col style="width:32%"><col style="width:36%"><col style="width:28%">
+      </colgroup>
+      <tr>
+        <td colspan="4" style="font-size:6.2pt"><b>If the window must contain everything:</b>
+        <b>A</b> 4 developers instead of 2 &mdash; Phases 1&ndash;5 plausible, Phase 6 still thin and PO review capacity becomes the bottleneck.
+        <b>B</b> drop the per-gate sign-offs and demo everything at the end &mdash; <span style="color:#b5122b;font-weight:bold">not recommended: this is precisely how the rejected prototype was produced.</span>
+        <b>C</b> keep 2 developers and move the window to 01 Dec &ndash; 08 Jan &mdash; <span style="color:#3f7d3f;font-weight:bold">recommended.</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="rgt">
+    <h2>Gates &amp; milestones in the window</h2>
+    <table>
+      <colgroup><col style="width:16%"><col style="width:13%"><col style="width:10%"><col style="width:61%"></colgroup>
+      <tr class="g"><th>ID</th><th>Date</th><th>Day</th><th>Exit criterion (TSD &sect;15)</th></tr>
+      <tr><td class="k">M-00</td><td class="c">Tue 01</td><td class="c">D1</td><td class="n">Kickoff: lanes, severity scheme and the Q-T1&hellip;Q-T6 defaults recorded as approved</td></tr>
+      <tr><td class="k">M-01</td><td class="c">Tue 01</td><td class="c">D1</td><td class="n">Environment accepted &mdash; <i>artisan about</i> + <i>migrate:status</i> captured, no UTC leakage</td></tr>
+      <tr><td class="k">M-02</td><td class="c">Thu 03</td><td class="c">D3</td><td class="n">77-component specification file and one named holder per role received</td></tr>
+      <tr><td class="gate" colspan="4">GATE 1 &mdash; Thu 03 Dec (D3) &middot; access &amp; identity: matrix test green for all 14 identities, audit immutability proven at DB level</td></tr>
+      <tr><td class="gate" colspan="4">GATE 2 &mdash; Tue 08 Dec (D6) &middot; specification &amp; master data: AC-C9 imported count equals source, one printed SBK correct</td></tr>
+      <tr><td class="gate" colspan="4">GATE 3 &mdash; Fri 11 Dec (D9) &middot; engine &amp; NPD spine: every guard has a passing negative test, a project blocks for the right reason</td></tr>
+      <tr><td class="k">M-06</td><td class="c">Mon 14</td><td class="c">D10</td><td class="n">Portal skeleton reachable; cross-tenant attempt returns 403 and is access-logged</td></tr>
+      <tr><td class="k">M-07</td><td class="c">Mon 14</td><td class="c">D10</td><td class="n">User walkthrough of signed scope, defect triage and scope freeze</td></tr>
+      <tr><td class="k">M-08</td><td class="c">Mon 14</td><td class="c">D10</td><td class="n">Document pack + code baseline pushed &mdash; one squashed comprehensive commit, no secrets</td></tr>
+      <tr><td class="co" colspan="4">GATES 4, 5, 6 &mdash; carried to W2, W3, W4. A gate closes only when the evidence exists <i>and</i> the one-page gate sheet is signed.</td></tr>
+    </table>
+
+    <h2 class="sm">Top schedule risks (full register in the workbook)</h2>
+    <table>
+      <colgroup><col style="width:11%"><col style="width:8%"><col style="width:49%"><col style="width:32%"></colgroup>
+      <tr class="g"><th>ID</th><th>Score</th><th>Risk</th><th>Mitigation already in the plan</th></tr>
+      <tr><td class="k">S-01</td><td class="risk">20</td><td class="n">The window is too short for Phases 4&ndash;6 with two developers.</td><td class="n">Explicit in-window / carry-over split; 12 follow-on WD proposed, nothing silently compressed.</td></tr>
+      <tr><td class="k">S-02</td><td class="mid">15</td><td class="n">Role holders or the specification file arrive late (0.6 is a user dependency).</td><td class="n">Requested at kickoff with a named date (D3); Gate 2 cannot be evidenced without it.</td></tr>
+      <tr><td class="k">S-05</td><td class="mid">15</td><td class="n">Guard logic 3.3 is the critical path and the hardest to test.</td><td class="n">QA writes negative tests alongside the classes; an untested guard counts as unimplemented.</td></tr>
+      <tr><td class="k">S-03</td><td class="mid">12</td><td class="n">Users miss a gate demo, so a phase stays open.</td><td class="n">Demos booked for the last half-day of each phase at kickoff; attendance is part of M-00.</td></tr>
+      <tr><td class="k">S-07</td><td class="mid">12</td><td class="n">Defects found after Gate 3 have no room before the window closes.</td><td class="n">D10 is reserved for triage and freeze (X.1, X.2), not for new build.</td></tr>
+      <tr><td class="k">S-04</td><td class="ok">8</td><td class="n">Environment friction eats day one (MySQL, composer path, php.ini UTC).</td><td class="n">0.3 is a scheduled package with its own evidence, not an assumed precondition.</td></tr>
+    </table>
+
+    <h2 class="sm">Who does what (condensed RACI)</h2>
+    <table>
+      <colgroup><col style="width:26%"><col style="width:74%"></colgroup>
+      <tr class="g"><th>Role</th><th>Accountable for &middot; produces</th></tr>
+      <tr><td class="k">PO &mdash; consultant</td><td class="n">Scope, user coordination, demos, gate scheduling, defect priority, repository handover. The only role that can close a gate is the business users signing it.</td></tr>
+      <tr><td class="k">QA &mdash; consultant</td><td class="n">Test design and execution, guard negative tests, matrix &times; route test, PDF snapshots, acceptance evidence. Deliberately independent of the build lane.</td></tr>
+      <tr><td class="k">DEV (2 people)</td><td class="n">All implementation. No work-in-progress pushes; history is squashed at handover.</td></tr>
+      <tr><td class="k">Business users</td><td class="n">Data provisioning, requirement interpretation, gate acceptance, UAT &mdash; 2 half-days per gate.</td></tr>
+      <tr><td class="k">IT / owner</td><td class="n">Environment, scheduled task, backups, hosting decisions.</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="note">
+  <b>The headline, stated plainly.</b> Inside 01&ndash;14 December with two developers and two consultants, this plan delivers
+  <b>Phases 0&ndash;3 with Gates 1, 2 and 3 signed</b> &mdash; foundation and access, master data and specification, the workflow engine and the NPD spine &mdash;
+  plus the supplier-portal shell with proven data isolation, a user walkthrough, a frozen defect list, and the document pack pushed to GitHub.
+  <b>Phases 4, 5 and 6 carry over</b> to the 12 proposed working days above. Compressing all six gates into ten working days would mean dropping the evidence
+  and the sign-off step that produced the approved PRD, FSD and TSD &mdash; and the users would see the result only at the end, which is exactly the outcome we were asked to avoid.
+</div>
+
+<div class="foot">
+  <b>PMS-PDS-004 v0.1</b> &middot; one-page summary of <b>PMS-PDS-004-delivery-schedule-v0.1.xlsx</b> (Overview &middot; Schedule &middot; Gantt &middot; RACI &middot; Milestones &middot; Risks &middot; Carry-over) &middot;
+  48 plan lines, 33 inside the window, 15 carried over &middot; prepared 23 Nov 2026 &middot; next review at GATE 1, Thu 03 Dec 2026.
+  &nbsp;Working-day calendar assumption: Mon&ndash;Fri, no public holidays observed inside the window; confirm at kickoff.
+</div>
+
+</body>
+</html>

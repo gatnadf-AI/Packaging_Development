@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD Approval Brief — Packaging Development System</title>
+<style>
+  @page { size: A4; margin: 8mm 9mm 6mm 9mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 7pt; line-height: 1.26; color: #16202b; margin: 0; }
+  h1 { font-size: 12pt; margin: 0; color: #0f2c4d; letter-spacing: -0.2pt; }
+  h2 { font-size: 8pt; margin: 5pt 0 2.5pt 0; color: #0f2c4d; text-transform: uppercase; letter-spacing: 0.6pt;
+       border-bottom: 1.2pt solid #0f2c4d; padding-bottom: 1.2pt; }
+  .hd { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2pt solid #b5122b; padding-bottom: 2.5pt; }
+  .hd .ref { text-align: right; font-size: 6.6pt; color: #44586c; }
+  .hd .brand { color: #b5122b; font-weight: 700; font-size: 7pt; letter-spacing: 1.6pt; }
+  table { width: 100%; border-collapse: collapse; font-size: 6.5pt; }
+  tr { break-inside: avoid; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 2pt 3pt; font-weight: 600; font-size: 6.4pt; }
+  td { padding: 2pt 3pt; border: 0.4pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f5f8fa; }
+  .id { font-family: Consolas, monospace; font-size: 6.2pt; color: #14416f; font-weight: 700; white-space: nowrap; }
+  .c { text-align: center; }
+  .blk { color: #b5122b; font-weight: 700; }
+  .nb { color: #3f7d3f; font-weight: 700; }
+  .grid { display: flex; gap: 7pt; }
+  .grid > div { flex: 1; }
+  ul { margin: 0 0 0 0; padding-left: 10pt; }
+  li { margin-bottom: 1.2pt; }
+  .inout { font-size: 6.6pt; }
+  .inout b { color: #0f2c4d; }
+  .inout p { margin: 0 0 2.5pt 0; }
+  svg { width: 100%; height: auto; display: block; }
+  .n { fill: #eef3f8; stroke: #14416f; stroke-width: 0.8; }
+  .g { fill: #fdf0f1; stroke: #b5122b; stroke-width: 0.8; }
+  .e2 { fill: #eef7ee; stroke: #3f7d3f; stroke-width: 0.8; }
+  .t { font-family: "Segoe UI", Arial; font-size: 5.6pt; fill: #16202b; text-anchor: middle; }
+  .tc { font-family: Consolas, monospace; font-size: 4.6pt; fill: #647586; text-anchor: middle; }
+  .ln { stroke: #44586c; stroke-width: 0.7; fill: none; marker-end: url(#a2); }
+  .lb { font-family: "Segoe UI", Arial; font-size: 6.2pt; fill: #0f2c4d; font-weight: 700; }
+  .sign td { height: 19pt; vertical-align: top; font-size: 6.2pt; }
+  .ans { background: #fffdf2 !important; }
+  .foot { font-size: 6pt; color: #647586; text-align: center; margin-top: 3pt; border-top: 0.4pt solid #c3cdd8; padding-top: 2pt; }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div>
+    <div class="brand">PT. PPM</div>
+    <h1>PRD Approval Brief &mdash; Packaging Development System</h1>
+  </div>
+  <div class="ref">
+    Companion to <b>PRD-PDS-001 v0.1</b> (30 pp.)<br>
+    Issued 21 Nov 2026 &middot; for user review meeting<br>
+    Decision needed before FSD begins
+  </div>
+</div>
+
+<h2>1. What the system does, and what it replaces</h2>
+<div class="grid">
+  <div>
+    <ul>
+      <li>Tracks every NPD packaging item through the <b>official NPD flowchart</b>, stage by stage, with a named owner and a recorded decision at each gate.</li>
+      <li>Answers two questions management cannot answer today: <i>which item is stuck, at which stage, waiting on whom</i> &mdash; and <i>what was the approved standard and who signed it</i>.</li>
+      <li>Drives the inspection checklist <b>from the stored packaging specification</b>, so T0/T1/T2 results are structured data, not free text.</li>
+      <li>Generates the two documents you already sign &mdash; <b>Form Approval Bahan Kemas</b> and <b>Spesifikasi Bahan Pengemas</b> &mdash; from data, in the current official layout.</li>
+    </ul>
+  </div>
+  <div class="inout">
+    <p style="margin:0 0 3pt 0"><b>IN SCOPE:</b> the full NPD flowchart (concept + COGS + BOD evaluation, marketing brief &amp; timeline, sourcing, primary branch, secondary/tertiary branch, scale up) &nbsp;+&nbsp; supplier portal &nbsp;+&nbsp; QC module (T0/T1/T2, application &amp; transport test, colour range) &nbsp;+&nbsp; master data, RBAC, notifications, audit trail, exports.</p>
+    <p style="margin:0"><b>OUT OF SCOPE:</b> the packaging-material <i>substitution</i> process as written in the old Excel (it is not in the flowchart &mdash; see OQ-02); EPD as a separate process; ERP/finance integration; legally certified e-signatures; mobile apps.</p>
+  </div>
+</div>
+
+<h2>2. The process the system enforces (primary source: NPD flowchart)</h2>
+<svg viewBox="0 0 1000 168" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#44586c"/></marker></defs>
+<text x="4" y="12" class="lb">Common front end</text>
+<g><rect x="4" y="16" width="230" height="30" class="n"/><text x="119" y="29" class="t">Concept + COGS target, BOD evaluation</text><text x="119" y="40" class="tc">NPD-01</text></g>
+<g><rect x="252" y="16" width="215" height="30" class="n"/><text x="359" y="29" class="t">Product summary &amp; NPD form (MKT)</text><text x="359" y="40" class="tc">NPD-02</text></g>
+<g><rect x="485" y="16" width="180" height="30" class="n"/><text x="575" y="29" class="t">NPD timeline (MKT)</text><text x="575" y="40" class="tc">NPD-03</text></g>
+<g><rect x="683" y="16" width="180" height="30" class="n"/><text x="773" y="29" class="t">Sourcing packaging material</text><text x="773" y="40" class="tc">NPD-04 &rarr; splits by category</text></g>
+<path class="ln" d="M234,31 L252,31"/><path class="ln" d="M467,31 L485,31"/><path class="ln" d="M665,31 L683,31"/>
+<path class="ln" d="M773,46 L773,56 L60,56 L60,66"/>
+<text x="4" y="76" class="lb">Branch A &mdash; Primary (bottle / crimp pump: touches the bulk)</text>
+<g><rect x="4" y="80" width="112" height="26" class="n"/><text x="60" y="91" class="t">P-01 Drawing review</text><text x="60" y="101" class="t">&amp; approval</text></g>
+<g><rect x="124" y="80" width="112" height="26" class="n"/><text x="180" y="91" class="t">P-02 SCM supply-service</text><text x="180" y="101" class="t">evaluation</text></g>
+<g><rect x="244" y="80" width="112" height="26" class="n"/><text x="300" y="91" class="t">P-03 Sample dummy</text><text x="300" y="101" class="t">(mold) review</text></g>
+<g><rect x="364" y="80" width="112" height="26" class="g"/><text x="420" y="91" class="t">P-04 Inspection</text><text x="420" y="101" class="t">T0 / T1 / T2</text></g>
+<g><rect x="484" y="80" width="112" height="26" class="n"/><text x="540" y="96" class="t">P-05 Quotation</text></g>
+<g><rect x="604" y="80" width="112" height="26" class="n"/><text x="660" y="91" class="t">P-06 Master product</text><text x="660" y="101" class="t">&amp; standard</text></g>
+<g><rect x="724" y="80" width="112" height="26" class="g"/><text x="780" y="91" class="t">P-07 Form approval</text><text x="780" y="101" class="t">bahan kemas</text></g>
+<g><rect x="844" y="80" width="112" height="26" class="e2"/><text x="900" y="96" class="t">P-08 Scale Up</text></g>
+<path class="ln" d="M116,93 L124,93"/><path class="ln" d="M236,93 L244,93"/><path class="ln" d="M356,93 L364,93"/><path class="ln" d="M476,93 L484,93"/><path class="ln" d="M596,93 L604,93"/><path class="ln" d="M716,93 L724,93"/><path class="ln" d="M836,93 L844,93"/>
+<text x="4" y="122" class="lb">Branch B &mdash; Secondary (sticker, kotak) and Tertiary (inner, partisi, master box)</text>
+<g><rect x="4" y="126" width="92" height="26" class="n"/><text x="50" y="137" class="t">S-01 Technical</text><text x="50" y="146" class="t">drawing created</text></g>
+<g><rect x="102" y="126" width="92" height="26" class="n"/><text x="148" y="137" class="t">S-02 Pitching &amp;</text><text x="148" y="146" class="t">blank trial</text></g>
+<g><rect x="200" y="126" width="92" height="26" class="g"/><text x="246" y="137" class="t">S-03 Inspection</text><text x="246" y="146" class="t">T0 / T1 / T2</text></g>
+<g><rect x="298" y="126" width="92" height="26" class="n"/><text x="344" y="137" class="t">S-04 Design review</text><text x="344" y="146" class="t">by Marketing</text></g>
+<g><rect x="396" y="126" width="92" height="26" class="n"/><text x="442" y="141" class="t">S-05 Quotation</text></g>
+<g><rect x="494" y="126" width="92" height="26" class="g"/><text x="540" y="137" class="t">S-06 Form approval</text><text x="540" y="146" class="t">bahan kemas</text></g>
+<g><rect x="592" y="126" width="92" height="26" class="g"/><text x="638" y="137" class="t">S-07 Artwork &amp;</text><text x="638" y="146" class="t">colour circulation</text></g>
+<g><rect x="690" y="126" width="92" height="26" class="n"/><text x="736" y="137" class="t">S-08 Master</text><text x="736" y="146" class="t">product created</text></g>
+<g><rect x="788" y="126" width="92" height="26" class="n"/><text x="834" y="137" class="t">S-09 Proofprint</text><text x="834" y="146" class="t">sample &amp; standard</text></g>
+<g><rect x="886" y="126" width="92" height="26" class="e2"/><text x="932" y="141" class="t">S-10 Scale Up</text></g>
+<path class="ln" d="M96,139 L102,139"/><path class="ln" d="M194,139 L200,139"/><path class="ln" d="M292,139 L298,139"/><path class="ln" d="M390,139 L396,139"/><path class="ln" d="M488,139 L494,139"/><path class="ln" d="M586,139 L592,139"/><path class="ln" d="M684,139 L690,139"/><path class="ln" d="M782,139 L788,139"/><path class="ln" d="M880,139 L886,139"/>
+<path class="ln" d="M773,46 L773,56 L50,56 L50,126" stroke-dasharray="3,2"/>
+</svg>
+<div style="font-size:6.4pt;color:#44586c;margin-top:1pt">Blue = stage &middot; <span style="color:#b5122b">Red = gate: a decision must be recorded to advance</span> &middot; Green = Scale Up, the exit of that branch. Branches run independently and each closes on its own Scale Up. Nothing before BOD approval of the concept can start.</div>
+
+<h2>3. Five decisions that shape the build &mdash; please confirm these</h2>
+<table>
+<tbody>
+<tr><td style="width:24%"><b>Basis of requirements</b></td><td>The NPD flowchart is authoritative. The old Excel's substitution workflow, its two screen mockups, and the existing prototype are <b>rejected as requirement sources</b>; its role list, access matrix and user stories are kept as secondary input.</td></tr>
+<tr><td><b>Two branches, not one pipeline</b></td><td>Primary and secondary/tertiary packaging progress independently from sourcing, in a <b>different internal order</b>, and each reaches its own Scale Up. A project is complete only when every branch holding an item has closed.</td></tr>
+<tr><td><b>Status is two-axis and derived</b></td><td>Every record carries a document status (Draft/Submitted/Pending/Closed/Cancelled) <b>and</b> an approval status (Submitted &rarr; Checking &rarr; Checked &rarr; Waiting approval &rarr; Approved/Rejected). Approval status is always <b>computed from recorded decisions</b>, never typed by a user.</td></tr>
+<tr><td><b>Approval = attributable decision</b></td><td>Signature blocks on the printed forms are filled from real in-system decisions (name, role, date) and cannot be hand-typed. The author of a record is never an approver of that version; one rejection with a mandatory reason returns it as a new version; approved records are immutable.</td></tr>
+<tr><td><b>Suppliers get a portal</b></td><td>Suppliers submit capability, blank samples, dummy photos, quotations (price/MOQ/lead time), artwork and proofprints themselves &mdash; with hard isolation: a supplier can never see another supplier's prices, samples or evaluations.</td></tr>
+</tbody></table>
+
+<h2>4. Open questions &mdash; record the answer here during the meeting</h2>
+<table>
+<thead><tr><th style="width:6%">ID</th><th style="width:31%">Question</th><th style="width:7%">Blocks<br>FSD?</th><th style="width:24%">Default if unanswered</th><th style="width:32%">Answer from the meeting</th></tr></thead>
+<tbody>
+<tr><td class="id">OQ-01</td><td>Who signs the Form Approval Bahan Kemas? The old Excel chain, or the four blocks on the Word form (prepared / checked / approved by QC Mgr, SCM Mgr, QA Mgr)?</td><td class="c blk">YES</td><td>The Word form's signature blocks.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-04</td><td>The access matrix leaves <b>R&amp;D, SCM Staff, QC Supervisor, QC Manager, QA Supervisor</b> with no grants, yet the flowchart needs them. What may each do?</td><td class="c blk">YES</td><td>Grant exactly the actions the flowchart assigns them (&sect;6.1 of PRD).</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-05</td><td>Must every pack pass T0, T1 <i>and</i> T2, or does it depend on pack type / risk?</td><td class="c blk">YES</td><td>All three for primary; T0 + T1 for secondary/tertiary.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-02</td><td>Is the packaging-material substitution process still needed at all? If yes it becomes a separate PRD.</td><td class="c nb">no</td><td>Dropped from this release.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-03</td><td>Interface language: Indonesian, English, or both?</td><td class="c nb">no</td><td>Indonesian UI, English technical terms.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-06</td><td>Can one project hold several items in the same branch, each needing its own approval form and Scale Up record?</td><td class="c nb">no</td><td>Yes &mdash; approval and standard are per item.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-07</td><td>Who may create supplier accounts &mdash; Admin only, or also SCM Manager?</td><td class="c nb">no</td><td>Admin creates; SCM Manager assigns.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-08</td><td>On the printed form: signature image, typed name, or typed name for manual signing?</td><td class="c nb">no</td><td>Typed name, role and date for manual signing.</td><td class="ans"></td></tr>
+<tr><td class="id">OQ-09</td><td>Retention period for records, attachments and audit history? May cancelled projects ever be deleted?</td><td class="c nb">no</td><td>Retain indefinitely; no deletion of referenced records.</td><td class="ans"></td></tr>
+</tbody></table>
+
+<h2>5. Sign-off &mdash; approval of PRD-PDS-001 v0.1 as the requirement baseline</h2>
+<table class="sign">
+<thead><tr><th style="width:16.6%">Product Owner</th><th style="width:16.6%">BOD</th><th style="width:16.6%">Marketing</th><th style="width:16.6%">QC / QA</th><th style="width:16.6%">SCM</th><th style="width:16.6%">R&amp;D / Pkg Dev</th></tr></thead>
+<tbody><tr><td>name / date</td><td>name / date</td><td>name / date</td><td>name / date</td><td>name / date</td><td>name / date</td></tr></tbody>
+</table>
+
+<div class="foot">PRD-PDS-001-AB v0.1 &middot; Approval brief for PRD-PDS-001 v0.1 &middot; Packaging Development System &mdash; NPD Workflow Management &middot; 21 November 2026 &middot; Primary source: NPD process flowchart</div>
+
+</body>
+</html>

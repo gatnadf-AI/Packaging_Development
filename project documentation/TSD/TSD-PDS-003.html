@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TSD — Packaging Development System</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 9.2pt; line-height: 1.45; color: #16202b; margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 4pt 0; color: #0f2c4d; letter-spacing: -0.3pt; }
+  h2 { font-size: 12.5pt; margin: 18pt 0 5pt 0; color: #0f2c4d; border-bottom: 2px solid #0f2c4d; padding-bottom: 3pt; break-after: avoid; }
+  h3 { font-size: 10.5pt; margin: 12pt 0 4pt 0; color: #14416f; break-after: avoid; }
+  h4 { font-size: 9.6pt; margin: 9pt 0 3pt 0; color: #14416f; break-after: avoid; }
+  p  { margin: 0 0 5pt 0; text-align: justify; }
+  ul, ol { margin: 0 0 6pt 0; padding-left: 14pt; }
+  li { margin-bottom: 2pt; }
+  table { width: 100%; border-collapse: collapse; margin: 4pt 0 9pt 0; font-size: 8.2pt; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 3.5pt 4.5pt; font-weight: 600; border: 0.5pt solid #0f2c4d; }
+  td { padding: 3pt 4.5pt; border: 0.5pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f4f7fa; }
+  .num { text-align: center; white-space: nowrap; }
+  .id { font-family: Consolas, monospace; font-size: 7.8pt; color: #14416f; font-weight: 600; white-space: nowrap; }
+  .code { font-family: Consolas, monospace; font-size: 7.8pt; color: #3a3a3a; }
+  pre { font-family: Consolas, monospace; font-size: 7.6pt; background: #f4f7fa; border: 0.5pt solid #c3cdd8; border-left: 2.5pt solid #14416f; padding: 5pt 7pt; margin: 4pt 0 8pt 0; white-space: pre-wrap; line-height: 1.35; break-inside: avoid; }
+  .cover { text-align: center; padding-top: 42mm; break-after: page; }
+  .cover .brand { color: #b5122b; font-size: 11.5pt; font-weight: 700; letter-spacing: 3pt; }
+  .cover .sub { font-size: 12pt; color: #44586c; margin-top: 6pt; }
+  .cover .meta { margin: 26pt auto 0 auto; width: 92mm; font-size: 9.2pt; text-align: left; }
+  .cover .meta td { border: none; padding: 2.5pt 4pt; background: none !important; }
+  .cover .meta td:first-child { color: #647586; width: 34mm; }
+  .badge { display: inline-block; background: #b06d00; color: #fff; padding: 2pt 8pt; border-radius: 2pt; font-size: 8.5pt; font-weight: 700; letter-spacing: 1pt; }
+  .callout { border-left: 3pt solid #b5122b; background: #fdf3f4; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .note { border-left: 3pt solid #14416f; background: #f1f5f9; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .good { border-left: 3pt solid #3f7d3f; background: #f2f8f2; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .pagebreak { break-before: page; }
+  .toc { columns: 2; column-gap: 10mm; font-size: 8.8pt; }
+  .toc div { margin-bottom: 2pt; }
+  .toc .l1 { font-weight: 600; color: #0f2c4d; }
+  .toc .l2 { padding-left: 8pt; color: #44586c; }
+  .foot { font-size: 7.8pt; color: #647586; text-align: center; margin-top: 14pt; border-top: 0.5pt solid #c3cdd8; padding-top: 5pt; }
+  svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">PT. PPM</div>
+  <div style="margin-top:5pt;font-size:8.6pt;color:#647586;">Quality Management &amp; Quality Control Division</div>
+  <div style="margin-top:22pt;"><span class="badge">FOR REVIEW &mdash; TSD GATE</span></div>
+  <h1 style="margin-top:12pt;">Technical Specification Document</h1>
+  <div class="sub">Packaging Development System<br>Architecture, data design, implementation contracts</div>
+  <table class="meta">
+    <tr><td>Document ID</td><td><b>TSD-PDS-003</b></td></tr>
+    <tr><td>Version</td><td><b>0.1</b> &mdash; first issue for review</td></tr>
+    <tr><td>Date</td><td>23 November 2026</td></tr>
+    <tr><td>Baseline</td><td>PRD-PDS-001 v0.2 &middot; FSD-PDS-002 <b>v0.2</b> (gate approved)</td></tr>
+    <tr><td>Gate decisions fed in</td><td>Q-F1 &hellip; Q-F6</td></tr>
+    <tr><td>Next step</td><td>TSD approval &rarr; Phase 1 build</td></tr>
+    <tr><td>Decides</td><td>How the FSD is realised: schema, services, components, jobs, config</td></tr>
+    <tr><td>Verified against</td><td>Actual local toolchain, probed 2026-11-23</td></tr>
+  </table>
+</div>
+
+<h2>0. How to read this document</h2>
+<div class="toc">
+  <div class="l1">1. Control, basis, scope of decisions</div>
+  <div class="l1">2. Architecture</div>
+  <div class="l2">2.1 Verified environment &middot; 2.2 Context &middot; 2.3 Request lifecycle &middot; 2.4 Layering</div>
+  <div class="l2">2.5 Repository layout &middot; 2.6 Dependencies &middot; 2.7 Configuration surface</div>
+  <div class="l1">3. Data design</div>
+  <div class="l2">3.1 Conventions &middot; 3.2 Entity map &middot; 3.3 Table catalogue &middot; 3.4 Indexes</div>
+  <div class="l2">3.5 Immutability and retention &middot; 3.6 Reference and seed data</div>
+  <div class="l1">4. Workflow engine implementation</div>
+  <div class="l2">4.1 Chain config &middot; 4.2 Status derivation &middot; 4.3 Transitions &middot; 4.4 Gate evaluator</div>
+  <div class="l2">4.5 Numbering &middot; 4.6 Derived queries &middot; 4.7 Scheduled jobs</div>
+  <div class="l1">5. Authorisation implementation</div>
+  <div class="l1">6. Domain services and contracts</div>
+  <div class="l1">7. Front-end architecture</div>
+  <div class="l2">7.1 Page structure &middot; 7.2 Shared components &middot; 7.3 Formatter &middot; 7.4 State &middot; 7.5 A11y/print</div>
+  <div class="l1">8. Document generation &middot; 9. Import pipeline &middot; 10. Notifications and queue</div>
+  <div class="l1">11. Audit and security &middot; 12. Performance and capacity</div>
+  <div class="l1">13. Testing strategy &middot; 14. Environment and build &middot; 15. Delivery plan</div>
+  <div class="l1">16. Decision log and risks &middot; 17. FSD traceability &middot; 18. Sign-off</div>
+</div>
+<p>Items are numbered <span class="id">TSD-xxx</span> and each carries an <b>FSD</b> column. Where a decision has more than one defensible option, it is written as an architecture decision record <span class="id">ADR-nn</span> with the rejected alternative and the reason, so a later reviewer can reopen it deliberately instead of by accident.</p>
+
+<h2 class="pagebreak">1. Control, basis, and scope of decisions</h2>
+<h3>1.1 Version history</h3>
+<table>
+<thead><tr><th style="width:10%">Version</th><th style="width:14%">Date</th><th>Change</th></tr></thead>
+<tbody><tr><td class="num">0.1</td><td class="num">2026-11-23</td><td>First issue. Baseline is FSD-PDS-002 v0.2, which carries the six gate decisions Q-F1&hellip;Q-F6. Environment facts in &sect;2.1 were read from the actual machine on the issue date, not assumed.</td></tr></tbody>
+</table>
+
+<h3>1.2 What the TSD decides and what it inherits</h3>
+<table>
+<thead><tr><th style="width:33%">Decided here</th><th>Inherited unchanged</th></tr></thead>
+<tbody>
+<tr><td>Process and code architecture, package boundaries, physical schema and indexes, engine implementation, service contracts, component inventory, queue and job design, PDF pipeline, import mechanics, security wiring, test levels, environment bring-up, delivery sequencing, and every <span class="id">ADR-nn</span>.</td><td>Why the system exists and its scope (PRD v0.2). Behaviour, fields, validation, states, permissions, wording of user-facing text, document layouts (FSD v0.2). Neither of those is reopened here; if a technical constraint makes an FSD clause unbuildable, that is escalated as a change request, not silently worked around.</td></tr>
+</tbody></table>
+
+<h3>1.3 The six gate decisions as technical inputs</h3>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:26%">Decision</th><th>Technical consequence realised in this document</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-F1</td><td>Rejected FAB keeps the accepted quotation.</td><td>No cascade from <span class="code">approval_documents</span> rejection into <span class="code">quotations.status</span>. The rejection handler writes a rework task only (&sect;4.3, TSD-430).</td></tr>
+<tr><td class="id">Q-F2</td><td>Two revision rounds, fixed.</td><td>A constant in <span class="code">config/workflow.php</span>, not a column on <span class="code">packaging_categories</span>. No admin UI for it (&sect;6.3).</td></tr>
+<tr><td class="id">Q-F3</td><td>SLA escalation for approver steps only.</td><td>The escalation query filters <span class="code">approval_chain_steps.action = 'APPROVE'</span>; CHECK steps are excluded by design (&sect;4.7).</td></tr>
+<tr><td class="id">Q-F4</td><td>Supplier daily digest.</td><td>Supplier-recipient notifications are written to the queue with a digest flag and flushed by one 08:00 WIB job; N-11 and N-14 bypass the digest (&sect;10).</td></tr>
+<tr><td class="id">Q-F5</td><td>One scale-up per assignment.</td><td>Partial unique index enforcing at most one non-restart <span class="code">scale_ups</span> row per assignment, plus a <span class="code">restart_of_id</span> self link (&sect;3.3, TSD-361).</td></tr>
+<tr><td class="id">Q-F6</td><td>Multi-role holding allowed.</td><td>Permission union plus a step-assignment resolver that refuses to give one person two steps of the same chain, and a submit-time warning when no other eligible actor exists (&sect;5.4).</td></tr>
+</tbody></table>
+
+<h2>2. Architecture</h2>
+
+<h3>2.1 Verified environment</h3>
+<p>Read from this machine on 2026-11-23. Anything marked <b>gap</b> must be closed during Phase 1 setup and is not something the code may assume.</p>
+<table>
+<thead><tr><th style="width:22%">Component</th><th style="width:30%">Observed</th><th>Consequence / action</th></tr></thead>
+<tbody>
+<tr><td>PHP</td><td>8.3.30, ZTS, VS2019 x64, <span class="code">C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64</span></td><td>Target Laravel 12 (supports 8.3). No 8.4-only syntax.</td></tr>
+<tr><td>PHP extensions</td><td>bcmath, curl, exif, fileinfo, gd, intl, mbstring, mysqlnd, openssl, sodium, zip &mdash; present; xdebug absent</td><td>gd covers image thumbnails; intl covers date/number formatting; zip covers export bundling. Debugging uses logs, not xdebug (ADR-07).</td></tr>
+<tr><td>php.ini</td><td>memory_limit 512M, max_execution_time 0, upload/post 2G, <b>date.timezone = UTC</b></td><td><b>Gap:</b> FSD &sect;2.2 requires WIB. Application timezone is pinned to <span class="code">Asia/Jakarta</span> in config and never inherited from php.ini (&sect;2.7). Upload limits are far above the 20 MB rule, so the 20 MB cap is enforced in validation, not php.ini.</td></tr>
+<tr><td>MySQL</td><td>8.4.3 winx64, port 3306, datadir <span class="code">C:\laragon\data\mysql-8.4</span>, max_allowed_packet 512M. <b>Server not running at time of writing</b> (connection refused).</td><td>Setup must start the Laragon MySQL service before migrate; documented in &sect;14. 8.4 supports CTEs and window functions used by the reporting queries.</td></tr>
+<tr><td>Composer</td><td>2.9.4 at <span class="code">C:\laragon\bin\composer\composer.phar</span>; <b>not on PATH</b> in the shell used</td><td><b>Gap:</b> scripts in &sect;14 call the phar by full path so build steps do not silently fail.</td></tr>
+<tr><td>Node / npm</td><td>Node v22.22.0, npm 10.9.4, npx present</td><td>Vite 5 + React 18 build works; no engine downgrade needed.</td></tr>
+<tr><td>Git</td><td>2.52.0.windows.1</td><td>Available. <b>Gap:</b> no global <span class="code">user.name</span>/<span class="code">user.email</span> and no GitHub authentication yet; repository push is Phase 6 (FSD &sect;10.2, PRD &sect;15).</td></tr>
+<tr><td>Web server</td><td>Apache httpd 2.4.66 and nginx both installed under Laragon; Mailpit present</td><td>Dev uses <span class="code">php artisan serve</span> to avoid vhost edits; Mailpit is the local mail catcher so no SMTP credentials are needed (&sect;10).</td></tr>
+<tr><td>Headless Chrome</td><td>Present and verified by rendering this document set</td><td>Available as the high-fidelity PDF path (ADR-11).</td></tr>
+<tr><td>Redis</td><td><b>Not installed</b> (memcached is, but is not a queue store we need)</td><td>Queue driver is <span class="code">database</span>; cache driver is <span class="code">file</span> in dev, <span class="code">database</span> where invalidation matters (ADR-05).</td></tr>
+<tr><td>Project directory</td><td><span class="code">C:\Users\USER\Downloads\Project\NPD</span> contains only <span class="code">docs\</span></td><td>Fresh build confirmed; nothing is being inherited from the rejected prototype.</td></tr>
+</tbody></table>
+
+<h3>2.2 System context</h3>
+<svg viewBox="0 0 700 250">
+  <style>
+    .n{fill:#eef3f8;stroke:#14416f;stroke-width:1;}
+    .x{fill:#fff8e6;stroke:#b06d00;stroke-width:1;}
+    .d{fill:#f2f8f2;stroke:#3f7d3f;stroke-width:1;}
+    .l{fill:none;stroke:#647586;stroke-width:1;marker-end:url(#ta);}
+    .tt{font-size:8px;fill:#16202b;font-family:Segoe UI,Arial,sans-serif;}
+    .hs{font-size:8.6px;fill:#0f2c4d;font-weight:bold;font-family:Segoe UI,Arial,sans-serif;}
+    .sm{font-size:6.8px;fill:#44586c;font-family:Segoe UI,Arial,sans-serif;}
+  </style>
+  <defs><marker id="ta" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#647586"/></marker></defs>
+
+  <text class="hs" x="6" y="12">Clients</text>
+  <rect class="n" x="6" y="18" width="118" height="30" rx="2"/><text class="tt" x="12" y="31">Internal users</text><text class="sm" x="12" y="41">12 roles, browser</text>
+  <rect class="n" x="6" y="54" width="118" height="30" rx="2"/><text class="tt" x="12" y="67">Supplier users</text><text class="sm" x="12" y="77">portal shell only</text>
+
+  <text class="hs" x="205" y="12">Application (one Laravel process)</text>
+  <rect class="d" x="170" y="18" width="230" height="150" rx="3"/>
+  <rect class="n" x="182" y="30" width="98" height="26" rx="2"/><text class="tt" x="188" y="41">Inertia pages</text><text class="sm" x="188" y="51">React 18 views</text>
+  <rect class="n" x="290" y="30" width="98" height="26" rx="2"/><text class="tt" x="296" y="41">HTTP layer</text><text class="sm" x="296" y="51">controllers, requests</text>
+  <rect class="n" x="182" y="64" width="206" height="26" rx="2"/><text class="tt" x="188" y="75">Domain services</text><text class="sm" x="188" y="85">workflow engine &middot; gates &middot; numbering &middot; derived queries</text>
+  <rect class="n" x="182" y="98" width="98" height="26" rx="2"/><text class="tt" x="188" y="109">Eloquent repos</text><text class="sm" x="188" y="119">persistence</text>
+  <rect class="n" x="290" y="98" width="98" height="26" rx="2"/><text class="tt" x="296" y="109">Jobs &amp; scheduler</text><text class="sm" x="296" y="119">notify &middot; digest &middot; SLA</text>
+  <rect class="n" x="182" y="132" width="206" height="26" rx="2"/><text class="tt" x="188" y="143">Output layer</text><text class="sm" x="188" y="153">FAB &amp; SBK rendering &middot; XLSX export &middot; spec import</text>
+
+  <text class="hs" x="470" y="12">Stores and externals</text>
+  <rect class="x" x="470" y="18" width="120" height="30" rx="2"/><text class="tt" x="476" y="31">MySQL 8.4.3</text><text class="sm" x="476" y="41">single schema, utf8mb4</text>
+  <rect class="x" x="470" y="54" width="120" height="30" rx="2"/><text class="tt" x="476" y="67">Local disk storage</text><text class="sm" x="476" y="77">private &lt;upload&gt; path</text>
+  <rect class="x" x="470" y="90" width="120" height="30" rx="2"/><text class="tt" x="476" y="103">Mailpit / SMTP</text><text class="sm" x="476" y="113">email delivery</text>
+  <rect class="x" x="470" y="126" width="120" height="30" rx="2"/><text class="tt" x="476" y="139">Headless Chrome</text><text class="sm" x="476" y="149">optional PDF fidelity</text>
+
+  <line class="l" x1="124" y1="33" x2="180" y2="40"/>
+  <line class="l" x1="124" y1="69" x2="180" y2="44"/>
+  <line class="l" x1="400" y1="33" x2="468" y2="33"/>
+  <line class="l" x1="400" y1="111" x2="468" y2="69"/>
+  <line class="l" x1="400" y1="111" x2="468" y2="105"/>
+  <line class="l" x1="285" y1="111" x2="285" y2="90"/>
+  <line class="l" x1="388" y1="145" x2="468" y2="140"/>
+
+  <text class="sm" x="6" y="188">Everything above runs as one PHP application on one host in the local deployment. There is no second service, no API gateway, and no SPA bundle served from a different origin: Inertia makes the boundary between</text>
+  <text class="sm" x="6" y="198">"front end" and "back end" a code-organisation concern, not a network one. Suppliers and staff hit the same process and are separated by authorisation scope, not by separate deployments.</text>
+  <rect class="n" x="6" y="208" width="688" height="26" rx="2" style="fill:#f1f5f9;"/>
+  <text class="sm" x="12" y="219"><tspan style="font-weight:bold;fill:#0f2c4d;">Deliberately absent:</tspan> Redis, message broker, search engine, object storage, external IdP/SSO, and a separate reporting database.</text>
+  <text class="sm" x="12" y="229">Each is a future cost with no current requirement behind it; the design leaves seams (&sect;10 queue driver, &sect;12 index budget) so they can be added without re-architecting.</text>
+</svg>
+
+<h3>2.3 Request lifecycle</h3>
+<table>
+<thead><tr><th style="width:6%">#</th><th style="width:22%">Stage</th><th>What happens, and what must not</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Route + middleware</td><td>Session, <span class="code">EnsureUserIsActive</span>, <span class="code">ResolvePermissionSet</span> (loads the union of the user's role grants, cached), timezone pin to <span class="code">Asia/Jakarta</span>. No controller may perform an authorisation check by inspecting a role name.</td></tr>
+<tr><td class="num">2</td><td>Form request</td><td>Field-level validation exactly as FSD &sect;5 validation columns, returning <span class="code">MSG-xxx</span> codes rather than prose, so wording lives in one language file.</td></tr>
+<tr><td class="num">3</td><td>Policy</td><td>Feature-level ability check from the matrix (deny by default). Supplier scope filters are applied here, never in the view.</td></tr>
+<tr><td class="num">4</td><td>Controller &rarr; service</td><td>Thin: map request to a command, call one domain service, return the Inertia props. No business rule in a controller.</td></tr>
+<tr><td class="num">5</td><td>Domain service</td><td>Gate evaluation, numbering, transition, derived recomputation, all inside one transaction. The engine never trusts a status sent by the client.</td></tr>
+<tr><td class="num">6</td><td>Persistence</td><td>Eloquent writes; audit entries appended in the same transaction as the change they describe.</td></tr>
+<tr><td class="num">7</td><td>Post-commit</td><td>Notification rows and job dispatch after commit (<span class="code">after_commit</span>), so a rolled back transition cannot notify.</td></tr>
+<tr><td class="num">8</td><td>Response</td><td>Inertia props already formatted for display? <b>No.</b> Raw values go out; the shared formatter in the client renders them (&sect;7.3). This keeps exports and screens consistent from one formatter, and keeps the API usable for PDF generation.</td></tr>
+</tbody></table>
+
+<h3>2.4 Layering and module boundaries</h3>
+<p>The application is one Laravel project. Boundaries are enforced by folder and by a small set of architectural tests, not by separate packages or services.</p>
+<table>
+<thead><tr><th style="width:16%">Layer</th><th style="width:26%">Location</th><th>Rule</th></tr></thead>
+<tbody>
+<tr><td>Interface</td><td><span class="code">app/Http/Controllers</span>, <span class="code">Requests</span>, <span class="code">Resources</span>, <span class="code">Pages</span> (Inertia props)</td><td>Depends on domain only. Never touches another module's table directly.</td></tr>
+<tr><td>Domain</td><td><span class="code">app/Domain/&lt;Context&gt;</span> &mdash; Workflow, Project, Spec, Inspection, Supplier, Approval, Access, Reporting</td><td>Owns its entities, services, gates. Contexts communicate through service interfaces or events, never by importing another context's model for writing.</td></tr>
+<tr><td>Infrastructure</td><td><span class="code">app/Support</span>, <span class="code">app/Jobs</span>, <span class="code">app/Console</span>, <span class="code">app/Services</span> (PDF, XLSX, mail)</td><td>Implementations the domain declares a need for. Swappable.</td></tr>
+<tr><td>Client</td><td><span class="code">resources/js/</span></td><td>Components read props; they do not compute status, progress or permission.</td></tr>
+</tbody></table>
+<div class="note"><b>Why the workflow engine is a context and not a model.</b> FSD &sect;4 makes one engine serve eight document types. If it lived inside, say, the approval module, the drawing and artwork flows would each re-implement it &mdash; which is precisely how the rejected prototype ended up with three menus for one thing. The engine owns <span class="code">approval_documents</span>, <span class="code">approval_steps</span>, chain configuration, transitions and derived status; every other context only declares a chain key and reads results.</div>
+
+<h3>2.5 Repository layout</h3>
+<pre>
+NPD/
+  docs/                        PRD, FSD, TSD sources and PDFs (already present)
+  app/
+    Domain/
+      Access/                  User, Role, PermissionMatrix, SegregationResolver
+      Project/                 Project, PackagingAssignment, StageRecord, Timeline
+      Spec/                    PackagingCategory, PackagingItem, Specification, SpecParameter
+      Supplier/                Supplier, Quotation, SampleSubmission, Evaluation, PortalAccess
+      Inspection/              Inspection, InspectionResult, TransportTest, ApplicationTest
+      Colour/                  ColourStandard, ArtworkCirculation, ProofPrint
+      Approval/                FormApprovalBahanKemas, Standard, ScaleUp, ProductMaster
+      Workflow/                ApprovalDocument, ApprovalStep, ChainTemplate,
+                               GateEvaluator, TransitionService, NumberingService, StatusDeriver
+      Notify/                  NotificationEvent, Digest, WorkingDayCalendar
+    Http/Controllers/&hellip;      one folder per FSD area F1&hellip;F9
+    Http/Requests/&hellip;         validation mirroring FSD field tables
+    Http/Middleware/           ResolvePermissionSet, EnsureUserIsActive, ScopeSupplierQueries
+    Policies/                  one per aggregate root
+    Jobs/                      SendNotification, FlushSupplierDigest, EscalateApprovals,
+                               GenerateDocument, ImportSpecification
+    Console/                   schedule:work, digest, escalate, prune-sessions
+    Support/                   Formatter, Audit, IdCodes, UploadPolicy
+  resources/js/
+    Pages/&lt;Area&gt;/&hellip;           Inertia pages, folder mirrors FSD areas
+    Components/               DataTable, FormShell, StatusChip, PersonRef, FileField,
+                              StageStepper, ApprovalBar, EvidenceGrid, EmptyState
+    Formatters/               date, number, currency, relative, status
+    Layouts/                  AppLayout, PortalLayout, PrintLayout
+  resources/views/pdf/         FAB and SBK blade layouts
+  database/migrations/         ordered by phase, see &sect;15
+  database/seeders/            roles, matrix, chains, stage definitions, sample project
+  tests/Feature/&hellip;            one file per FSD area, gate tests per guard
+  tests/Unit/&hellip;                engine, gates, numbering, formatter
+  config/                      workflow.php, matrix.php, numbering.php, pdf.php
+</pre>
+
+<h3>2.6 Dependencies</h3>
+<table>
+<thead><tr><th style="width:26%">Package</th><th style="width:14%">Version target</th><th>Why, and what it replaces</th></tr></thead>
+<tbody>
+<tr><td class="code">laravel/framework</td><td>^12.0</td><td>Framework. PHP 8.3 compatible.</td></tr>
+<tr><td class="code">laravel/breeze</td><td>^2.0 (React stack)</td><td>Auth scaffolding; gives Inertia + React wiring without a custom build.</td></tr>
+<tr><td class="code">inertiajs/inertia-laravel</td><td>latest for 12</td><td>Page rendering. Chosen over a separate SPA so one app, one session, one deploy.</td></tr>
+<tr><td class="code">spatie/laravel-permission</td><td>^6</td><td>Roles and abilities. The runtime matrix in FSD &sect;6 is stored in its tables plus a feature-grant table; the package supplies caching and ownership.</td></tr>
+<tr><td class="code">barryvdh/laravel-dompdf</td><td>^3</td><td>Primary PDF path for FAB and SBK: pure PHP, no external binary, deterministic in the local environment.</td></tr>
+<tr><td class="code">phpoffice/phpspreadsheet</td><td>^3</td><td>XLSX export and specification import. Chosen over a CSV dance because the source Master Spec is XLSX with merged headers.</td></tr>
+<tr><td class="code">spatie/laravel-activitylog or custom</td><td>&mdash;</td><td><b>Custom</b> (ADR-09): FSD &sect;2.5 and FSD-907 demand before/after values, role-at-the-time, IP, and access-read events. A purpose-built <span class="code">audit_entries</span> table is smaller than bending a package to record reads.</td></tr>
+<tr><td class="code">tightenco/ziggy</td><td>^2</td><td>Route names inside React, so components never hard-code URLs.</td></tr>
+<tr><td class="code">laravel/horizon, redis, scout</td><td>&mdash;</td><td>Explicitly <b>not</b> used: no Redis on this host (FSD &sect;10.2 seam respected by the queue driver choice only).</td></tr>
+</tbody></table>
+
+<h3>2.7 Configuration surface</h3>
+<p>Values that a reviewer or an administrator could plausibly want to change are configuration, not code. Anything else stays hard-coded so it cannot drift.</p>
+<table>
+<thead><tr><th style="width:30%">Key</th><th style="width:22%">Default</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="code">app.timezone</td><td><span class="code">Asia/Jakarta</span></td><td>Overrides php.ini UTC. All storage is timestamps in UTC; display converts.</td></tr>
+<tr><td class="code">workflow.revision_escalation_rounds</td><td>2</td><td>Q-F2 fixed. Not exposed in the UI.</td></tr>
+<tr><td class="code">workflow.sla_approver_working_days</td><td>3</td><td>Q-F3. Approver steps only.</td></tr>
+<tr><td class="code">workflow.sla_manager_copy_working_days</td><td>5</td><td>Q-F3.</td></tr>
+<tr><td class="code">notify.supplier_digest_cron</td><td><span class="code">0 8 * * *</span> (WIB)</td><td>Q-F4.</td></tr>
+<tr><td class="code">notify.invitation_deadline_days</td><td>7</td><td>Auto-close of unanswered invitations (FSD-507).</td></tr>
+<tr><td class="code">upload.max_mb / upload.types</td><td>20 / per-field list</td><td>FSD &sect;2.5. Enforced in validation even though php.ini allows 2G.</td></tr>
+<tr><td class="code">pdf.engine</td><td><span class="code">dompdf</span></td><td><span class="code">chrome</span> selectable for complex SBK layouts (ADR-11).</td></tr>
+<tr><td class="code">pdf.sbk_number_format</td><td><span class="code">QC/BP/{seq:3}/{yy}</span></td><td>FSD &sect;2.3, matches the paper convention.</td></tr>
+<tr><td class="code">matrix.cache_ttl_seconds</td><td>0 (until invalidated)</td><td>Permission changes invalidate immediately (FSD-204).</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">3. Data design</h2>
+
+<h3>3.1 Conventions</h3>
+<table>
+<thead><tr><th style="width:22%">Rule</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>Engine, charset</td><td>InnoDB, <span class="code">utf8mb4_0900_ai_ci</span>. Material names and remarks contain non-ASCII and must not be silently mangled.</td></tr>
+<tr><td>Primary keys</td><td><span class="code">id BIGINT UNSIGNED AUTO_INCREMENT</span> internally. Human codes (<span class="code">code</span>, <span class="code">number</span>) are separate unique columns, never the join key &mdash; codes are printed, ids are not (FSD &sect;2.3).</td></tr>
+<tr><td>Foreign keys</td><td>Real constraints, <span class="code">ON DELETE RESTRICT</span> everywhere. Nothing in this system is deleted by cascade; deactivation is the mechanism (FSD-402, G-13).</td></tr>
+<tr><td>Timestamps</td><td><span class="code">created_at</span>/<span class="code">updated_at</span> stored UTC. Business dates that a human chooses (<span class="code">effective_date</span>, <span class="code">planned_end</span>) are <span class="code">DATE</span>, not timestamps &mdash; a date must not shift by an hour across a DST-free but mis-set clock.</td></tr>
+<tr><td>Soft delete</td><td>Only on records with no audit consequence: <span class="code">announcements</span>, <span class="code">attachments</span>. Never on workflow, approval, inspection or master data (OQ-09).</td></tr>
+<tr><td>Money</td><td><span class="code">DECIMAL(14,2)</span>, whole rupiah in practice; never float. Currency is single (IDR) and not stored per row.</td></tr>
+<tr><td>Enumerations</td><td>MySQL <span class="code">ENUM</span> is avoided. Status values are <span class="code">VARCHAR(32)</span> with a check constraint plus a PHP enum class, so adding a state is a migration, not a column rebuild.</td></tr>
+<tr><td>Numeric tolerance</td><td><span class="code">DECIMAL(12,4)</span> for nominal/min/max; <span class="code">unit</span> is a FK to <span class="code">units</span>, never free text, because the inspection form must compare against it.</td></tr>
+<tr><td>Boolean</td><td><span class="code">TINYINT(1)</span> named <span class="code">is_*</span> or <span class="code">has_*</span>. No nullable booleans: three states are three explicit values.</td></tr>
+<tr><td>Names</td><td>Tables plural snake_case; columns snake_case; pivot tables <span class="code">a_b</span> alphabetical. Indexes <span class="code">idx_&lt;table&gt;_&lt;cols&gt;</span>, uniques <span class="code">uq_&lt;table&gt;_&lt;cols&gt;</span>, FKs <span class="code">fk_&lt;table&gt;_&lt;col&gt;</span>.</td></tr>
+<tr><td>JSON</td><td>Allowed only for genuinely open payload shapes (form impact rows, evidence metadata). Never for anything queried, filtered, or gated.</td></tr>
+</tbody></table>
+
+<h3>3.2 Entity map</h3>
+<svg viewBox="0 0 700 268">
+  <style>
+    .en{fill:#eef3f8;stroke:#14416f;stroke-width:1;}
+    .ct{fill:#f2f8f2;stroke:#3f7d3f;stroke-width:1;}
+    .sys{fill:#fff8e6;stroke:#b06d00;stroke-width:1;}
+    .rl{fill:none;stroke:#647586;stroke-width:0.9;marker-end:url(#tb);}
+    .nm{font-size:7.6px;fill:#0f2c4d;font-weight:bold;font-family:Segoe UI,Arial,sans-serif;}
+    .lb{font-size:6.4px;fill:#44586c;font-family:Segoe UI,Arial,sans-serif;}
+    .hd{font-size:8.4px;fill:#0f2c4d;font-weight:bold;font-family:Segoe UI,Arial,sans-serif;}
+  </style>
+  <defs><marker id="tb" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#647586"/></marker></defs>
+
+  <text class="hd" x="6" y="12">Master data</text>
+  <rect class="en" x="6" y="18" width="92" height="24" rx="2"/><text class="nm" x="11" y="33">packaging_categories</text>
+  <rect class="en" x="6" y="48" width="92" height="24" rx="2"/><text class="nm" x="11" y="63">packaging_items</text>
+  <rect class="en" x="6" y="78" width="92" height="24" rx="2"/><text class="nm" x="11" y="93">specifications</text>
+  <rect class="en" x="6" y="108" width="92" height="24" rx="2"/><text class="nm" x="11" y="123">spec_parameters</text>
+  <line class="rl" x1="52" y1="42" x2="52" y2="46"/><line class="rl" x1="52" y1="72" x2="52" y2="76"/><line class="rl" x1="52" y1="102" x2="52" y2="106"/>
+
+  <text class="hd" x="120" y="12">Project and workflow</text>
+  <rect class="en" x="120" y="18" width="76" height="24" rx="2"/><text class="nm" x="125" y="33">projects</text>
+  <rect class="en" x="120" y="52" width="76" height="24" rx="2"/><text class="nm" x="125" y="67">assignments</text>
+  <rect class="en" x="120" y="86" width="76" height="24" rx="2"/><text class="nm" x="125" y="101">stage_records</text>
+  <rect class="ct" x="120" y="120" width="76" height="24" rx="2"/><text class="nm" x="125" y="135">stage_defs</text>
+  <line class="rl" x1="158" y1="42" x2="158" y2="50"/><line class="rl" x1="158" y1="76" x2="158" y2="84"/><line class="rl" x1="158" y1="110" x2="158" y2="118"/>
+  <line class="rl" x1="98" y1="60" x2="118" y2="62"/>
+
+  <text class="hd" x="222" y="12">Approval engine</text>
+  <rect class="ct" x="222" y="18" width="92" height="24" rx="2"/><text class="nm" x="227" y="33">approval_chains</text>
+  <rect class="ct" x="222" y="48" width="92" height="24" rx="2"/><text class="nm" x="227" y="63">chain_steps</text>
+  <rect class="ct" x="222" y="78" width="92" height="24" rx="2"/><text class="nm" x="227" y="93">approval_documents</text>
+  <rect class="ct" x="222" y="108" width="92" height="24" rx="2"/><text class="nm" x="227" y="123">approval_steps</text>
+  <rect class="ct" x="222" y="138" width="92" height="24" rx="2"/><text class="nm" x="227" y="153">numbering_sequences</text>
+  <line class="rl" x1="268" y1="42" x2="268" y2="46"/><line class="rl" x1="268" y1="72" x2="268" y2="76"/><line class="rl" x1="268" y1="102" x2="268" y2="106"/>
+  <line class="rl" x1="196" y1="64" x2="220" y2="86"/>
+
+  <text class="hd" x="336" y="12">Typed document payloads</text>
+  <rect class="en" x="336" y="18" width="96" height="22" rx="2"/><text class="nm" x="341" y="32">form_approval_bk</text>
+  <rect class="en" x="336" y="44" width="96" height="22" rx="2"/><text class="nm" x="341" y="58">specifications (own)</text>
+  <rect class="en" x="336" y="70" width="96" height="22" rx="2"/><text class="nm" x="341" y="84">artwork_circulation</text>
+  <rect class="en" x="336" y="96" width="96" height="22" rx="2"/><text class="nm" x="341" y="110">technical_drawing</text>
+  <rect class="en" x="336" y="122" width="96" height="22" rx="2"/><text class="nm" x="341" y="136">quotation</text>
+  <rect class="en" x="336" y="148" width="96" height="22" rx="2"/><text class="nm" x="341" y="162">packaging_standard</text>
+  <line class="rl" x1="314" y1="90" x2="334" y2="30"/>
+  <line class="rl" x1="314" y1="90" x2="334" y2="56"/>
+  <line class="rl" x1="314" y1="90" x2="334" y2="82"/>
+  <line class="rl" x1="314" y1="90" x2="334" y2="108"/>
+  <line class="rl" x1="314" y1="90" x2="334" y2="134"/>
+  <line class="rl" x1="314" y1="90" x2="334" y2="160"/>
+
+  <text class="hd" x="454" y="12">Evidence and outcomes</text>
+  <rect class="en" x="454" y="18" width="104" height="22" rx="2"/><text class="nm" x="459" y="32">inspections (T0/T1/T2)</text>
+  <rect class="en" x="454" y="44" width="104" height="22" rx="2"/><text class="nm" x="459" y="58">inspection_results</text>
+  <rect class="en" x="454" y="70" width="104" height="22" rx="2"/><text class="nm" x="459" y="84">transport / app. tests</text>
+  <rect class="en" x="454" y="96" width="104" height="22" rx="2"/><text class="nm" x="459" y="110">proof_prints</text>
+  <rect class="en" x="454" y="122" width="104" height="22" rx="2"/><text class="nm" x="459" y="136">scale_ups</text>
+  <rect class="en" x="454" y="148" width="104" height="22" rx="2"/><text class="nm" x="459" y="162">design_reviews</text>
+  <line class="rl" x1="432" y1="29" x2="452" y2="29"/>
+  <line class="rl" x1="432" y1="135" x2="452" y2="132"/>
+  <line class="rl" x1="196" y1="64" x2="452" y2="29" style="stroke-dasharray:3 2;"/>
+  <line class="rl" x1="196" y1="64" x2="452" y2="132" style="stroke-dasharray:3 2;"/>
+
+  <text class="hd" x="582" y="12">Suppliers</text>
+  <rect class="en" x="582" y="18" width="112" height="22" rx="2"/><text class="nm" x="587" y="32">suppliers</text>
+  <rect class="en" x="582" y="44" width="112" height="22" rx="2"/><text class="nm" x="587" y="58">supplier_invitations</text>
+  <rect class="en" x="582" y="70" width="112" height="22" rx="2"/><text class="nm" x="587" y="84">sample_submissions</text>
+  <rect class="en" x="582" y="96" width="112" height="22" rx="2"/><text class="nm" x="587" y="110">supplier_evaluations</text>
+  <line class="rl" x1="638" y1="40" x2="638" y2="42"/><line class="rl" x1="638" y1="66" x2="638" y2="68"/><line class="rl" x1="638" y1="92" x2="638" y2="94"/>
+  <line class="rl" x1="580" y1="111" x2="560" y2="111" style="stroke-dasharray:3 2;"/>
+
+  <text class="hd" x="6" y="182">System</text>
+  <rect class="sys" x="6" y="188" width="92" height="22" rx="2"/><text class="nm" x="11" y="202">users / roles</text>
+  <rect class="sys" x="104" y="188" width="92" height="22" rx="2"/><text class="nm" x="109" y="202">feature_grants</text>
+  <rect class="sys" x="202" y="188" width="92" height="22" rx="2"/><text class="nm" x="207" y="202">attachments</text>
+  <rect class="sys" x="300" y="188" width="92" height="22" rx="2"/><text class="nm" x="305" y="202">notifications</text>
+  <rect class="sys" x="398" y="188" width="92" height="22" rx="2"/><text class="nm" x="403" y="202">audit_entries</text>
+  <rect class="sys" x="496" y="188" width="92" height="22" rx="2"/><text class="nm" x="501" y="202">working_day_calendar</text>
+  <rect class="sys" x="594" y="188" width="100" height="22" rx="2"/><text class="nm" x="599" y="202">announcements</text>
+
+  <text class="lb" x="6" y="226">Solid arrow = ownership / parent-child. Dashed = reference used by a gate or a report, not a hierarchy. Green = the workflow engine, shared by every approval-bearing</text>
+  <text class="lb" x="6" y="236">document. Orange = infrastructure. A typed payload table (blue, middle-right) holds the FSD field columns for one document type and is joined one-to-one to approval_documents.</text>
+  <text class="lb" x="6" y="250"><tspan style="font-weight:bold;fill:#b5122b;">The split matters:</tspan> gates query stage_records and inspections; the engine queries approval_steps; reports</text>
+  <text class="lb" x="6" y="260">join the two through approval_documents. Neither side needs to know the other's table names, which keeps eight document types on one state machine.</text>
+</svg>
+
+<h3>3.3 Table catalogue</h3>
+<p>Only columns that carry behaviour are listed; framework columns (<span class="code">id</span>, timestamps, <span class="code">created_by</span>/<span class="code">updated_by</span> where present) are implied.</p>
+
+<h4>3.3.1 Access and identity</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">users</td><td><span class="code">name</span>, <span class="code">email</span> uq, <span class="code">password</span>, <span class="code">department_id</span>, <span class="code">phone</span>, <span class="code">is_active</span>, <span class="code">must_change_password</span>, <span class="code">last_login_at</span>, <span class="code">locale</span>, <span class="code">row_version</span></td><td>N&ndash;M roles; <span class="code">is_active=0</span> blocks login and clears queues</td><td class="id">FSD-101, 201, 202</td></tr>
+<tr><td class="code">departments</td><td><span class="code">name</span> uq, <span class="code">is_active</span></td><td>referenced by users and reports</td><td class="id">FSD-206</td></tr>
+<tr><td class="code">roles / model_has_roles / permissions / role_has_permissions</td><td>Spatie tables. Role <span class="code">name</span> is the twelve business roles plus <span class="code">admin</span> and <span class="code">supplier</span>; role <span class="code">slug</span> is stable and used by chain steps.</td><td>role slug uq</td><td class="id">FSD-614</td></tr>
+<tr><td class="code">features</td><td><span class="code">key</span> uq (e.g. <span class="code">specification.update</span>), <span class="code">group</span>, <span class="code">label</span>, <span class="code">sort</span></td><td>rows mirror FSD &sect;6 feature rows exactly</td><td class="id">FSD-204</td></tr>
+<tr><td class="code">feature_grants</td><td><span class="code">feature_key</span>, <span class="code">role_slug</span>, <span class="code">level</span> ENUM('FULL','READ','NONE')</td><td>uq(feature_key, role_slug); absence means NONE (deny by default)</td><td class="id">FSD-204, BR-07</td></tr>
+<tr><td class="code">supplier_user_links</td><td><span class="code">user_id</span> uq, <span class="code">supplier_id</span>, <span class="code">created_by</span>, <span class="code">rebound_reason</span></td><td>one supplier account per user; rebinding needs a reason</td><td class="id">FSD-203, OQ-07</td></tr>
+</tbody></table>
+
+<h4>3.3.2 Master data</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">packaging_categories</td><td><span class="code">name</span>, <span class="code">description</span>, <span class="code">is_active</span></td><td>name uq; delete blocked by items</td><td class="id">FSD-401</td></tr>
+<tr><td class="code">packaging_items</td><td><span class="code">code</span> uq, <span class="code">name</span>, <span class="code">category_id</span>, <span class="code">material_type_id</span>, <span class="code">branch_class</span> ENUM('A','B','BOTH'), <span class="code">is_active</span></td><td>branch_class is metadata only, never a gate</td><td class="id">FSD-402, 403</td></tr>
+<tr><td class="code">material_types</td><td><span class="code">name</span> uq (HDPE, PP, paper board&hellip;)</td><td>reference</td><td class="id">FSD-408</td></tr>
+<tr><td class="code">units</td><td><span class="code">symbol</span> uq, <span class="code">name</span>, <span class="code">kind</span> (length/mass/volume/count)</td><td>parameters and results both FK here</td><td class="id">FSD-408</td></tr>
+<tr><td class="code">parameter_groups</td><td><span class="code">name</span>, <span class="code">sort</span></td><td>the six observed groups seeded</td><td class="id">FSD-408</td></tr>
+<tr><td class="code">analysis_methods</td><td><span class="code">name</span> uq, <span class="code">default_unit_id</span></td><td>reference</td><td class="id">FSD-408</td></tr>
+<tr><td class="code">products</td><td><span class="code">code</span>, <span class="code">name</span>, <span class="code">brand</span>, <span class="code">variant</span>, <span class="code">pack_size</span>, <span class="code">is_active</span></td><td>code uq; deactivate blocked by open assignments</td><td class="id">FSD-409, 812</td></tr>
+</tbody></table>
+
+<h4>3.3.3 Specification (SBK)</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">specifications</td><td><span class="code">number</span> (<span class="code">QC/BP/NNN/YY</span>), <span class="code">version</span>, <span class="code">item_id</span>, <span class="code">product_id</span>, <span class="code">material_name</span>, <span class="code">material_type_id</span>, <span class="code">effective_date</span>, <span class="code">doc_status</span>, <span class="code">approval_document_id</span>, <span class="code">revision_of_id</span>, <span class="code">change_note</span>, <span class="code">row_version</span></td><td>uq(number, version); number sequence per year, never reused</td><td class="id">FSD-404, 406</td></tr>
+<tr><td class="code">specification_sizes</td><td><span class="code">specification_id</span>, <span class="code">code</span> (TL/C/TH/OD/H), <span class="code">label</span>, <span class="code">nominal</span>, <span class="code">min</span>, <span class="code">max</span>, <span class="code">unit_id</span>, <span class="code">method_id</span>, <span class="code">sort</span></td><td>the dimension block of the printed form</td><td class="id">&sect;7.2</td></tr>
+<tr><td class="code">specification_parameters</td><td><span class="code">specification_id</span>, <span class="code">group_id</span>, <span class="code">parameter</span>, <span class="code">spec_text</span>, <span class="code">min</span>, <span class="code">max</span>, <span class="code">unit_id</span>, <span class="code">method_id</span>, <span class="code">criteria</span>, <span class="code">is_numeric</span>, <span class="code">sort</span></td><td>drives the inspection template exactly; nothing may be added at inspection time</td><td class="id">S-7.1</td></tr>
+<tr><td class="code">specification_components</td><td><span class="code">specification_id</span>, <span class="code">component</span>, <span class="code">material</span>, <span class="code">percent</span>, <span class="code">note</span>, <span class="code">sort</span></td><td>the 77-row import target</td><td class="id">FSD-407</td></tr>
+</tbody></table>
+
+<h4>3.3.4 Project, assignment, stages</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">projects</td><td><span class="code">code</span> uq, <span class="code">name</span>, <span class="code">concept_text</span>, <span class="code">target_cogs</span>, <span class="code">target_market</span>, <span class="code">brand</span>, <span class="code">deadline</span> DATE, <span class="code">owner_id</span>, <span class="code">concept_status</span>, <span class="code">is_archived</span>, <span class="code">is_cancelled</span>, <span class="code">cancelled_reason</span>, <span class="code">row_version</span></td><td>name uq among active; owner holds Marketing or PD role (checked in request)</td><td class="id">FSD-301, 308, 309</td></tr>
+<tr><td class="code">packaging_assignments</td><td><span class="code">code</span> uq (<span class="code">NPD-2026-007/A1</span>), <span class="code">project_id</span>, <span class="code">item_id</span>, <span class="code">branch</span> ENUM('A','B'), <span class="code">qty_per_run</span>, <span class="code">target_supplier_id</span>, <span class="code">note</span>, <span class="code">current_stage_id</span>, <span class="code">progress_pct</span> (cached), <span class="code">is_closed</span></td><td>uq(project_id, branch, seq); branch never changes once a stage completed</td><td class="id">FSD-304, 305</td></tr>
+<tr><td class="code">stage_definitions</td><td><span class="code">key</span> uq (P-01&hellip;S-10), <span class="code">branch</span>, <span class="code">seq</span>, <span class="code">label</span>, <span class="code">owner_role_slug</span>, <span class="code">gate_keys</span> (JSON list of G ids), <span class="code">exit_rule</span> (class name), <span class="code">is_applicable</span></td><td>configuration table, seeded, editable only by migration</td><td class="id">FSD-502, 503</td></tr>
+<tr><td class="code">stage_records</td><td><span class="code">assignment_id</span>, <span class="code">stage_key</span>, <span class="code">status</span>, <span class="code">owner_user_id</span>, <span class="code">planned_start/end</span> DATE, <span class="code">actual_start/end</span> DATETIME, <span class="code">blocked_reason</span>, <span class="code">needs_re_review</span>, <span class="code">closed_by_artifact_type/id</span></td><td>uq(assignment_id, stage_key); actual_* written only by the engine</td><td class="id">FSD-306, 509</td></tr>
+<tr><td class="code">design_reviews</td><td><span class="code">project_id</span>, <span class="code">reviewer_id</span>, <span class="code">reviewed_at</span>, <span class="code">outcome</span>, <span class="code">note</span>, <span class="code">is_blocking</span></td><td>S-04 record, not an approval document</td><td class="id">FSD-307</td></tr>
+</tbody></table>
+
+<h4>3.3.5 Workflow engine</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">approval_chains</td><td><span class="code">key</span> uq (FAB-PRIMARY, DWG-REVIEW, ARTWORK-CIRC&hellip;), <span class="code">label</span>, <span class="code">is_sequential</span>, <span class="code">is_active</span></td><td>8 rows seeded</td><td class="id">&sect;4.3</td></tr>
+<tr><td class="code">approval_chain_steps</td><td><span class="code">chain_id</span>, <span class="code">seq</span>, <span class="code">role_slug</span>, <span class="code">action</span> ENUM('CHECK','APPROVE'), <span class="code">is_required</span>, <span class="code">parallel_group</span> (nullable int)</td><td>uq(chain_id, seq); <span class="code">parallel_group</span> distinguishes the three FAB approvers from the four artwork stations</td><td class="id">FSD-401, &sect;4.3</td></tr>
+<tr><td class="code">approval_documents</td><td><span class="code">type</span> (fab, drawing, artwork, colour_range, quotation, standard, concept, specification), <span class="code">code</span> uq, <span class="code">title</span>, <span class="code">payload_table</span>, <span class="code">payload_id</span>, <span class="code">assignment_id</span> nullable, <span class="code">project_id</span>, <span class="code">chain_key</span>, <span class="code">doc_status</span>, <span class="code">approval_status_cached</span>, <span class="code">author_id</span>, <span class="code">version</span>, <span class="code">revision_of_id</span>, <span class="code">submitted_at</span>, <span class="code">closed_at</span></td><td>the single header every approvable thing shares; <span class="code">approval_status_cached</span> is derived, never written by a controller</td><td class="id">FSD-401, T-01..T-09</td></tr>
+<tr><td class="code">approval_steps</td><td><span class="code">approval_document_id</span>, <span class="code">seq</span>, <span class="code">role_slug</span>, <span class="code">action</span>, <span class="code">assigned_user_id</span> nullable, <span class="code">decision</span> ENUM(NULL,PASS,APPROVE,REJECT,RETURN), <span class="code">comment</span>, <span class="code">reason</span>, <span class="code">acted_at</span>, <span class="code">superseded_at</span></td><td>uq(document_id, seq); snapshot of the chain at submit time so a later chain edit cannot rewrite history</td><td class="id">FSD-401, BR-02</td></tr>
+<tr><td class="code">numbering_sequences</td><td><span class="code">scope</span> (fab, sbk, project, quotation&hellip;), <span class="code">period</span> (YYYY), <span class="code">next_value</span>, <span class="code">pattern</span></td><td>row-locked on allocate; values never reused even when the document is cancelled</td><td class="id">BR-13, &sect;2.3</td></tr>
+<tr><td class="code">attachments</td><td><span class="code">attachable_type/id</span>, <span class="code">field_key</span>, <span class="code">disk</span>, <span class="code">path</span>, <span class="code">original_name</span>, <span class="code">mime</span>, <span class="code">size</span>, <span class="code">uploaded_by</span>, <span class="code">deleted_at</span></td><td>path is a hash, original name kept for display and printing</td><td class="id">&sect;2.5</td></tr>
+</tbody></table>
+
+<h4>3.3.6 Suppliers, portal, quotations</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">suppliers</td><td><span class="code">code</span> uq, <span class="code">name</span> uq-normalised, <span class="code">contact_name</span>, <span class="code">email</span>, <span class="code">phone</span>, <span class="code">capacity_note</span>, <span class="code">is_active</span></td><td>name stored with a generated <span class="code">name_key</span> (lower, trimmed) for the unique test</td><td class="id">S-6.1</td></tr>
+<tr><td class="code">supplier_category</td><td>pivot <span class="code">supplier_id</span>, <span class="code">category_id</span></td><td>drives invitation eligibility</td><td class="id">S-6.1</td></tr>
+<tr><td class="code">supplier_invitations</td><td><span class="code">assignment_id</span>, <span class="code">supplier_id</span>, <span class="code">kind</span> (PITCHING/BLANK/DUMMY/ARTWORK), <span class="code">due_date</span>, <span class="code">status</span>, <span class="code">closed_reason</span></td><td>uq(assignment, supplier, kind); auto-close job sets <span class="code">NO_RESPONSE</span></td><td class="id">FSD-507</td></tr>
+<tr><td class="code">sample_submissions</td><td><span class="code">invitation_id</span>, <span class="code">kind</span>, <span class="code">verdict</span>, <span class="code">observation</span>, <span class="code">round_no</span>, <span class="code">escalated_at</span>, <span class="code">submitted_by</span></td><td>round_no counter drives the fixed two-round escalation</td><td class="id">FSD-505, 608</td></tr>
+<tr><td class="code">quotations</td><td><span class="code">code</span> uq, <span class="code">supplier_id</span>, <span class="code">assignment_id</span>, <span class="code">item_id</span>, <span class="code">unit_price</span>, <span class="code">moq</span>, <span class="code">lead_time_days</span>, <span class="code">valid_until</span>, <span class="code">tooling_cost</span>, <span class="code">incoterm</span>, <span class="code">payment_terms</span>, <span class="code">status</span>, <span class="code">revision_of_id</span>, <span class="code">reject_reason</span>, <span class="code">approval_document_id</span></td><td>accepted rows are frozen; a price change is a new revision row</td><td class="id">FSD-603, 604</td></tr>
+<tr><td class="code">supplier_evaluations</td><td><span class="code">code</span>, <span class="code">supplier_id</span>, <span class="code">period</span> (YYYY-Qn), <span class="code">quality_score</span>, <span class="code">delivery_score</span>, <span class="code">overall_score</span> (generated), <span class="code">conclusion</span>, <span class="code">note</span>, <span class="code">evaluator_id</span></td><td>uq(supplier, period); scores 1&ndash;5, weighted overall computed in SQL, not typed</td><td class="id">FSD-605, 606</td></tr>
+</tbody></table>
+
+<h4>3.3.7 QC, colour, artwork, proofprint</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">inspections</td><td><span class="code">code</span> uq, <span class="code">assignment_id</span>, <span class="code">level</span> ENUM('T0','T1','T2'), <span class="code">attempt_no</span>, <span class="code">specification_id</span> (pinned version), <span class="code">sample_ref</span>, <span class="code">verdict</span>, <span class="code">performed_by</span>, <span class="code">checked_by</span>, <span class="code">inspected_at</span>, <span class="code">narrative</span></td><td>uq(assignment, level, attempt_no); <span class="code">checked_by &lt;&gt; performed_by</span> enforced by a check constraint</td><td class="id">FSD-701, S-7.1</td></tr>
+<tr><td class="code">inspection_results</td><td><span class="code">inspection_id</span>, <span class="code">specification_parameter_id</span>, <span class="code">group_id</span>, <span class="code">expected_text</span>, <span class="code">measured_num</span>, <span class="code">measured_text</span>, <span class="code">unit_id</span>, <span class="code">verdict</span>, <span class="code">evidence_note</span></td><td>FK to the pinned parameter row, so a later spec edit cannot move a recorded result</td><td class="id">FSD-406</td></tr>
+<tr><td class="code">transport_tests</td><td><span class="code">code</span>, <span class="code">assignment_id</span>, <span class="code">route</span>, <span class="code">mode</span>, <span class="code">duration_days</span>, <span class="code">pack_config</span>, <span class="code">findings</span>, <span class="code">damage_severity</span>, <span class="code">verdict</span>, <span class="code">corrective_action_ref</span></td><td>FAIL auto-creates a task</td><td class="id">FSD-704</td></tr>
+<tr><td class="code">application_tests</td><td><span class="code">code</span>, <span class="code">assignment_id</span>, <span class="code">line</span>, <span class="code">batch</span>, <span class="code">observations</span>, <span class="code">verdict</span>, <span class="code">tested_at</span></td><td>gate on standard creation, not on quotation</td><td class="id">FSD-703</td></tr>
+<tr><td class="code">colour_standards</td><td><span class="code">code</span>, <span class="code">item_id</span>, <span class="code">name</span>, <span class="code">medium</span>, <span class="code">batch</span>, <span class="code">image_path</span>, <span class="code">is_active</span></td><td>referenced by artwork and proofprint</td><td class="id">FSD-705</td></tr>
+<tr><td class="code">artwork_circulations</td><td><span class="code">code</span>, <span class="code">assignment_id</span>, <span class="code">kind</span> (ARTWORK/COLOUR_RANGE), <span class="code">colour_standard_id</span>, <span class="code">approval_document_id</span>, <span class="code">current_station_seq</span> (cached), <span class="code">markup_comment_id</span> nullable</td><td>sequential chain; comments threaded by step</td><td class="id">FSD-706, 707, 709</td></tr>
+<tr><td class="code">proof_prints</td><td><span class="code">code</span>, <span class="code">assignment_id</span>, <span class="code">artwork_circulation_id</span>, <span class="code">print_supplier_id</span>, <span class="code">colour_standard_id</span>, <span class="code">verdict</span>, <span class="code">qc_by</span></td><td>gate G-10 for S-09</td><td class="id">FSD-809</td></tr>
+</tbody></table>
+
+<h4>3.3.8 Approval payloads, standards, scale up</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">form_approval_bk</td><td><span class="code">assignment_id</span>, <span class="code">quotation_id</span>, <span class="code">specification_id</span>, <span class="code">drawing_id</span>, <span class="code">reason_text</span>, <span class="code">price_override_reason</span>, <span class="code">impact_rows</span> JSON, <span class="code">t0_inspection_id</span>, <span class="code">t1_inspection_id</span>, <span class="code">t2_inspection_id</span>, <span class="code">transport_test_id</span>, <span class="code">application_test_id</span>, <span class="code">artwork_circulation_id</span> nullable</td><td>the three T FKs are what makes the printed evidence block impossible to leave blank; all three must reference a PASS inspection (G-06 re-checked at submit)</td><td class="id">FSD-801, 803</td></tr>
+<tr><td class="code">technical_drawings</td><td><span class="code">number</span>, <span class="code">version</span>, <span class="code">item_id</span>, <span class="code">title</span>, <span class="code">approval_document_id</span>, <span class="code">is_current</span>, <span class="code">dimension_rows</span> JSON</td><td>uq(number, version); one <span class="code">is_current</span> per number</td><td class="id">FSD-504</td></tr>
+<tr><td class="code">packaging_standards</td><td><span class="code">code</span>, <span class="code">item_id</span>, <span class="code">version</span>, <span class="code">specification_id</span>, <span class="code">drawing_id</span>, <span class="code">sampling_plan</span>, <span class="code">frequency</span>, <span class="code">effective_date</span>, <span class="code">next_review_date</span>, <span class="code">status</span>, <span class="code">approval_document_id</span>, <span class="code">change_note</span></td><td>uq(item, version); review job flags expiry</td><td class="id">FSD-807, 808</td></tr>
+<tr><td class="code">scale_ups</td><td><span class="code">code</span>, <span class="code">assignment_id</span>, <span class="code">standard_id</span>, <span class="code">scaled_at</span>, <span class="code">batch</span>, <span class="code">line</span>, <span class="code">quantity</span>, <span class="code">observations</span>, <span class="code">attendees</span> JSON, <span class="code">restart_of_id</span> nullable</td><td>partial unique on assignment_id where <span class="code">restart_of_id IS NULL</span> &mdash; one scale-up per assignment (Q-F5)</td><td class="id">FSD-810</td></tr>
+</tbody></table>
+
+<h4>3.3.9 System tables</h4>
+<table>
+<thead><tr><th style="width:17%">Table</th><th style="width:44%">Columns of consequence</th><th style="width:22%">Relations / constraints</th><th>FSD</th></tr></thead>
+<tbody>
+<tr><td class="code">notifications</td><td><span class="code">event_key</span> (N-01&hellip;N-22), <span class="code">recipient_id</span>, <span class="code">title</span>, <span class="code">body</span>, <span class="code">link_type/id</span>, <span class="code">channel</span>, <span class="code">digest</span> BOOL, <span class="code">read_at</span>, <span class="code">emailed_at</span>, <span class="code">email_attempts</span></td><td>index on (recipient, read_at); digest flag routes to the 08:00 flush</td><td class="id">FSD-902, 904</td></tr>
+<tr><td class="code">notification_preferences</td><td><span class="code">user_id</span>, <span class="code">event_class</span> (approval/info), <span class="code">in_app</span>, <span class="code">email</span></td><td>defaults seeded per FSD-904</td><td class="id">FSD-904</td></tr>
+<tr><td class="code">audit_entries</td><td><span class="code">actor_id</span>, <span class="code">actor_role_snapshot</span>, <span class="code">action</span>, <span class="code">target_type/id</span>, <span class="code">before</span> JSON, <span class="code">after</span> JSON, <span class="code">ip</span>, <span class="code">user_agent</span>, <span class="code">created_at</span></td><td>append-only; no update or delete grant; no FK cascade out</td><td class="id">FSD-907, BR-10</td></tr>
+<tr><td class="code">access_logs</td><td><span class="code">actor_id</span>, <span class="code">target_type/id</span>, <span class="code">kind</span> (READ_DENIED, READ_COMMERCIAL)</td><td>separate from audit so a read flood cannot bury decisions</td><td class="id">FSD-908, MSG-010</td></tr>
+<tr><td class="code">announcements / announcement_reads</td><td>title, body, audience JSON, publish_at, expire_at / (user, announcement)</td><td>dismissal recorded per user</td><td class="id">FSD-208</td></tr>
+<tr><td class="code">working_day_calendar</td><td><span class="code">date</span> uq, <span class="code">is_working_day</span>, <span class="code">label</span></td><td>seeded per year with national holidays; every SLA and cycle-time query joins it</td><td class="id">FSD-905, &sect;9</td></tr>
+</tbody></table>
+
+<h3>3.4 Index strategy</h3>
+<p>Indexes are justified by a named query in this document, not by intuition. The budget is roughly 6&ndash;8 secondary indexes per hot table.</p>
+<table>
+<thead><tr><th style="width:26%">Index</th><th style="width:34%">Serves</th><th>Why this shape</th></tr></thead>
+<tbody>
+<tr><td class="code">approval_documents (doc_status, approval_status_cached, type)</td><td>Lists, queue counts, dashboard cards</td><td>Covering the two predicates every list applies before paging.</td></tr>
+<tr><td class="code">approval_steps (assigned_user_id, decision, acted_at)</td><td>"Waiting on whom", badge count</td><td>Open steps are <span class="code">decision IS NULL</span>; the index leads on the actor so the badge query is an index seek.</td></tr>
+<tr><td class="code">approval_steps (approval_document_id, seq)</td><td>Status derivation</td><td>Unique; the deriver reads one document's steps in order, always.</td></tr>
+<tr><td class="code">stage_records (assignment_id, stage_key) UNIQUE</td><td>Stepper render, progress calc</td><td>One read per assignment, ordered by seq via join to definitions.</td></tr>
+<tr><td class="code">stage_records (status, planned_end)</td><td>Overdue report</td><td>Partial selectivity: most rows are not overdue.</td></tr>
+<tr><td class="code">inspections (assignment_id, level, attempt_no) UNIQUE</td><td>G-05, G-06</td><td>The gate asks "does a PASS T1 exist for this assignment"; this index answers it as a seek plus one filter.</td></tr>
+<tr><td class="code">quotations (assignment_id, status)</td><td>G-07, comparison view</td><td>Comparison reads all quotations for one assignment.</td></tr>
+<tr><td class="code">notifications (recipient_id, read_at, created_at)</td><td>Bell panel, unread count</td><td>Ordered by recency without a filesort.</td></tr>
+<tr><td class="code">audit_entries (target_type, target_id, created_at)</td><td>Per-record history strip (&sect;2.5)</td><td>The strip is opened constantly; without this it is a table scan.</td></tr>
+<tr><td class="code">supplier-scoped FKs on quotations, invitations, submissions</td><td>G-14 isolation</td><td>Every supplier query filters by supplier_id first; the index makes isolation cheap rather than merely correct.</td></tr>
+</tbody></table>
+<div class="note"><b>Generated columns are used sparingly.</b> <span class="code">suppliers.name_key</span> and <span class="code">supplier_evaluations.overall_score</span> are STORED generated columns because they are unique-checked and reported respectively. <span class="code">approval_status_cached</span> is <b>not</b> generated &mdash; it depends on another table's rows, which MySQL does not allow in a generated column. It is written by the deriver inside the same transaction (&sect;4.2).</div>
+
+<h3>3.5 Immutability and retention</h3>
+<table>
+<thead><tr><th style="width:24%">Rule</th><th>Implementation</th></tr></thead>
+<tbody>
+<tr><td>Approved documents are immutable</td><td>Policy refuses update when <span class="code">doc_status = CLOSED</span>; a revision inserts a new row with <span class="code">revision_of_id</span>. No trigger needed, and no status column can be flipped back by an API client.</td></tr>
+<tr><td>Referenced master data is never deleted</td><td>FK RESTRICT plus an explicit pre-check that returns <span class="code">MSG-070</span> with the live referencing count (the count is the same subquery the list column uses, so the number shown and the number blocking are identical).</td></tr>
+<tr><td>Retention</td><td>No purge job for business data (OQ-09). Only <span class="code">sessions</span>, expired <span class="code">password_resets</span>, and delivered notification rows older than 180 days are pruned, and pruning notifications never removes an unread one.</td></tr>
+<tr><td>Audit</td><td>Application writes only. The DB user used by the application is granted INSERT/SELECT on <span class="code">audit_entries</span>, not UPDATE/DELETE &mdash; enforced by MySQL grants, not by convention (TSD-370).</td></tr>
+<tr><td>Sequences</td><td>Allocated under <span class="code">SELECT &hellip; FOR UPDATE</span>; a rolled-back document still consumes its number (BR-13 wants numbers never reused, not gapless).</td></tr>
+</tbody></table>
+
+<h3>3.6 Reference and seed data</h3>
+<table>
+<thead><tr><th style="width:22%">Seeder</th><th style="width:30%">Content</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="code">RolesAndMatrix</td><td>12 business roles + admin + supplier; ~29 feature rows &times; 14 grants from FSD &sect;6</td><td>Generated from the FSD table so the two cannot drift; a test asserts the seeded matrix equals the FSD document rows.</td></tr>
+<tr><td class="code">Chains</td><td>8 chain templates with their steps</td><td>Same source list as FSD &sect;4.3.</td></tr>
+<tr><td class="code">StageDefinitions</td><td>8 + 10 stages with owners and gate keys</td><td>The only place the flowchart order is written down.</td></tr>
+<tr><td class="code">UnitsGroupsMethods</td><td>units, six parameter groups, analysis methods, material types</td><td>From the observed SBK document.</td></tr>
+<tr><td class="code">MasterSpecImport</td><td>the 77-component baseline</td><td>Runs through the same import code path as production imports, so the importer is never untested.</td></tr>
+<tr><td class="code">DemoProject</td><td>one project, one A assignment, one B assignment, all stages not started, plus two suppliers and portal accounts</td><td>Local only, guarded by <span class="code">app.env</span>; never in a production seeder run.</td></tr>
+<tr><td class="code">WorkingDays</td><td>current and next year, national holidays</td><td>Holiday list is a data file the administrator can extend.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">4. Workflow engine implementation</h2>
+
+<h3>4.1 Chain configuration and resolution</h3>
+<p>Chain templates are data (&sect;3.3.5). At submit time the engine snapshots them into <span class="code">approval_steps</span> rows, resolving each role to a concrete user where possible and leaving <span class="code">assigned_user_id</span> NULL where the role has several holders.</p>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-401</td><td>Snapshot, do not reference.</td><td>Steps copy <span class="code">role_slug</span>, <span class="code">action</span>, <span class="code">seq</span>, <span class="code">parallel_group</span> from the template at submit. Editing a template later changes only documents submitted afterwards. This is what makes a printed signature block still describe reality five years on.</td></tr>
+<tr><td class="id">TSD-402</td><td>Role-to-person resolution order.</td><td>(1) explicit delegate on the role for this document type; (2) the single holder of the role; (3) if several holders, the step stays role-assigned and any holder may act, first actor wins; (4) if zero holders, submit is refused with a named configuration fault rather than silently dropping the step.</td></tr>
+<tr><td class="id">TSD-403</td><td>Author exclusion at resolution.</td><td>Resolution never assigns the author to their own document's step (G-01 enforced before display, not only at action time), so the UI does not invite a failure.</td></tr>
+<tr><td class="id">TSD-404</td><td>Sequential vs parallel.</td><td><span class="code">approval_chains.is_sequential</span> decides whether step n+1 becomes visible at all. <span class="code">ARTWORK-CIRC</span> is sequential; FAB approvers share one <span class="code">parallel_group</span> and are all open at once. Both are one query: open steps are those with <span class="code">decision IS NULL</span> and, when sequential, the minimum <span class="code">seq</span> among undecided.</td></tr>
+<tr><td class="id">TSD-405</td><td>Required vs optional steps.</td><td><span class="code">is_required</span> allows a future "for information" reviewer without changing the deriver's rule that all required steps must be decided.</td></tr>
+</tbody></table>
+
+<h3>4.2 Status derivation</h3>
+<pre>
+StatusDeriver::derive(ApprovalDocument $doc): string
+  steps = doc.steps(order: seq)              // uses uq(approval_document_id, seq)
+  if doc.doc_status == DRAFT      -> NONE
+  if any required step.decision == REJECT -> REJECTED
+  if doc.doc_status == CANCELLED  -> REJECTED
+  open = steps where decision IS NULL and is_required
+  if none open                    -> APPROVED
+  if any open with action CHECK   -> CHECKING  (or PENDING_CHECKING before first action)
+  if no CHECK steps remain open   -> WAITING_APPROVAL
+</pre>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-410</td><td>Derived on write, cached for lists.</td><td>Every step decision write calls the deriver inside the same transaction and stores the result in <span class="code">approval_status_cached</span>. Reads for a single document recompute; reads for a list use the cache. Recomputation is cheap (one indexed read of &le;5 rows).</td></tr>
+<tr><td class="id">TSD-411</td><td>Cache integrity check.</td><td>A nightly job recomputes all non-closed documents and logs any mismatch. It fixes nothing by default; the mismatch is the finding, because a mismatch means a code path wrote a step without going through the deriver.</td></tr>
+<tr><td class="id">TSD-412</td><td>No client-supplied status.</td><td>Requests may carry an <i>action</i> (approve, reject, return) and never a status. Status is exclusively the deriver's output.</td></tr>
+</tbody></table>
+
+<h3>4.3 Transitions</h3>
+<table>
+<thead><tr><th style="width:10%">FSD</th><th style="width:22%">Service method</th><th style="width:22%">Transaction boundary</th><th>Implementation notes</th></tr></thead>
+<tbody>
+<tr><td class="id">T-01</td><td class="code">Submit::run()</td><td>one tx</td><td>lock document row, assert DRAFT, validate payload completeness, allocate code if absent, snapshot chain, set SUBMITTED, queue notifications after commit.</td></tr>
+<tr><td class="id">T-02/03</td><td class="code">RecordCheck::run()</td><td>one tx</td><td>refuses if the acting user is not the assigned step holder or role holder; PASS moves to CHECKED then opens the approver group; FAIL closes the document as REJECTED.</td></tr>
+<tr><td class="id">T-04/05</td><td class="code">RecordApproval::run()</td><td>one tx</td><td>idempotent per (document, step, actor): a duplicate POST returns the recorded decision instead of double-notifying. Last required approve closes the document and calls the effect registry.</td></tr>
+<tr><td class="id">T-06</td><td class="code">RecordRejection::run()</td><td>one tx</td><td>reason required; earlier approve decisions get <span class="code">superseded_at</span> set but are never deleted; rework task created; <b>no</b> change to the quotation (Q-F1).</td></tr>
+<tr><td class="id">T-07</td><td class="code">CreateRevision::run()</td><td>one tx</td><td>copies payload into a new document at version+1, links <span class="code">revision_of_id</span>, allocates a new code, and re-snapshots the chain.</td></tr>
+<tr><td class="id">T-08</td><td class="code">Cancel::run()</td><td>one tx</td><td>refused once any approver has acted.</td></tr>
+<tr><td class="id">T-09</td><td class="code">Update::guard()</td><td>&mdash;</td><td>policy-level refusal with <span class="code">MSG-042</span> before any write is attempted.</td></tr>
+</tbody></table>
+<div class="callout"><b>Effects registry.</b> Closing a document must do more than change a status: it opens a stage, records an actual date, and notifies. Rather than scattering <span class="code">if type == 'fab'</span> branches, each document type registers an <span class="code">OnApproved</span> and <span class="code">OnRejected</span> effect class resolved from <span class="code">config/workflow.php</span>. Adding a document type means adding a chain row, a payload table, and one effect class &mdash; nothing else. A test asserts every registered type has an effect class, so a new type cannot be added that approves into silence.</div>
+
+<h3>4.4 Gate evaluator</h3>
+<p>Each guard is a small class with one public predicate, registered by its FSD id. This makes G-01&hellip;G-14 individually testable and makes the "why is this blocked" message a property of the guard rather than of a controller.</p>
+<pre>
+app/Domain/Workflow/Gates/
+  Gate::check(StageContext $ctx): GateResult      // pass | blocked(messageCode, blockers[])
+  G01SelfApproval · G02ConceptApproved · G03ReasonRequired · G04ApprovedDrawing
+  G05LevelSequence · G06AllThreeLevelsPass · G07QuotationAndT2 · G08FabApproved
+  G09ArtworkPreconditions · G10ArtworkApproved · G11BranchStagesComplete
+  G12Editable · G13Deletable · G14SupplierOwnsRecord
+</pre>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-420</td><td>Guards return blockers, not just a boolean.</td><td><span class="code">G06</span> returns which levels are missing so <span class="code">MSG-050</span> can name them and link to them. A boolean would force the UI to re-derive the reason and get it wrong.</td></tr>
+<tr><td class="id">TSD-421</td><td>Same guard object serves UI and write.</td><td>The stage card calls <span class="code">check()</span> to render the disabled state; the service calls the same <span class="code">check()</span> inside the transaction. There is exactly one implementation of the rule.</td></tr>
+<tr><td class="id">TSD-422</td><td>G-06 is the OQ-05 rule.</td><td>Predicate: for the assignment, an inspection exists with <span class="code">verdict = PASS</span> for each of T0, T1, T2 (any attempt number). No branch-specific exception exists in code, so no branch can accidentally skip a level.</td></tr>
+<tr><td class="id">TSD-423</td><td>G-11 completeness.</td><td>Every applicable stage of the assignment with seq &lt; current is COMPLETED, and the referenced standard's document is CLOSED. "Applicable" comes from <span class="code">stage_definitions.is_applicable</span>, which is why an empty branch never blocks (BS-06).</td></tr>
+<tr><td class="id">TSD-424</td><td>Reopen cascade.</td><td><span class="code">ReopenStage::run()</span> sets the reopened stage IN_PROGRESS and marks all later stages of that assignment <span class="code">needs_re_review = 1</span>, notifies their owners, and records the reason. It never clears an actual date &mdash; history stays, the flag says "look again".</td></tr>
+</tbody></table>
+
+<h3>4.5 Numbering service</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-430</td><td>One allocator for all patterns.</td><td><span class="code">Numbering::allocate('fab')</span> reads the pattern from <span class="code">config/numbering.php</span>, locks the period row, increments, formats. Patterns: <span class="code">NPD-{Y}-{N:3}</span>, <span class="code">FAB-{Y}-{N:3}</span>, <span class="code">QC/BP/{N:3}/{YY}</span>, <span class="code">QT-{Y}-{N:4}</span>, <span class="code">INS-{assignment}-{level}</span>, <span class="code">DWG-{N:4}</span>.</td></tr>
+<tr><td class="id">TSD-431</td><td>Concurrency.</td><td><span class="code">SELECT ... FOR UPDATE</span> on the sequence row inside the caller's transaction. Two simultaneous submits cannot receive the same number; the loser waits, then gets the next value.</td></tr>
+<tr><td class="id">TSD-432</td><td>Codes are immutable after allocation.</td><td>No rename path exists. A wrong code is corrected by cancelling and re-issuing, which consumes a new number (BR-13).</td></tr>
+</tbody></table>
+
+<h3>4.6 Derived queries</h3>
+<table>
+<thead><tr><th style="width:20%">Value</th><th style="width:34%">Query shape</th><th>Caching</th></tr></thead>
+<tbody>
+<tr><td>Assignment progress</td><td>count(stage_records where status=COMPLETED and definition.is_applicable) / count(applicable) &mdash; one grouped read per assignment</td><td>Stored in <span class="code">assignments.progress_pct</span>, refreshed on every stage transition. Never typed.</td></tr>
+<tr><td>Project progress</td><td>AVG(assignments.progress_pct) plus the per-assignment rows for the breakdown</td><td>Computed on read; the dashboard batches it for visible projects only.</td></tr>
+<tr><td>Branch completion</td><td>NOT EXISTS(open applicable stage in branch)</td><td>Computed; drives N-20 which fires once because the event key includes the branch and a unique sent-marker.</td></tr>
+<tr><td>Overdue</td><td><span class="code">stage_records.status &lt;&gt; COMPLETED AND planned_end &lt; CURDATE()</span></td><td>Report-time only; no stored flag, so a changed planned date cannot leave a stale "late" mark.</td></tr>
+<tr><td>Current owner</td><td>earliest undecided step's assigned user/role, else earliest open stage's owner role</td><td>Never stored. This is the field the prototype could not answer reliably.</td></tr>
+<tr><td>Working-day age</td><td>join <span class="code">working_day_calendar</span> between acted_at and today</td><td>Used by SLA and cycle-time report; a calendar join is cheaper and more honest than subtracting 5/7 of the days.</td></tr>
+</tbody></table>
+
+<h3>4.7 Scheduled jobs</h3>
+<table>
+<thead><tr><th style="width:24%">Job</th><th style="width:16%">Schedule</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td class="code">escalate:approvals</td><td>daily 08:00 WIB</td><td>Approver steps open &ge; 3 working days &rarr; N-10 to approver; &ge; 5 &rarr; copy to author's manager. CHECK steps excluded (Q-F3).</td></tr>
+<tr><td class="code">notify:supplier-digest</td><td>daily 08:00 WIB</td><td>Collects flagged digest notifications per supplier account into one email; N-11 and N-14 are sent at event time, not here (Q-F4).</td></tr>
+<tr><td class="code">invitations:expire</td><td>daily 06:30</td><td>Auto-closes invitations past <span class="code">due_date</span> as NO_RESPONSE, notifies supplier and SCM Staff.</td></tr>
+<tr><td class="code">standards:review-flags</td><td>daily 07:00</td><td>Flags standards due within 30 days and newly expired; drives N-18.</td></tr>
+<tr><td class="code">workflow:status-audit</td><td>daily 02:00</td><td>TSD-411 mismatch scan.</td></tr>
+<tr><td class="code">system:prune</td><td>weekly</td><td>Sessions, expired tokens, delivered notifications older than 180 days (never unread).</td></tr>
+<tr><td class="code">queue:work</td><td>under a supervisor</td><td>Single worker, <span class="code">--tries=3 --backoff=30</span>, driver <span class="code">database</span>. Local Laragon has no Redis (ADR-05).</td></tr>
+</tbody></table>
+<div class="note"><b>Local scheduler reality.</b> On Windows/Laragon the cron entry is a Laragon "add service" or a scheduled task running <span class="code">php artisan schedule:run</span> every minute. If that task is not installed, nothing in the workflow breaks &mdash; approvals, gates and documents are all synchronous. Only escalation, digests and expiry lag. &sect;14 therefore makes installing the scheduler an explicit setup step with a visible check, and the admin health panel shows the last successful run of each job so a silent absence is impossible.</div>
+
+<h2 class="pagebreak">5. Authorisation implementation</h2>
+<h3>5.1 Model</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-501</td><td>Two layers, one truth.</td><td>Spatie roles carry the user's role set. The <span class="code">feature_grants</span> table carries the matrix. A permission is synchronised into Spatie only as a cache of the matrix, so the matrix remains the single editable source (FSD-614).</td></tr>
+<tr><td class="id">TSD-502</td><td>Ability naming.</td><td><span class="code">&lt;feature&gt;.&lt;level&gt;</span> &mdash; e.g. <span class="code">quotation.compare.FULL</span>, <span class="code">specification.view.READ</span>. A FULL grant implies READ; the synchroniser writes both so a <span class="code">can('...READ')</span> check never fails for someone with FULL.</td></tr>
+<tr><td class="id">TSD-503</td><td>Deny by default.</td><td>No grant row means no permission. There is no "everyone can" row and no fallback allow in the middleware.</td></tr>
+<tr><td class="id">TSD-504</td><td>Menus are data.</td><td>The navigation tree is filtered server-side by the same grant set the policies use, so a menu item cannot exist for a user who would get <span class="code">MSG-010</span> clicking it.</td></tr>
+</tbody></table>
+
+<h3>5.2 Caching and invalidation</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-510</td><td>Per-user permission set cached in the session plus a global cache key.</td><td>Key <span class="code">perm:user:{id}</span>. The matrix write bumps a global <span class="code">matrix_version</span>; every request compares it and reloads on mismatch. A change takes effect on the next request of every affected user, satisfying FSD-204 without logging anyone out.</td></tr>
+<tr><td class="id">TSD-511</td><td>Matrix save is per cell.</td><td>One transaction: update cell, bump version, write audit, queue N-21 to affected users. A page of edits is many small saves, which is why the UI cycles a cell on click instead of a big form.</td></tr>
+</tbody></table>
+
+<h3>5.3 Enforcement points</h3>
+<table>
+<thead><tr><th style="width:20%">Point</th><th>Rule</th></tr></thead>
+<tbody>
+<tr><td>Route middleware</td><td><span class="code">feature:&lt;key&gt;,&lt;level&gt;</span> on every route group. One route table entry per FSD screen id, so the FSD &sect;5 screen inventory and the route list can be diffed by a test.</td></tr>
+<tr><td>Policies</td><td>Aggregate-level rules the matrix cannot express: author-not-approver, supplier ownership, locked status, branch visibility.</td></tr>
+<tr><td>Query scope</td><td><span class="code">ScopeSupplierQueries</span> adds <span class="code">where supplier_id = current</span> to every Eloquent query from a portal route, including eager loads. Isolation is a default, not a per-controller instruction (FSD-601).</td></tr>
+<tr><td>Writes</td><td>Gate G-14 re-checked inside the transaction; a policy pass is not proof the row still belongs to the actor.</td></tr>
+<tr><td>Denials</td><td>Logged to <span class="code">access_logs</span> with the attempted route and the actor's grant snapshot.</td></tr>
+</tbody></table>
+
+<h3>5.4 Multi-role and segregation (Q-F6)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-520</td><td>Permissions are the union of held roles.</td><td>Nothing else changes for menus and policies; a person with two roles sees the union and acts under the union.</td></tr>
+<tr><td class="id">TSD-521</td><td>One person, one step per chain.</td><td>The resolver refuses to assign the same user to two steps of one document. If a chain would collapse onto one person, the engine leaves the second step role-assigned so any other holder may act, and if no other holder exists the submit is refused with a named configuration fault rather than proceeding with a rubber stamp.</td></tr>
+<tr><td class="id">TSD-522</td><td>Author exclusion still applies.</td><td>G-01 is evaluated against the <i>person</i>, not the role, so holding QC Manager does not let the QC Supervisor who authored a document approve it.</td></tr>
+<tr><td class="id">TSD-523</td><td>Admin cannot hold a business approval role.</td><td>Enforced on role assignment: <span class="code">admin</span> plus any role referenced by an <span class="code">APPROVE</span> chain step is rejected. This preserves the segregation statement in FSD &sect;6.1.</td></tr>
+</tbody></table>
+
+<h2>6. Domain services and contracts</h2>
+<p>Signatures, not code. Each service owns its invariants and is the only writer of its tables.</p>
+<table>
+<thead><tr><th style="width:22%">Service</th><th style="width:30%">Public operations</th><th style="width:16%">Writes</th><th>Reads / emits</th></tr></thead>
+<tbody>
+<tr><td class="code">WorkflowEngine</td><td>submit, recordCheck, recordApproval, recordRejection, revise, cancel</td><td>approval_documents, approval_steps</td><td>chains, gates; emits DocumentSubmitted, StepDecided, DocumentApproved, DocumentRejected</td></tr>
+<tr><td class="code">StageMachine</td><td>openStage, completeStage, reopenStage, evaluateGuards</td><td>stage_records, assignments.progress_pct</td><td>definitions, inspections, quotations, standards; emits StageCompleted, BranchCompleted</td></tr>
+<tr><td class="code">SpecificationService</td><td>create, revise, approve, import</td><td>specifications + children</td><td>emits SpecificationApproved (feeds inspection templates)</td></tr>
+<tr><td class="code">InspectionService</td><td>createFromSpec, recordResults, conclude, retest</td><td>inspections, inspection_results</td><td>pinned spec version; emits LevelPassed / LevelFailed (feeds G-05, G-06)</td></tr>
+<tr><td class="code">QuotationService</td><td>submit, accept, reject, revise</td><td>quotations</td><td>emits QuotationAccepted (feeds G-07)</td></tr>
+<tr><td class="code">FabService</td><td>composeFromAssignment, submit, print</td><td>form_approval_bk</td><td>reads assignment aggregate; effect class on approve opens P-06/S-08</td></tr>
+<tr><td class="code">StandardService</td><td>createFromFab, review, expire</td><td>packaging_standards</td><td>emits StandardDueForReview</td></tr>
+<tr><td class="code">ScaleUpService</td><td>record, linkRestart</td><td>scale_ups</td><td>checks G-11; emits BranchCompleted, ProjectArchivable</td></tr>
+<tr><td class="code">AccessService</td><td>grant, revoke, assignRoles, resolveStepActor</td><td>feature_grants, role_user</td><td>bumps matrix_version; emits MatrixChanged</td></tr>
+<tr><td class="code">NotificationService</td><td>emit(event, payload), markRead, flushDigest</td><td>notifications</td><td>reads preferences; dispatches SendNotification jobs</td></tr>
+<tr><td class="code">AuditService</td><td>record(actor, action, target, before, after)</td><td>audit_entries, access_logs</td><td>called by every writer; never called by a view</td></tr>
+</tbody></table>
+<div class="note"><b>Events are in-process, not a bus.</b> Listeners run synchronously inside the same transaction except notification listeners, which are queued <span class="code">after_commit</span>. There is no eventual-consistency window a user can see, and no broker to run.</div>
+
+<h2 class="pagebreak">7. Front-end architecture</h2>
+
+<h3>7.1 Page structure</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-701</td><td>One Inertia page component per FSD screen id.</td><td><span class="code">resources/js/Pages/Qc/InspectionForm.jsx</span> is FSD SCR-7.1. A test walks the FSD screen table and asserts a component exists for each id, so a screen cannot be built without being specified and cannot be specified without being built.</td></tr>
+<tr><td class="id">TSD-702</td><td>Two layouts only.</td><td><span class="code">AppLayout</span> (internal, role-filtered nav) and <span class="code">PortalLayout</span> (supplier, one nav group). A third layout would be the start of the duplicated-menu failure.</td></tr>
+<tr><td class="id">TSD-703</td><td>Detail views are tabs over one payload.</td><td>The assignment detail receives all five tabs' data in one Inertia response and switches client-side; a tab that needs different data is a sign the aggregate is drawn wrongly.</td></tr>
+<tr><td class="id">TSD-704</td><td>No client-side permission logic beyond hiding.</td><td>Server props include <span class="code">can</span> flags computed by policies. Components never compare role names.</td></tr>
+</tbody></table>
+
+<h3>7.2 Shared components &mdash; the FSD contracts made physical</h3>
+<p>FSD &sect;2.4 and &sect;2.5 describe behaviour that must be identical on 41 screens. It is implemented once.</p>
+<table>
+<thead><tr><th style="width:18%">Component</th><th style="width:26%">Realises</th><th>Contract</th></tr></thead>
+<tbody>
+<tr><td class="code">&lt;DataTable&gt;</td><td>FSD &sect;2.4</td><td>Props: columns (with <span class="code">searchable</span>, <span class="code">sortable</span>, <span class="code">render</span>), filters, defaultSort, rowActions, emptyState variant. Owns URL sync of filter/sort/page, the 3-character search floor, rows-per-page memory, server paging, and the three empty states. A screen cannot accidentally omit any of it because the component owns the behaviour, not the page.</td></tr>
+<tr><td class="code">&lt;FormShell&gt;</td><td>FSD &sect;2.5</td><td>Sections, mandatory marks, blur/submit validation split, draft-vs-submit actions, unsaved-changes guard, <span class="code">row_version</span> conflict handling with <span class="code">MSG-020</span> options, read-only banner with reason.</td></tr>
+<tr><td class="code">&lt;StatusChip&gt;</td><td>FSD &sect;2.2.1</td><td>Accepts an internal code, renders the Indonesian label and colour from one map. No screen passes a colour or a label string.</td></tr>
+<tr><td class="code">&lt;PersonRef&gt;</td><td>&sect;2.2 person rule</td><td>Renders "Name (Role)"; role snapshot at action time for decision contexts.</td></tr>
+<tr><td class="code">&lt;StageStepper&gt;</td><td>FSD-509</td><td>Renders the guard result returned by TSD-420: blocked stages show the message code's text and links to blockers; completed stages collapse; current expands.</td></tr>
+<tr><td class="code">&lt;ApprovalBar&gt;</td><td>FSD-803</td><td>The approver's single screen region: summary, evidence links, prior decisions, then the action. Action disabled until evidence props are loaded.</td></tr>
+<tr><td class="code">&lt;EvidenceGrid&gt;</td><td>S-7.1 results</td><td>Rows come from the pinned spec version; numeric rows validate against min/max inline and show the computed verdict, so a human cannot mark PASS on an out-of-tolerance value without an explicit override reason.</td></tr>
+<tr><td class="code">&lt;FileField&gt;</td><td>&sect;2.5 attachments</td><td>Size/type rules from server props, per-field; upload progress; remove only before submit.</td></tr>
+<tr><td class="code">&lt;EmptyState&gt;</td><td>&sect;2.4</td><td>Three variants with prescribed copy and action.</td></tr>
+</tbody></table>
+
+<h3>7.3 Formatter layer</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-710</td><td>One formatter module, used by screens, exports and PDFs.</td><td><span class="code">app/Support/Formatter</span> in PHP and <span class="code">resources/js/Formatters</span> in JS, with a shared fixture file asserting both produce identical strings. Divergence between the printed date and the screen date is the kind of defect this project was asked to eliminate.</td></tr>
+<tr><td class="id">TSD-711</td><td>Timezone.</td><td>Storage UTC, display <span class="code">Asia/Jakarta</span> via <span class="code">IntlDateFormatter</span> (intl is present) and <span class="code">Intl.DateTimeFormat</span> client-side. php.ini's UTC is never relied on (&sect;2.1 gap).</td></tr>
+<tr><td class="id">TSD-712</td><td>Numbers.</td><td><span class="code">NumberFormatter</span> with <span class="code">id_ID</span>-style grouping (dot thousands, comma decimal) for both currency and tolerance, matching FSD &sect;2.2 rather than the browser locale.</td></tr>
+<tr><td class="id">TSD-713</td><td>Em dash rule.</td><td>Formatter returns <span class="code">&mdash;</span> for null/empty and never a blank, "null", or "Belum ada". A unit test enumerates every formatter against null, zero and empty string: zero must render as a number with its unit.</td></tr>
+</tbody></table>
+
+<h3>7.4 State, and 7.5 accessibility and print</h3>
+<table>
+<thead><tr><th style="width:22%">Concern</th><th>Decision</th></tr></thead>
+<tbody>
+<tr><td>Client state</td><td>No global store. Inertia props are the source of truth; local <span class="code">useState</span> for form drafts; filter/sort/page live in the URL. A Redux layer would duplicate server state and create exactly the "screen shows something the record does not" class of bug.</td></tr>
+<tr><td>Badge counts</td><td>Refetched on Inertia completion and on notification events; no polling.</td></tr>
+<tr><td>Optimistic UI</td><td>None for approvals. A decision shows a pending button until the server confirms, because a false "approved" is worse than a slow one.</td></tr>
+<tr><td>Accessibility</td><td>Keyboard-operable tables and steppers, visible focus, 4.5:1 text contrast, status never conveyed by colour alone (chip carries the word), form errors announced through an aria-live region, file inputs labelled.</td></tr>
+<tr><td>Print</td><td><span class="code">PrintLayout</span> for on-screen printing of non-official records; official forms always go through the PDF pipeline so the printed artefact is the controlled one.</td></tr>
+</tbody></table>
+
+<h2>8. Document generation</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Decision</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-801</td><td>Dompdf is the default engine.</td><td>Pure PHP, no external binary, works inside Laragon without a browser dependency, and the two official forms are table-shaped documents that Dompdf handles. Blade templates in <span class="code">resources/views/pdf/</span> mirror FSD &sect;7.1 and &sect;7.2 regions one-to-one.</td></tr>
+<tr><td class="id">TSD-802</td><td>Chrome is a selectable fallback.</td><td><span class="code">pdf.engine = chrome</span> renders the same Blade through headless Chrome with <span class="code">--print-to-pdf</span>. Chosen for the SBK when its wide parameter tables need better pagination than Dompdf gives. The interface is one method, <span class="code">RenderPdf::toBytes(type, id)</span>, so switching is a config value.</td></tr>
+<tr><td class="id">TSD-803</td><td>Generation is synchronous for a user request, queued for bulk.</td><td>A single FAB or SBK prints in well under the NFR-01 budget, so the user waits on a spinner (<span class="code">MSG-080</span>) rather than hunting an inbox. Archive exports and batch printing are jobs.</td></tr>
+<tr><td class="id">TSD-804</td><td>Signature blocks from decisions.</td><td>The FAB template reads the document's recorded steps: Dibuat Oleh = author, Diperiksa Oleh = CHECK step actor, Disetujui Oleh = the three APPROVE steps by <span class="code">parallel_group</span> order. Undecided approvers print <span class="code">(menunggu)</span>. Nothing is typed onto the PDF (FSD-804).</td></tr>
+<tr><td class="id">TSD-805</td><td>Printed artefacts are reproducible.</td><td>Every generated PDF is stored under a hash path with its document id and version, and the audit entry references it. Reprinting an approved document regenerates from the same immutable row, so a printed sheet can always be tied back to the record that produced it.</td></tr>
+<tr><td class="id">TSD-806</td><td>Wide-table pagination.</td><td>Repeated header rows on page break, no fixed row heights, and a page count computed after layout for the SBK header. The truncation defect of the prototype is treated as a rendering requirement, not a CSS accident.</td></tr>
+</tbody></table>
+
+<h2>9. Import pipeline (specification)</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Step</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-901</td><td>Read</td><td>PhpSpreadsheet with <span class="code">setReadDataOnly(true)</span> and a chunk read filter; the 77-row baseline loads fully, and the design tolerates a few thousand rows without memory pressure at the 512M limit.</td></tr>
+<tr><td class="id">TSD-902</td><td>Map</td><td>Column mapping screen; mapping remembered per sheet signature so the next import of the same file shape is one click.</td></tr>
+<tr><td class="id">TSD-903</td><td>Preview</td><td>Rows classified new / changed / unchanged against the current specification, with validation failures listed per row. The user chooses overwrite behaviour for changed rows. Nothing is written at this stage.</td></tr>
+<tr><td class="id">TSD-904</td><td>Commit</td><td>Transaction per component group rather than one giant transaction: a bad row in group 4 does not undo groups 1&ndash;3, and <span class="code">MSG-061</span> reports <span class="code">k dari t</span> with a downloadable error file. Re-running is safe because classification is idempotent.</td></tr>
+<tr><td class="id">TSD-905</td><td>Audit</td><td>One audit entry per committed group plus the file hash, so a specification can be traced to the exact spreadsheet that produced it.</td></tr>
+</tbody></table>
+
+<h2>10. Notifications, mail, and queue</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Decision</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-1001</td><td>Queue driver <span class="code">database</span>.</td><td>No Redis on this host. The <span class="code">jobs</span> table plus one worker is adequate at this volume and removes an installation dependency.</td></tr>
+<tr><td class="id">TSD-1002</td><td>Notification row before job.</td><td>Every event writes the <span class="code">notifications</span> row in the emitting transaction, then dispatches delivery. In-app is therefore guaranteed even if mail fails, which satisfies "a notification is never the only source of truth" (FSD-902).</td></tr>
+<tr><td class="id">TSD-1003</td><td>Mail via Mailpit locally, SMTP in production.</td><td>No credentials needed for development and no accidental real mail. Delivery failures retry 3&times; with backoff, then mark the row <span class="code">email_attempts = 3</span> and appear in the admin health panel rather than vanishing (FSD-904).</td></tr>
+<tr><td class="id">TSD-1004</td><td>Digest mechanics (Q-F4).</td><td>Supplier-recipient events are written with <span class="code>digest = 1</span> and are not emailed at event time. The 08:00 job groups unread digest rows per recipient into one message with deep links. N-11 and N-14 are excluded by event key so invitations and deadline notices stay immediate.</td></tr>
+<tr><td class="id">TSD-1005</td><td>Once-only events.</td><td>N-20 (branch complete / archivable) writes a sentinel row keyed <span class="code">(event, assignment)</span>; a repeat transition cannot re-notify. Same mechanism guards N-08 for a re-approved revision, which should notify again because it is genuinely a different document.</td></tr>
+<tr><td class="id">TSD-1006</td><td>Preferences.</td><td>Per-user, per event-class channel flags, defaulting per FSD-904. Supplier accounts have no preference UI; their channel set is fixed.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">11. Audit and security implementation</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Control</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td class="id">TSD-1101</td><td>Audit write path</td><td>A model observer on every audited type captures before/after of only the changed columns, plus the actor's role snapshot at that moment. Called from services, never from controllers, so a new controller cannot forget it.</td></tr>
+<tr><td class="id">TSD-1102</td><td>DB-level immutability</td><td>The application's MySQL user is granted INSERT and SELECT only on <span class="code">audit_entries</span> and <span class="code">access_logs</span>. Even a bug that issues an UPDATE fails at the database.</td></tr>
+<tr><td class="id">TSD-1103</td><td>Sessions</td><td><span class="code">SESSION_DRIVER=database</span>, 30-minute idle expiry matching FSD's warning at 25 minutes, regenerate on login, one session table row per device, revoke list from FSD-105.</td></tr>
+<tr><td class="id">TSD-1104</td><td>Passwords and reset</td><td>Bcrypt/argon2id per config, forced change on first login, reset tokens single-use and 60-minute, and the response to a reset request never reveals whether the address exists (<span class="code">MSG-001</span> discipline extended to password flows).</td></tr>
+<tr><td class="id">TSD-1105</td><td>Rate limiting</td><td>5 login attempts per account per minute, 10-minute lockout; portal quotation writes limited per supplier per hour to blunt accidental double submissions.</td></tr>
+<tr><td class="id">TSD-1106</td><td>Uploads</td><td>Stored outside the document root on a private disk, filename hashed, original kept as metadata, downloads through a policy-checked controller with <span class="code">Content-Disposition</span>. MIME sniffed, not trusted from the client.</td></tr>
+<tr><td class="id">TSD-1107</td><td>Headers and CSRF</td><td><span class="code">X-Frame-Options: DENY</span>, <span class="code">Referrer-Policy: same-origin</span>, CSP allowing self plus inline styles required by Inertia's data attribute, HSTS when served over TLS. CSRF enabled on all state-changing routes; the SPA never uses token-free POSTs.</td></tr>
+<tr><td class="id">TSD-1108</td><td>Injection and mass assignment</td><td>Eloquent and bound parameters only; no raw SQL built from request input, with the two reporting queries that need CTEs using whitelisted sort columns validated against the column list.</td></tr>
+<tr><td class="id">TSD-1109</td><td>Backups</td><td>Nightly <span class="code">mysqldump</span> plus a copy of the upload disk, retained 30 days locally; restore is a documented one-command procedure and is rehearsed once during Phase 1 (NFR-05).</td></tr>
+<tr><td class="id">TSD-1110</td><td>Secrets</td><td>Nothing in the repository. <span class="code">.env</span> is git-ignored; a <span class="code">.env.example</span> carries keys without values. GitHub push (Phase 6) is preceded by a scan for accidental secrets.</td></tr>
+</tbody></table>
+
+<h2>12. Performance and capacity</h2>
+<table>
+<thead><tr><th style="width:24%">Assumption</th><th style="width:18%">Value used</th><th>Consequence</th></tr></thead>
+<tbody>
+<tr><td>Users / concurrent</td><td>~60 accounts, 12 concurrent</td><td>Single host, no horizontal scaling needed; the queue worker count of 1 is deliberate.</td></tr>
+<tr><td>Projects per year</td><td>~40</td><td>Project lists stay under a few hundred rows; no partitioning.</td></tr>
+<tr><td>Assignments per project</td><td>2&ndash;8</td><td>Stage records: ~40&ndash;320 per project across both branches; the stepper query is one indexed read.</td></tr>
+<tr><td>Specifications</td><td>~120 active, 77+ components each</td><td>Specification children are the largest tables (~10k rows). The pin-on-inspect design means they are read rarely and never joined into lists.</td></tr>
+<tr><td>Inspections</td><td>3 per assignment, ~1.5k/yr</td><td>Gate queries hit the unique index; sub-millisecond.</td></tr>
+<tr><td>Audit volume</td><td>~50k rows/yr</td><td>Grows fastest; the composite target index keeps the history strip fast, and the viewer always pages server-side.</td></tr>
+<tr><td>Attachments</td><td>20 MB cap, ~10 GB/yr</td><td>Disk, not database. A 10 GB year is a storage plan item, not a schema one.</td></tr>
+</tbody></table>
+<table>
+<thead><tr><th style="width:24%">NFR</th><th style="width:26%">Target</th><th>How it is met and measured</th></tr></thead>
+<tbody>
+<tr><td>NFR-01 latency</td><td>p95 &lt; 800 ms list, &lt; 1.5 s detail</td><td>Server-side paging everywhere, no N+1 by construction (eager-load lists declared per page), a feature test asserts query count ceilings on the five hottest screens.</td></tr>
+<tr><td>NFR-02 SLA</td><td>Escalation within one working day</td><td>Daily 08:00 job; measured by the age column in the waiting-on-whom report.</td></tr>
+<tr><td>NFR-03 availability</td><td>Working hours only</td><td>Single host with Laragon-managed services; no clustering claimed. Documented restart procedure and a monitored scheduler.</td></tr>
+<tr><td>NFR-04 confidentiality</td><td>Supplier isolation, no cross-read</td><td>Scope middleware plus a feature test that attempts every portal route with another supplier's id and asserts 403 + access log.</td></tr>
+<tr><td>NFR-06 auditability</td><td>Decision reconstructable</td><td>Immutable steps with role snapshot; a test asserts a printed FAB matches the stored decisions byte-for-byte in content.</td></tr>
+<tr><td>NFR-10 import</td><td>77 rows in one pass</td><td>Import pipeline &sect;9; a test imports the real baseline file and asserts the resulting component count equals the source.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">13. Testing strategy</h2>
+<table>
+<thead><tr><th style="width:16%">Level</th><th style="width:22%">Tool</th><th>What it proves</th></tr></thead>
+<tbody>
+<tr><td>Unit</td><td>PHPUnit (bundled)</td><td>Each gate class G-01&hellip;G-14 in isolation, including the blocker payload; StatusDeriver over a matrix of step combinations; Numbering patterns and period rollover; Formatter against the shared fixture (dates, IDR, tolerance, null &rarr; em dash, zero &rarr; "0 item").</td></tr>
+<tr><td>Feature</td><td>PHPUnit + Inertia assertions</td><td>One file per FSD area. Every FSD screen id gets a route, a permission, and a happy-path test. Transitions T-01&hellip;T-09 tested through HTTP, not by calling services, so middleware and policies are exercised.</td></tr>
+<tr><td>Workflow integration</td><td>PHPUnit</td><td>The two branch walks end-to-end: concept &rarr; requirements &rarr; drawings &rarr; samples &rarr; T0/T1/T2 &rarr; quotation &rarr; FAB &rarr; standard &rarr; artwork/proofprint &rarr; scale up &rarr; archive, asserting the exact stage that each artefact unlocks. This is AC-C1 and AC-C2.</td></tr>
+<tr><td>Guard negative tests</td><td>PHPUnit</td><td>For each guard, one test that attempts the bypass and asserts refusal with the right <span class="code">MSG-xxx</span>. A guard without a negative test is considered unimplemented.</td></tr>
+<tr><td>Permission matrix</td><td>PHPUnit data provider</td><td>Every (role, feature) cell from the seeded matrix asserted against the actual route: FULL may act, READ may not, NONE gets 403. This turns FSD &sect;6 into an executable contract.</td></tr>
+<tr><td>Document snapshot</td><td>PHPUnit + stored PDFs</td><td>Generated FAB and SBK compared on extracted text against a golden file, catching a layout regression that would otherwise only be seen on paper.</td></tr>
+<tr><td>Browser</td><td>Laravel Dusk, small suite</td><td>Three flows only: login, one approval with comment and attachment, one supplier quotation submit. Chosen for the parts where JavaScript behaviour is the requirement.</td></tr>
+<tr><td>Manual acceptance</td><td>checklist from AC-C1&hellip;C10</td><td>Run by the client users at each phase exit. The checklist is derived from FSD &sect;10.1 so no criterion can be silently dropped.</td></tr>
+</tbody></table>
+<div class="note"><b>Fixtures.</b> Factories for every aggregate, plus one <span class="code">BranchAWalk</span> and <span class="code">BranchBWalk</span> scenario builder that constructs a fully approved chain of artefacts. Tests read as the process, not as table rows, which is what makes a regression in gate logic obvious in a failure name.</div>
+
+<h2>14. Environment, configuration, and build</h2>
+<h3>14.1 Bring-up sequence</h3>
+<pre>
+1  Start Laragon services            MySQL 8.4.3 must be running; port 3306
+                                     (verified closed at time of writing)
+2  Create schema                     CREATE DATABASE pds CHARACTER SET utf8mb4
+                                     COLLATE utf8mb4_0900_ai_ci;
+3  Create app DB user                GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,INDEX,REFERENCES
+                                     ON pds.*  — deliberately NOT UPDATE/DELETE on
+                                     audit_entries / access_logs (TSD-1102)
+4  Install PHP deps                  "C:\laragon\bin\composer\composer.phar" install
+                                     (composer is not on PATH — use the full path)
+5  Install JS deps                   npm install            (Node 22.22.0, npm 10.9.4)
+6  Configure                         copy .env.example → .env, set DB_*, APP_URL,
+                                     QUEUE_CONNECTION=database, MAIL_MAILER=log
+                                     or smtp→Mailpit 1025, APP_TIMEZONE=Asia/Jakarta
+7  Key + migrate + seed              php artisan key:generate
+                                     php artisan migrate --seed
+                                     php artisan db:seed --class=MasterSpecImport
+8  Build assets                      npm run dev   (or npm run build for a snapshot)
+9  Serve                             php artisan serve --port=8000
+10 Workers + scheduler               php artisan queue:work --tries=3 --backoff=30
+                                     php artisan schedule:work   (dev) / scheduled task (prod)
+11 Verify                            php artisan about  ·  php artisan migrate:status
+                                     health panel shows last run of each job (&sect;4.7 note)
+</pre>
+<h3>14.2 Configuration keys</h3>
+<table>
+<thead><tr><th style="width:30%">Key</th><th>Value / note</th></tr></thead>
+<tbody>
+<tr><td class="code">APP_TIMEZONE</td><td><span class="code">Asia/Jakarta</span> &mdash; overrides the observed php.ini <span class="code">UTC</span>.</td></tr>
+<tr><td class="code">DB_*</td><td>host 127.0.0.1, port 3306, database pds, dedicated user, <span class="code">unix_socket</span> unused on Windows.</td></tr>
+<tr><td class="code">FILESYSTEM_DISK</td><td><span class="code">local</span> private disk under <span class="code">storage/app/private</span>, outside the web root.</td></tr>
+<tr><td class="code">QUEUE_CONNECTION / CACHE_STORE</td><td><span class="code">database</span> / <span class="code">file</span> in dev; cache store switches to <span class="code">database</span> if session-permission caching proves too chatty (ADR-05).</td></tr>
+<tr><td class="code">MAIL_*</td><td>Mailpit SMTP 127.0.0.1:1025 locally. No real address is reachable from the dev config by design.</td></tr>
+<tr><td class="code">PDF_ENGINE</td><td><span class="code">dompdf</span>; <span class="code">chrome</span> with an absolute <span class="code">--print-to-pdf</span> path when selected (a relative path was observed to fail with a write-permission error).</td></tr>
+</tbody></table>
+
+<h2>15. Delivery plan</h2>
+<p>Six phases, each ending in something a user can click and sign off. Order is dictated by dependency, not by convenience: nothing in the workflow can be built before the engine, and the engine is meaningless before there is something to approve.</p>
+<table>
+<thead><tr><th style="width:8%">Ph</th><th style="width:22%">Deliverable</th><th style="width:26%">FSD areas</th><th>Exit check</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Foundation</td><td>F1, F2, part of F9</td><td>Login, forced password change, session revoke, users/roles, editable matrix with the FSD &sect;6 cells asserted by test, audit viewer, announcements. <b>Gate:</b> matrix test green for all 14 identities.</td></tr>
+<tr><td class="num">2</td><td>Master data and specification</td><td>F4</td><td>Categories, items, SBK authoring with the six parameter groups, import of the 77-component baseline, specification approval chain, printed SBK. <b>Gate:</b> AC-C9.</td></tr>
+<tr><td class="num">3</td><td>Workflow engine and NPD spine</td><td>&sect;4 engine, F3, F5</td><td>Projects, concept/BOD, requirement capture creating assignments, stage definitions, stepper, guards, drawings, dummy review. <b>Gate:</b> every guard has a passing negative test; a project can be created and blocked for the right reason.</td></tr>
+<tr><td class="num">4</td><td>Supplier, QC, and the two branch walks</td><td>F6, F7</td><td>Supplier master, portal with isolation, invitations, samples, quotations, T0/T1/T2, transport and application tests, colour, artwork circulation. <b>Gate:</b> AC-C1, AC-C2, AC-C3, AC-C5.</td></tr>
+<tr><td class="num">5</td><td>Official documents, standards, scale up</td><td>F8</td><td>FAB with the four signature blocks, standards, proofprint, scale up, branch completion, archive. <b>Gate:</b> AC-C4, AC-C7, AC-C10 and the PDF snapshot test.</td></tr>
+<tr><td class="num">6</td><td>Reports, notifications, hardening, handover</td><td>F9</td><td>Nine reports, exports, digests, escalation, dashboards, backup rehearsal, documentation, repository push. <b>Gate:</b> AC-C6, AC-C8 and a full walkthrough of both branches by client users.</td></tr>
+</tbody></table>
+<div class="note"><b>Why the engine comes before the supplier portal.</b> Quotations, drawings, artwork and the FAB are all approval documents. Building the portal first would mean inventing four small status machines and merging them later &mdash; the exact path that produced the prototype's duplicated menus. Phase 3 makes one engine real; Phase 4 only points things at it.</div>
+
+<h2 class="pagebreak">16. Decision log and risks</h2>
+<h3>16.1 Architecture decision records</h3>
+<table>
+<thead><tr><th style="width:8%">ADR</th><th style="width:26%">Decision</th><th style="width:26%">Rejected alternative</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td class="id">01</td><td>Laravel 12 + Inertia + React in one app.</td><td>Separate SPA + API.</td><td>Chosen at the PRD gate; also removes a second auth surface, a second deployment, and a class of session bugs.</td></tr>
+<tr><td class="id">02</td><td>One generic approval engine for all eight document types.</td><td>Per-module status columns.</td><td>FSD &sect;4. The prototype's failure mode was duplicated status logic; a shared engine makes that structurally impossible.</td></tr>
+<tr><td class="id">03</td><td>Snapshot chain steps at submit.</td><td>Resolve chain live on every read.</td><td>An approved document must remain describable after its chain template is edited.</td></tr>
+<tr><td class="id">04</td><td>Typed payload table per document type, joined to <span class="code">approval_documents</span>.</td><td>JSON payload for everything.</td><td>Gates and reports query payload columns (T-levels, quotation acceptance). JSON would make G-06 a full scan and untestable.</td></tr>
+<tr><td class="id">05</td><td>Queue and cache drivers: database and file.</td><td>Redis + Horizon.</td><td>Redis is not installed. The seam is the driver name, so production can switch without code changes.</td></tr>
+<tr><td class="id">06</td><td>Assignment, not project, is the unit of workflow.</td><td>Pipeline attached to the project.</td><td>OQ-06. Two branches and multiple items must desynchronise visibly.</td></tr>
+<tr><td class="id">07</td><td>No xdebug; logs and telescope-free debugging.</td><td>Install xdebug.</td><td>Not present in the verified environment; installing system PHP extensions is not done silently. If debugging proves slow, this is reopened as a change request.</td></tr>
+<tr><td class="id">08</td><td>Permissions cached with a global matrix version.</td><td>Reload per request / long TTL.</td><td>Correctness (FSD-204 takes effect immediately) at the cost of one extra integer read per request.</td></tr>
+<tr><td class="id">09</td><td>Custom audit tables.</td><td>spatie/laravel-activitylog.</td><td>Read-access logging, role-at-time snapshots and DB-grant immutability are not that package's shape.</td></tr>
+<tr><td class="id">10</td><td>Formatter duplicated in PHP and JS with a shared fixture.</td><td>Server-render all formatted strings.</td><td>Server strings would freeze presentation into props and break client-side sorting and re-rendering; the fixture test prevents drift.</td></tr>
+<tr><td class="id">11</td><td>Dompdf primary, Chrome selectable for PDF.</td><td>Chrome-only.</td><td>Dompdf has no external binary dependency and is deterministic; Chrome is kept as a config switch for the wide SBK tables.</td></tr>
+<tr><td class="id">12</td><td>Repository pushed as one squashed commit at Phase 6.</td><td>Continuous push of WIP.</td><td>Stated preference: history should read as a delivered system, not as a build log.</td></tr>
+</tbody></table>
+
+<h3>16.2 Risks</h3>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:30%">Risk</th><th style="width:12%">Sev</th><th>Mitigation in this design</th></tr></thead>
+<tbody>
+<tr><td class="id">R-01</td><td>Windows scheduler not installed, so digests and escalations silently never run.</td><td class="num">High</td><td>&sect;4.7 makes each job record its last successful run and shows it in the admin health panel; Phase 6 acceptance checks it explicitly.</td></tr>
+<tr><td class="id">R-02</td><td>Composer and MySQL are not on PATH / not running, so setup fails confusingly.</td><td class="num">Med</td><td>&sect;14.1 uses absolute paths and starts with a service check; a <span class="code">pds:doctor</span> command reports each prerequisite.</td></tr>
+<tr><td class="id">R-03</td><td>Dompdf cannot paginate the wide SBK tables acceptably.</td><td class="num">Med</td><td>ADR-11 keeps Chrome one config value away; the snapshot test catches the regression before a user prints one.</td></tr>
+<tr><td class="id">R-04</td><td>Role holders change (a person leaves, two roles collapse onto one person) and a chain becomes unresolvable.</td><td class="num">Med</td><td>TSD-402 zero-holder refusal and TSD-521 clash handling, both surfaced at submit time rather than discovered mid-approval.</td></tr>
+<tr><td class="id">R-05</td><td>Specification import shape differs from the client's next file.</td><td class="num">Med</td><td>Mapping screen (TSD-902) rather than a hard-coded column order; preview before commit; error report.</td></tr>
+<tr><td class="id">R-06</td><td>FSD &sect;6 matrix and the seeded matrix drift apart as features are added.</td><td class="num">Low</td><td>Seeder generated from the FSD table and a test asserting route inventory equals FSD screen inventory.</td></tr>
+<tr><td class="id">R-07</td><td>Audit growth outpaces the rest of the data.</td><td class="num">Low</td><td>Changed-columns-only diffs, separate access log, documented archive-by-export rather than deletion.</td></tr>
+<tr><td class="id">R-08</td><td>Single-host availability is below what a production QA tool eventually needs.</td><td class="num">Low</td><td>Stated honestly in NFR-03; no clustering claimed; the design has no in-process state that prevents adding a second app node later.</td></tr>
+</tbody></table>
+
+<h2>17. Traceability: FSD clause &rarr; TSD decision</h2>
+<table>
+<thead><tr><th style="width:26%">FSD obligation</th><th style="width:30%">Realised by</th><th>Verified by</th></tr></thead>
+<tbody>
+<tr><td>&sect;2.2 no raw machine values</td><td>TSD-710..713 formatter layer, shared fixture</td><td>Formatter unit suite + AC-C8 walkthrough</td></tr>
+<tr><td>&sect;2.3 identifier rules</td><td>TSD-430..432 numbering service, <span class="code">numbering_sequences</span></td><td>Period-rollover and concurrency tests</td></tr>
+<tr><td>&sect;2.4 list contract</td><td>TSD-701, <span class="code">&lt;DataTable&gt;</span></td><td>Component test: 3-char floor, URL sync, three empty states</td></tr>
+<tr><td>&sect;2.5 form contract incl. conflict</td><td><span class="code">&lt;FormShell&gt;</span>, <span class="code">row_version</span> columns</td><td>Feature test asserting MSG-020 path</td></tr>
+<tr><td>&sect;4.1 derived approval status</td><td>TSD-410..412 deriver + cache + nightly audit</td><td>Deriver matrix test over all step combinations</td></tr>
+<tr><td>&sect;4.2 transitions T-01..T-09</td><td>&sect;4.3 service methods, idempotency</td><td>Workflow integration suite</td></tr>
+<tr><td>&sect;4.3 chain templates</td><td>TSD-401..405, <span class="code">approval_chains</span> seed</td><td>Matrix test per chain; sequential visibility test for ARTWORK-CIRC</td></tr>
+<tr><td>&sect;4.4 guards G-01..G-14</td><td>TSD-420..424 gate classes</td><td>One negative test per guard, mandatory</td></tr>
+<tr><td>&sect;4.5 derived values</td><td>&sect;4.6 queries</td><td>Progress and owner tests on a two-branch fixture</td></tr>
+<tr><td>OQ-05 / G-06 mandatory T0+T1+T2</td><td>TSD-422</td><td>Negative test per branch, per item type</td></tr>
+<tr><td>OQ-01 four signature blocks</td><td>TSD-804</td><td>PDF snapshot of a fully approved FAB</td></tr>
+<tr><td>OQ-04 twelve-role matrix</td><td>&sect;5, TSD-501..504</td><td>Every cell asserted against a real route</td></tr>
+<tr><td>Q-F1 quotation survives rejection</td><td>TSD-430 rejection path</td><td>Feature test asserting quotation status unchanged after FAB reject</td></tr>
+<tr><td>Q-F2 fixed two rounds</td><td><span class="code">workflow.revision_escalation_rounds</span></td><td>Escalation test at round 3</td></tr>
+<tr><td>Q-F3 approver-only SLA</td><td>&sect;4.7 escalate job filter</td><td>Job test with a stale CHECK step asserted silent</td></tr>
+<tr><td>Q-F4 supplier digest</td><td>TSD-1004</td><td>Digest test: one email, N-11/N-14 immediate</td></tr>
+<tr><td>Q-F5 one scale-up per assignment</td><td>partial unique index, TSD-361</td><td>Constraint violation test</td></tr>
+<tr><td>Q-F6 multi-role with segregation</td><td>TSD-520..523</td><td>Clash-resolution and admin-role-exclusion tests</td></tr>
+<tr><td>FSD-601 supplier isolation</td><td>&sect;5.3 scope middleware + G-14 re-check</td><td>Cross-tenant attempt suite</td></tr>
+<tr><td>FSD-907 audit</td><td>TSD-1101..1102</td><td>Observer coverage test; DB grant test</td></tr>
+<tr><td>FSD-407 77-row import</td><td>&sect;9 pipeline</td><td>Real-file import test</td></tr>
+</tbody></table>
+
+<h2>18. Approval and sign-off</h2>
+<p>Signing this document authorises the build exactly as phased in &sect;15. It also records acceptance of the twelve ADRs: a reviewer who disagrees with a decision should replace its row in &sect;16.1 rather than argue it in a comment thread after code exists.</p>
+<table>
+<thead><tr><th style="width:22%">Role</th><th style="width:20%">Name</th><th style="width:12%">Signature</th><th style="width:11%">Date</th><th>What they are accepting</th></tr></thead>
+<tbody>
+<tr><td>Author &mdash; Technical</td><td></td><td></td><td></td><td>Architecture, schema, engine, delivery plan.</td></tr>
+<tr><td>QC Manager</td><td></td><td></td><td></td><td>Gate implementation for T0/T1/T2, specification pinning and versioning.</td></tr>
+<tr><td>SCM Manager</td><td></td><td></td><td></td><td>Supplier isolation, portal storage and mail handling, quotation freeze.</td></tr>
+<tr><td>QA Manager</td><td></td><td></td><td></td><td>Audit immutability, permission model, testing strategy.</td></tr>
+<tr><td>R&amp;D</td><td></td><td></td><td></td><td>Master data, standard lifecycle, scale-up constraint.</td></tr>
+<tr><td>Marketing</td><td></td><td></td><td></td><td>Project and concept flow, artwork circulation position.</td></tr>
+<tr><td>Packaging Development</td><td></td><td></td><td></td><td>Stage machine, FAB payload and print output.</td></tr>
+<tr><td>IT / Systems owner</td><td></td><td></td><td></td><td>Environment, backup, scheduler, hosting assumptions in &sect;14.</td></tr>
+</tbody></table>
+
+<div class="foot">TSD-PDS-003 v0.1 &middot; baseline PRD-PDS-001 v0.2 and FSD-PDS-002 v0.2 &middot; PT PPM &mdash; Quality Management &amp; Quality Control Division &middot; draft for review, not a controlled document until signed above.</div>
+
+
+</body>
+</html>

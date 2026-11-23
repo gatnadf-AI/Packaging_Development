@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FSD — Packaging Development System</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 9.2pt; line-height: 1.45; color: #16202b; margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 4pt 0; color: #0f2c4d; letter-spacing: -0.3pt; }
+  h2 { font-size: 12.5pt; margin: 18pt 0 5pt 0; color: #0f2c4d; border-bottom: 2px solid #0f2c4d; padding-bottom: 3pt; break-after: avoid; }
+  h3 { font-size: 10.5pt; margin: 12pt 0 4pt 0; color: #14416f; break-after: avoid; }
+  h4 { font-size: 9.6pt; margin: 9pt 0 3pt 0; color: #14416f; break-after: avoid; }
+  p  { margin: 0 0 5pt 0; text-align: justify; }
+  ul, ol { margin: 0 0 6pt 0; padding-left: 14pt; }
+  li { margin-bottom: 2pt; }
+  table { width: 100%; border-collapse: collapse; margin: 4pt 0 9pt 0; font-size: 8.2pt; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 3.5pt 4.5pt; font-weight: 600; border: 0.5pt solid #0f2c4d; }
+  td { padding: 3pt 4.5pt; border: 0.5pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f4f7fa; }
+  .num { text-align: center; white-space: nowrap; }
+  .id { font-family: Consolas, monospace; font-size: 7.8pt; color: #14416f; font-weight: 600; white-space: nowrap; }
+  .code { font-family: Consolas, monospace; font-size: 7.8pt; color: #3a3a3a; }
+  .cover { text-align: center; padding-top: 42mm; break-after: page; }
+  .cover .brand { color: #b5122b; font-size: 11.5pt; font-weight: 700; letter-spacing: 3pt; }
+  .cover .sub { font-size: 12pt; color: #44586c; margin-top: 6pt; }
+  .cover .meta { margin: 26pt auto 0 auto; width: 92mm; font-size: 9.2pt; text-align: left; }
+  .cover .meta td { border: none; padding: 2.5pt 4pt; background: none !important; }
+  .cover .meta td:first-child { color: #647586; width: 34mm; }
+  .badge { display: inline-block; background: #b06d00; color: #fff; padding: 2pt 8pt; border-radius: 2pt; font-size: 8.5pt; font-weight: 700; letter-spacing: 1pt; }
+  .callout { border-left: 3pt solid #b5122b; background: #fdf3f4; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .note { border-left: 3pt solid #14416f; background: #f1f5f9; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .good { border-left: 3pt solid #3f7d3f; background: #f2f8f2; padding: 6pt 8pt; margin: 7pt 0 9pt 0; }
+  .pagebreak { break-before: page; }
+  .toc { columns: 2; column-gap: 10mm; font-size: 8.8pt; }
+  .toc div { margin-bottom: 2pt; }
+  .toc .l1 { font-weight: 600; color: #0f2c4d; }
+  .toc .l2 { padding-left: 8pt; color: #44586c; }
+  .F { color: #3f7d3f; font-weight: 700; }
+  .R { color: #b06d00; font-weight: 700; }
+  .N { color: #98a4b1; font-weight: 700; }
+  .scr { background: #eef3f8; border: 0.5pt solid #b9c8d6; padding: 5pt 7pt; margin: 5pt 0 7pt 0; font-size: 8.4pt; }
+  .scr b { color: #0f2c4d; }
+  .foot { font-size: 7.8pt; color: #647586; text-align: center; margin-top: 14pt; border-top: 0.5pt solid #c3cdd8; padding-top: 5pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">PT. PPM</div>
+  <div style="margin-top:5pt;font-size:8.6pt;color:#647586;">Quality Management &amp; Quality Control Division</div>
+  <div style="margin-top:22pt;"><span class="badge" style="background:#3f7d3f;">APPROVED AT FSD GATE &mdash; v0.2</span></div>
+  <h1 style="margin-top:12pt;">Functional Specification Document</h1>
+  <div class="sub">Packaging Development System<br>NPD Workflow Management</div>
+  <table class="meta">
+    <tr><td>Document ID</td><td><b>FSD-PDS-002</b></td></tr>
+    <tr><td>Version</td><td><b>0.2</b> &mdash; gate decisions incorporated</td></tr>
+    <tr><td>Date</td><td>23 November 2026</td></tr>
+    <tr><td>Baseline</td><td>PRD-PDS-001 <b>v0.2</b> (approved)</td></tr>
+    <tr><td>Next gate</td><td>FSD approval &rarr; TSD &rarr; Development</td></tr>
+    <tr><td>Decides</td><td>Behaviour, fields, validation, states, permissions</td></tr>
+    <tr><td>Does not decide</td><td>Schema DDL, framework internals, deployment</td></tr>
+  </table>
+</div>
+
+<h2>0. How to read this document</h2>
+<div class="toc">
+  <div class="l1">1. Document control and basis</div>
+  <div class="l1">2. Global conventions</div>
+  <div class="l2">2.1 Notation &middot; 2.2 Formatting rules &middot; 2.3 Identifier rules</div>
+  <div class="l2">2.4 Common list contract &middot; 2.5 Common form contract</div>
+  <div class="l2">2.6 Message catalogue &middot; 2.7 Empty, loading and error states</div>
+  <div class="l1">3. Logical domain model</div>
+  <div class="l1">4. Workflow engine</div>
+  <div class="l2">4.1 Status model &middot; 4.2 Transition table &middot; 4.3 Approval chain templates</div>
+  <div class="l2">4.4 Stage gate rules &middot; 4.5 Derived values &middot; 4.6 Stage gate map</div>
+  <div class="l1">5. Functional area specifications</div>
+  <div class="l2">F1 Auth &amp; profile &middot; F2 Administration &middot; F3 NPD project &amp; concept</div>
+  <div class="l2">F4 Master data &amp; specification &middot; F5 Sourcing, drawing, dummy review</div>
+  <div class="l2">F6 Supplier, evaluation, quotation &middot; F7 QC inspection &amp; circulation</div>
+  <div class="l2">F8 Approval form, standard, proofprint, scale up &middot; F9 Notifications, dashboards, reports</div>
+  <div class="l1">6. Permission matrix</div>
+  <div class="l1">7. Document output specifications</div>
+  <div class="l1">8. Notification catalogue</div>
+  <div class="l1">9. Reports and exports</div>
+  <div class="l1">10. Acceptance mapping and deferred items</div>
+</div>
+<p>Every numbered item below carries an identifier (<span class="id">FSD-xxx</span>) and a <b>PRD</b> column tracing it to a requirement in PRD-PDS-001 v0.2. An item with no PRD trace is either a derived necessity or a defect in this document; reviewers should challenge any such row.</p>
+
+<h2 class="pagebreak">1. Document control and basis</h2>
+<h3>1.1 Version history</h3>
+<table>
+<thead><tr><th style="width:10%">Version</th><th style="width:14%">Date</th><th>Change</th></tr></thead>
+<tbody><tr><td class="num">0.2</td><td class="num">2026-11-23</td><td>Gate decisions Q-F1&hellip;Q-F6 incorporated. FSD-904 and N-12&hellip;N-14 changed: supplier notifications move to a daily digest except invitations and deadline notices. FSD-905 restricted to approver steps. New FSD-615 permits multi-role holding with segregation. FSD-505 fixed at two rounds, not configurable. FSD-806 confirmed unchanged. &sect;10.3 closed.</td></tr><tr><td class="num">0.1</td><td class="num">2026-11-23</td><td>First issue against approved baseline PRD-PDS-001 v0.2. Incorporates the three blocking decisions: the Word form signature blocks as the approval chain (OQ-01), the resolved grants for the five previously blank roles (OQ-04), and mandatory T0+T1+T2 for every packaging item (OQ-05).</td></tr></tbody>
+</table>
+
+<h3>1.2 Basis and boundaries</h3>
+<table>
+<thead><tr><th style="width:26%">In this document</th><th>Not in this document (and where it belongs)</th></tr></thead>
+<tbody>
+<tr><td>Every screen, its fields, their validation, its actions, its permissions, its state transitions, its notifications, its edge cases. Formatting rules. Identifier rules. Document output layouts. Report definitions.</td><td>Why a feature exists (PRD). Table DDL, indexes, framework structure, service decomposition, deployment topology, test tooling (TSD). Visual design tokens, spacing, exact colours (design system, produced alongside the TSD).</td></tr>
+</tbody>
+</table>
+
+<h3>1.3 Decisions inherited from the PRD gate</h3>
+<table>
+<thead><tr><th style="width:10%">Source</th><th style="width:34%">Decision</th><th>Consequence for this FSD</th></tr></thead>
+<tbody>
+<tr><td class="id">OQ-01</td><td>Approval chain = the Word form's four signature blocks.</td><td>&sect;4.3 chain template <span class="code">FAB-PRIMARY</span> / <span class="code">FAB-SECONDARY</span> defines exactly one author, one checker and three approvers, and &sect;7.1 maps each printed block to a recorded decision.</td></tr>
+<tr><td class="id">OQ-04</td><td>R&amp;D, SCM Staff, QC Supervisor, QC Manager, QA Supervisor are granted the duties the flowchart assigns.</td><td>&sect;6 matrix is complete for all twelve roles; no cell is marked "undetermined". Five role columns are now normative.</td></tr>
+<tr><td class="id">OQ-05</td><td>T0, T1 and T2 are mandatory for every packaging item in both branches.</td><td>Gate rules in &sect;4.4 require all three passes before <span class="id">P-05</span>/<span class="id">S-05</span> can open; the inspection module (&sect;F7) offers no "skip level" action.</td></tr>
+<tr><td class="id">OQ-03</td><td>Indonesian interface, English technical terms.</td><td>All field labels, buttons and messages in &sect;5 are specified in Indonesian; identifiers, statuses in code and this document remain English.</td></tr>
+<tr><td class="id">OQ-02</td><td>Substitution of packaging material is dropped as a workflow.</td><td>No functional area, screen, chain template or report in this document models a substitution. A material change is handled as an ordinary new project (F3) whose FAB carries the reason "penggantian bahan" &mdash; that is a data value, not a second workflow.</td></tr>
+</tbody></table>
+
+<h3>1.4 Standing rule inherited from the negative reference</h3>
+<div class="callout">
+<b>Rule N-1.</b> No raw machine value may appear on any screen. Timestamps, codes, nulls, booleans and enumerations are always rendered through the formatting rules in &sect;2.2. This exists because the reviewed prototype surfaced <span class="code">2026-06-13T00:00:00.0000000Z</span> and <span class="code">PIC: Belum ada</span> to users. Every screen specification in &sect;5 is written so that this is achievable without per-screen improvisation; a screen that needs a special case is a defect in this FSD, not in the code.
+</div>
+
+<h3>1.5 Gate decisions recorded at the FSD review</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Decision taken</th><th style="width:34%">Effect on this FSD</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-F1</td><td>A rejected Form Approval Bahan Kemas leaves the accepted quotation standing.</td><td>FSD-806 confirmed as written; no reversion of quotation status on FAB rejection.</td><td class="F">accepted, unchanged</td></tr>
+<tr><td class="id">Q-F2</td><td>Two revision rounds before escalation is sufficient.</td><td>FSD-505 and FSD-608 fixed at two rounds; the counter is a constant, not a per-category setting.</td><td class="F">accepted, simplified</td></tr>
+<tr><td class="id">Q-F3</td><td>The 3 / 5 working-day escalation applies to approver steps only.</td><td>FSD-905 amended: checker steps are excluded from the SLA digest and are surfaced only through the queue and the "waiting on whom" report.</td><td class="F">accepted, narrowed</td></tr>
+<tr><td class="id">Q-F4</td><td>Suppliers receive a daily digest rather than one email per event.</td><td>FSD-904 amended and N-12, N-13, N-14 changed to <i>digest</i>. N-11 (invitation sent) and N-14 deadline notices stay immediate because they are time-boxed.</td><td class="F">accepted, changed</td></tr>
+<tr><td class="id">Q-F5</td><td>One scale-up record per assignment.</td><td>FSD-810 confirmed; repeats remain possible only as an explicitly linked restart, not as additional scale-ups.</td><td class="F">accepted, unchanged</td></tr>
+<tr><td class="id">Q-F6</td><td>A person may hold two roles.</td><td>New FSD-615 in &sect;6.2. Permitted, with segregation of duties enforced by G-01 and by a new rule that one person may not occupy two different steps of the same chain.</td><td class="F">accepted, new rule</td></tr>
+</tbody></table>
+
+<h2>2. Global conventions</h2>
+
+<h3>2.1 Notation</h3>
+<table>
+<thead><tr><th style="width:14%">Symbol</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td class="num"><b>M</b> / <b>O</b> / <b>C</b></td><td>Field requirement: Mandatory, Optional, Computed (system-filled, never typed).</td></tr>
+<tr><td class="num"><b>F</b> / <b>R</b> / <b>&mdash;</b></td><td>Permission: Full (read + act), Read-only, No access.</td></tr>
+<tr><td class="num"><span class="id">V-nnn</span></td><td>Validation rule; failure produces the mapped <span class="id">MSG-nnn</span>.</td></tr>
+<tr><td class="num"><span class="id">G-nn</span></td><td>Gate guard: a server-side precondition that blocks a transition.</td></tr>
+<tr><td class="num"><span class="id">PRD: FR-nnn</span></td><td>Traceability to the requirement baseline.</td></tr>
+<tr><td class="num">&larr; / &rarr;</td><td>Field is populated from / sent to the named source.</td></tr>
+</tbody></table>
+
+<h3>2.2 Formatting rules (global, applied by one shared formatter)</h3>
+<table>
+<thead><tr><th style="width:16%">Data</th><th style="width:26%">Render as</th><th>Example</th><th style="width:14%">PRD</th></tr></thead>
+<tbody>
+<tr><td>Date</td><td><span class="code">dd MMM yyyy</span>, Indonesian month abbreviations</td><td>23 Nov 2026</td><td class="id">NFR-07</td></tr>
+<tr><td>Date + time</td><td><span class="code">dd MMM yyyy, HH:mm</span> WIB (single timezone, always stated once in the page header)</td><td>23 Nov 2026, 14:05</td><td class="id">NFR-07</td></tr>
+<tr><td>Relative age</td><td>Used only for queues and overdue: <i>hari ini</i>, <i>kemarin</i>, <i>N hari lalu</i>; tooltip carries the absolute timestamp</td><td>4 hari lalu</td><td class="id">FR-1907</td></tr>
+<tr><td>Currency</td><td>IDR, dot thousands separator, no decimals for quotations</td><td>IDR 1.850.000</td><td class="id">FR-1301</td></tr>
+<tr><td>Numeric tolerance</td><td>Comma decimal, unit always appended, range shown as <span class="code">min&ndash;max</span></td><td>1,05&ndash;1,56 mm</td><td class="id">FR-1102</td></tr>
+<tr><td>Person</td><td>Display name; on first mention in a decision context also the role</td><td>Katarina Manurung (QC Supervisor)</td><td class="id">FR-1604</td></tr>
+<tr><td>Empty value</td><td>Em dash. Never <span class="code">null</span>, never <span class="code">-</span> alone, never "Belum ada" in a table cell. In a form, an unfilled mandatory field is highlighted instead.</td><td>&mdash;</td><td class="id">NFR-07</td></tr>
+<tr><td>Zero that means something</td><td>Rendered as the number with its unit; only true absence becomes an em dash</td><td>0 item</td><td class="id">FR-603</td></tr>
+<tr><td>Status</td><td>Coloured chip with Indonesian label from the fixed vocabulary in &sect;2.2.1. Never a bare code.</td><td><span class="code">Menunggu Persetujuan</span></td><td class="id">NFR-08</td></tr>
+<tr><td>Boolean</td><td>Icon + word, never a tick alone</td><td>&#10003; Lulus / &#10007; Gagal</td><td class="id">FR-1104</td></tr>
+<tr><td>Long text</td><td>Clamped to 2 lines in lists with an expand affordance; full text always available in the detail view</td><td>&mdash;</td><td class="id">NFR-07</td></tr>
+</tbody></table>
+
+<h4>2.2.1 Status vocabulary (Indonesian label &larr; internal code)</h4>
+<table>
+<thead><tr><th style="width:20%">Document status</th><th style="width:24%">Approval status</th><th style="width:20%">Stage status</th><th>Verdict</th></tr></thead>
+<tbody>
+<tr><td>Draft &larr; <span class="code">DRAFT</span></td><td>Belum diajukan &larr; <span class="code">NONE</span></td><td>Belum mulai &larr; <span class="code">NOT_STARTED</span></td><td>Lulus &larr; <span class="code">PASS</span></td></tr>
+<tr><td>Terajukan &larr; <span class="code">SUBMITTED</span></td><td>Terajukan &larr; <span class="code">SUBMITTED</span></td><td>Berjalan &larr; <span class="code">IN_PROGRESS</span></td><td>Gagal &larr; <span class="code">FAIL</span></td></tr>
+<tr><td>Menunggu &larr; <span class="code">PENDING</span></td><td>Menunggu pemeriksaan &larr; <span class="code">PENDING_CHECKING</span></td><td>Selesai &larr; <span class="code">COMPLETED</span></td><td>Perlu revisi &larr; <span class="code">REVISION</span></td></tr>
+<tr><td>Selesai &larr; <span class="code">CLOSED</span></td><td>Pemeriksaan &larr; <span class="code">CHECKING</span></td><td>Ditolak &larr; <span class="code">REJECTED</span></td><td>Diterima &larr; <span class="code">ACCEPTED</span></td></tr>
+<tr><td>Batal &larr; <span class="code">CANCELLED</span></td><td>Periksa selesai &larr; <span class="code">CHECKED</span></td><td>Tidak berlaku &larr; <span class="code">NOT_APPLICABLE</span></td><td>Ditolak &larr; <span class="code">REJECTED</span></td></tr>
+<tr><td>Dikunci &larr; <span class="code">LOCKED</span></td><td>Menunggu persetujuan &larr; <span class="code">WAITING_APPROVAL</span></td><td>&mdash;</td><td>Diterima bersyarat &larr; <span class="code">ACCEPTED_CONDITIONAL</span></td></tr>
+<tr><td>&mdash;</td><td>Disetujui &larr; <span class="code">APPROVED</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+<tr><td>&mdash;</td><td>Ditolak &larr; <span class="code">REJECTED</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+</tbody></table>
+<div class="note"><b>Why two statuses and not one.</b> A single status cannot answer "is this finished, or is it finished-and-signed-off?". Keeping document status and approval status separate is what makes the <i>My work</i> dashboard and the overdue report computable without special-casing (PRD &sect;7.4).</div>
+
+<h3>2.3 Identifier and numbering rules</h3>
+<p>All codes are generated server-side, are unique, are never reused, and never encode meaning that could later become false (for example a supplier name is not embedded in a quotation code). BR-13.</p>
+<table>
+<thead><tr><th style="width:22%">Object</th><th style="width:24%">Pattern</th><th style="width:20%">Example</th><th>Sequence scope / rule</th></tr></thead>
+<tbody>
+<tr><td>NPD project</td><td><span class="code">NPD-YYYY-NNN</span></td><td>NPD-2026-007</td><td>Per calendar year; assigned on create, kept if the project is cancelled.</td></tr>
+<tr><td>Packaging assignment</td><td><span class="code">&lt;project&gt;/&lt;A|B&gt;&lt;n&gt;</span></td><td>NPD-2026-007/A1</td><td>Per project per branch; A = primary, B = secondary/tertiary.</td></tr>
+<tr><td>Technical drawing</td><td><span class="code">DWG-NNN/version</span></td><td>DWG-0142 / v03</td><td>Number per item; version increments on every re-issue.</td></tr>
+<tr><td>Quotation</td><td><span class="code">QT-YYYY-NNNN</span></td><td>QT-2026-0118</td><td>Per year; revision creates a new number linked to the parent.</td></tr>
+<tr><td>Form Approval Bahan Kemas</td><td><span class="code">FAB-YYYY-NNN</span></td><td>FAB-2026-031</td><td>Per year, both branches share the sequence.</td></tr>
+<tr><td>Packaging specification (SBK)</td><td><span class="code">QC/BP/NNN/YY</span></td><td>QC/BP/013/26</td><td>Per year; follows the existing paper convention.</td></tr>
+<tr><td>Inspection</td><td><span class="code">INS-&lt;assignment&gt;-T0|T1|T2</span></td><td>INS-NPD-2026-007/A1-T1</td><td>Exactly one active inspection per assignment per level; a retest appends <span class="code">-r2</span>.</td></tr>
+<tr><td>Transport / application test</td><td><span class="code">TT-&lt;assignment&gt;-NN</span></td><td>TT-NPD-2026-007/B1-02</td><td>Per assignment; multiple rounds allowed.</td></tr>
+<tr><td>Supply-service evaluation</td><td><span class="code">SSE-YYYY-NNN</span></td><td>SSE-2026-044</td><td>Per year, per supplier many.</td></tr>
+<tr><td>Artwork circulation</td><td><span class="code">AWK-&lt;assignment&gt;-NN</span></td><td>AWK-NPD-2026-007/B1-01</td><td>Per assignment; re-circulation after rejection is a new number.</td></tr>
+<tr><td>Proofprint record</td><td><span class="code">PFP-&lt;assignment&gt;-NN</span></td><td>PFP-NPD-2026-007/B1-01</td><td>Per assignment.</td></tr>
+<tr><td>Packaging standard</td><td><span class="code">STD-&lt;item&gt;-NN</span></td><td>STD-CRIMP-004-02</td><td>Per item; version suffix increments, prior versions immutable.</td></tr>
+<tr><td>Scale-up event</td><td><span class="code">SCL-&lt;assignment&gt;-NN</span></td><td>SCL-NPD-2026-007/A1-01</td><td>Per assignment; normally one, repeats allowed for restarts.</td></tr>
+</tbody></table>
+
+<h3>2.4 Common list-page contract</h3>
+<p>Defined once; every list in &sect;5 inherits it and may only add columns or filters, never subtract behaviour. This contract exists because the reviewed prototype implemented table behaviour inconsistently between screens.</p>
+<table>
+<thead><tr><th style="width:20%">Element</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td>Identity</td><td>Breadcrumb <span class="code">Module / Screen</span>, page title, one-line description, primary action button at the right of the title row.</td></tr>
+<tr><td>Search</td><td>Single input, placeholder <i>Cari kode, nama, atau judul&hellip;</i>. Debounced 300 ms. Requests are only sent when the term is <b>3 characters or more</b>; below that a hint appears and no request is made. Search covers the columns marked <span class="code">S</span> in each screen spec.</td></tr>
+<tr><td>Filters</td><td>Each filter is a select with <i>Semua &lt;nama&gt;</i> as the default option. Filters combine with AND. Active filters are shown as removable chips above the table. State is kept in the URL so a filtered view is shareable and survives reload.</td></tr>
+<tr><td>Sorting</td><td>One column at a time; clicking cycles asc &rarr; desc &rarr; default. Default sort is always defined per screen.</td></tr>
+<tr><td>Paging</td><td>Rows per page 5 / 10 / 25 / 50 / 100, default 10, remembered per user per screen. Footer shows <span class="code">N baris</span> and <span class="code">Halaman x dari y</span> with first/prev/next/last controls. Paging is server-side.</td></tr>
+<tr><td>Row action</td><td>A single <span class="code">&#8943;</span> menu per row: <i>Lihat</i>, <i>Ubah</i>, plus the state-dependent actions permitted by &sect;6. Destructive or irreversible actions are separated by a rule and require confirmation.</td></tr>
+<tr><td>Empty states</td><td>Three distinct cases, each with its own text and action: no records exist yet; records exist but the filter excludes them (offers <i>Reset filter</i>); the user lacks permission (offers no action).</td></tr>
+<tr><td>Column rules</td><td>Maximum 8 columns. Any column that would truncate is moved to the detail view. Codes render in monospace; statuses as chips; dates per &sect;2.2.</td></tr>
+<tr><td>Export</td><td>Present only if the user holds <span class="code">report.export</span>. Exports the <b>filtered</b> set, not the current page, and states the row count before starting.</td></tr>
+</tbody></table>
+
+<h3>2.5 Common form-page contract</h3>
+<table>
+<thead><tr><th style="width:20%">Element</th><th>Behaviour</th></tr></thead>
+<tbody>
+<tr><td>Structure</td><td>Grouped into labelled sections; mandatory fields marked with <span class="code">*</span> and explained once in a legend, not per field.</td></tr>
+<tr><td>Save</td><td><i>Simpan draft</i> validates only field format, not completeness. <i>Ajukan</i> (submit) validates everything and is the only action that changes document status out of <span class="code">DRAFT</span>.</td></tr>
+<tr><td>Validation timing</td><td>On blur for format, on submit for completeness and cross-field rules. Errors appear under the field, the first invalid field receives focus, and the form scrolls to it. Server errors use the same rendering path.</td></tr>
+<tr><td>Unsaved changes</td><td>Navigating away with unsaved edits prompts <i>Simpan / Buang / Batal</i>. Browser close is guarded.</td></tr>
+<tr><td>Concurrency</td><td>Each editable record carries a version token. If another user saved first, the save is refused with <span class="code">MSG-020</span> and offers <i>Muat ulang data</i> or <i>Kirim ulang saya</i>. Silent overwrite does not exist.</td></tr>
+<tr><td>Read-only view</td><td>Any record the user may see but not edit opens in the same layout with inputs disabled and a banner naming the reason (<i>Dokumen terkunci setelah persetujuan</i>, <i>Anda hanya memiliki akses baca</i>).</td></tr>
+<tr><td>Attachments</td><td>Drag or pick; max 20 MB; allowed types per field spec; each row shows name, size, uploader, date, and offers download and (before submit) remove.</td></tr>
+<tr><td>Audit strip</td><td>Every detail view ends with a compact history strip: who, when, what changed, for that record only.</td></tr>
+</tbody></table>
+
+<h3>2.6 Message catalogue</h3>
+<p>Messages are specified here so that screens in &sect;5 reference codes rather than re-inventing wording. All user-facing text is Indonesian.</p>
+<table>
+<thead><tr><th style="width:9%">Code</th><th style="width:38%">User-facing text</th><th style="width:14%">Trigger</th><th>Recovery offered</th></tr></thead>
+<tbody>
+<tr><td class="id">MSG-001</td><td>Email atau password tidak sesuai.</td><td>Failed login</td><td>Reset password link. Never states which half was wrong.</td></tr>
+<tr><td class="id">MSG-004</td><td>Sesi Anda akan berakhir dalam 5 menit. Perpanjang?</td><td>Idle warning</td><td>Perpanjang / Keluar now.</td></tr>
+<tr><td class="id">MSG-005</td><td>Waktu sesi habis. Silakan masuk kembali.</td><td>Timeout</td><td>Returns to login preserving intended destination.</td></tr>
+<tr><td class="id">MSG-010</td><td>Anda tidak memiliki akses ke bagian ini.</td><td>Permission denied</td><td>Back to dashboard. Action is logged.</td></tr>
+<tr><td class="id">MSG-011</td><td>Dokumen ini bukan milik Anda.</td><td>Supplier isolation breach</td><td>None. Logged as a security event.</td></tr>
+<tr><td class="id">MSG-020</td><td>Data ini baru saja diubah orang lain. Muat ulang untuk melihat versi terbaru sebelum menyimpan.</td><td>Version conflict</td><td>Muat ulang / Kirim ulang saya.</td></tr>
+<tr><td class="id">MSG-030</td><td>Field bertanda * wajib diisi.</td><td>Submit with gaps</td><td>Focus first gap.</td></tr>
+<tr><td class="id">MSG-031</td><td>Format tidak sesuai: {field} {rule}.</td><td>Format validation</td><td>Inline hint.</td></tr>
+<tr><td class="id">MSG-040</td><td>Anda tidak bisa menyetujui dokumen yang Anda buat sendiri.</td><td>G-01</td><td>Explain who can approve.</td></tr>
+<tr><td class="id">MSG-041</td><td>Alasan penolakan wajib diisi.</td><td>Reject without reason</td><td>Focus reason field.</td></tr>
+<tr><td class="id">MSG-042</td><td>Dokumen sudah disetujui dan terkunci. Buat versi baru untuk mengubah.</td><td>Edit locked record</td><td>Buat versi baru.</td></tr>
+<tr><td class="id">MSG-050</td><td>T{level} belum lulus. Uji {missing} harus selesai dan lulus lebih dulu.</td><td>G-05</td><td>Link to the blocking inspection.</td></tr>
+<tr><td class="id">MSG-051</td><td>Kutipan belum disetujui untuk kemasan ini. Persetujuan bahan kemas belum bisa dibuat.</td><td>G-06</td><td>Link to quotation.</td></tr>
+<tr><td class="id">MSG-052</td><td>Form approval bahan kemas belum disetujui. Standar belum bisa dibuat.</td><td>G-07</td><td>Link to FAB.</td></tr>
+<tr><td class="id">MSG-053</td><td>Ada tahap yang belum selesai di jalur ini. Scale up belum bisa dicatat.</td><td>G-08</td><td>Lists the open stages with owners.</td></tr>
+<tr><td class="id">MSG-054</td><td>Konsep belum disetujui BOD. Tahap kemasan belum bisa dimulai.</td><td>G-09</td><td>Shows concept status and BOD queue position.</td></tr>
+<tr><td class="id">MSG-060</td><td>File melebihi 20 MB atau tipe tidak diterima.</td><td>Upload rejected</td><td>States limit and accepted types.</td></tr>
+<tr><td class="id">MSG-061</td><td>Baris {n} tidak bisa diimpor: {alasan}. {k} dari {t} baris berhasil.</td><td>Import partial failure</td><td>Download error report; re-upload corrected file.</td></tr>
+<tr><td class="id">MSG-070</td><td>Kategori masih dipakai {n} kemasan. Nonaktifkan, jangan hapus.</td><td>Delete blocked</td><td>Deactivate instead.</td></tr>
+<tr><td class="id">MSG-080</td><td>Dokumen sedang disiapkan untuk cetak.</td><td>PDF generation</td><td>Progress indicator; result opens in a new tab.</td></tr>
+</tbody></table>
+
+<h3>2.7 Empty, loading and error states</h3>
+<table>
+<thead><tr><th style="width:18%">Situation</th><th>Required behaviour</th></tr></thead>
+<tbody>
+<tr><td>Loading a list</td><td>Skeleton rows matching the real column widths; no layout shift when data arrives; controls disabled until loaded.</td></tr>
+<tr><td>Loading a detail</td><td>Skeleton of the actual section blocks, not a spinner over a blank page.</td></tr>
+<tr><td>Request failure</td><td>Inline banner with <i>Coba lagi</i>; the user keeps their entered data. A failed save never clears the form.</td></tr>
+<tr><td>PDF generation</td><td>Button enters a pending state with <span class="code">MSG-080</span>; generation never blocks the rest of the page.</td></tr>
+<tr><td>Long-running import</td><td>Progress with processed-row count; the user may leave the page and returns to a completion notice.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">3. Logical domain model</h2>
+<p>Logical entities and their relationships. Physical schema, keys and indexes belong to the TSD.</p>
+<table>
+<thead><tr><th style="width:20%">Entity</th><th style="width:36%">Attributes (logical)</th><th style="width:22%">Relationships</th><th>Lifecycle owner</th></tr></thead>
+<tbody>
+<tr><td class="id">Project</td><td>code, name, concept text, target COGS, target market, planned deadline, status, owner, archived flag</td><td>1 &rarr; N Assignment, Timeline, Attachment, Decision</td><td>Marketing</td></tr>
+<tr><td class="id">Assignment</td><td>code, branch (A/B), packaging item, current stage, stage status, owner role, T0/T1/T2 outcome</td><td>belongs to Project + Item; 1 &rarr; N StageRecord, Inspection, Quotation link, FAB, Standard, ScaleUp</td><td>System, from sourcing</td></tr>
+<tr><td class="id">PackagingCategory</td><td>name, description, active</td><td>1 &rarr; N Item</td><td>R&amp;D / Admin</td></tr>
+<tr><td class="id">PackagingItem</td><td>code, name, category, material type, active</td><td>belongs to Category; 1 &rarr; N Specification, Drawing, Standard</td><td>R&amp;D / Admin</td></tr>
+<tr><td class="id">Specification</td><td>number, effective date, product name, material name, material type, prepared/checked/approved refs, status</td><td>belongs to Item; 1 &rarr; N SpecParameter</td><td>QC</td></tr>
+<tr><td class="id">SpecParameter</td><td>group, parameter, specification value, min, max, unit, method of analysis, order</td><td>drives InspectionResult template</td><td>QC</td></tr>
+<tr><td class="id">StageRecord</td><td>stage id, branch, status, owner, planned start/end, actual start/end, outcome, version</td><td>belongs to Assignment; 1 &rarr; N Decision</td><td>System</td></tr>
+<tr><td class="id">ApprovalDoc</td><td>type, code, title, body data ref, doc status, approval status (derived), author, version</td><td>1 &rarr; N ApprovalStep, Attachment</td><td>Author role</td></tr>
+<tr><td class="id">ApprovalStep</td><td>sequence, role, action (CHECK/APPROVE), assigned user, decision, comment, acted at</td><td>belongs to ApprovalDoc + chain template</td><td>Assigned approver</td></tr>
+<tr><td class="id">Drawing</td><td>number, version, item, file, status, notes</td><td>belongs to Item; referenced by Assignment</td><td>R&amp;D</td></tr>
+<tr><td class="id">Inspection</td><td>code, assignment, level, verdict, performed by, checked by, date</td><td>1 &rarr; N InspectionResult, Attachment</td><td>QC</td></tr>
+<tr><td class="id">InspectionResult</td><td>spec parameter ref, expected, measured, verdict, evidence</td><td>belongs to Inspection</td><td>QC</td></tr>
+<tr><td class="id">Supplier</td><td>code, name, contact, categories, capacity, ratings, active, linked user account</td><td>1 &rarr; N Quotation, SampleSubmission, Artwork, Evaluation</td><td>SCM Manager</td></tr>
+<tr><td class="id">Quotation</td><td>code, supplier, item, assignment, price, MOQ, lead time, validity, status, revision of</td><td>belongs to Supplier + Assignment</td><td>Supplier</td></tr>
+<tr><td class="id">SampleSubmission</td><td>kind (BLANK/DUMMY/PROOFPRINT), supplier, assignment, files, submitted at, verdict, note</td><td>belongs to Supplier + Assignment</td><td>Supplier</td></tr>
+<tr><td class="id">Evaluation</td><td>code, supplier, period, quality score, delivery score, conclusion, evaluator</td><td>belongs to Supplier</td><td>SCM Manager</td></tr>
+<tr><td class="id">Standard</td><td>code, item, version, spec ref, effective date, status, change note</td><td>belongs to Item; referenced by ScaleUp</td><td>R&amp;D</td></tr>
+<tr><td class="id">ScaleUp</td><td>code, assignment, standard ref, date, recorded by, note</td><td>belongs to Assignment; closes branch</td><td>R&amp;D</td></tr>
+<tr><td class="id">User / Role / Permission</td><td>identity, department, active, role grants, feature grants</td><td>supports &sect;6</td><td>Admin</td></tr>
+<tr><td class="id">Notification</td><td>recipient, event, payload, channel state, read at</td><td>system-wide</td><td>System</td></tr>
+<tr><td class="id">AuditEntry</td><td>actor, action, target, before, after, IP, timestamp</td><td>append-only</td><td>System</td></tr>
+</tbody></table>
+<div class="note"><b>Assignment is the unit of workflow, not Project.</b> This follows OQ-06: a project may hold several packaging items in the same branch, and each carries its own inspections, quotation, approval form, standard and scale-up. Getting this boundary right is what allows two branches to desynchronise visibly instead of silently (PRD BS-02, BS-05).</div>
+
+<h2 class="pagebreak">4. Workflow engine</h2>
+<p>One engine serves every approval-bearing document. Modules do not implement their own status logic; they declare a chain template and read derived status. This is the specific design decision that prevents the duplicated-menu failure observed in the prototype.</p>
+
+<h3>4.1 Status model</h3>
+<table>
+<thead><tr><th style="width:24%">ApprovalDoc.doc_status</th><th style="width:26%">Derived approval_status</th><th>Editable by author?</th><th>Visible to</th></tr></thead>
+<tbody>
+<tr><td><span class="code">DRAFT</span></td><td><span class="code">NONE</span></td><td>Yes</td><td>Author, Admin</td></tr>
+<tr><td><span class="code">SUBMITTED</span></td><td><span class="code">SUBMITTED</span> &rarr; <span class="code">PENDING_CHECKING</span></td><td>No</td><td>Author, checker, approvers</td></tr>
+<tr><td><span class="code">PENDING</span></td><td><span class="code">CHECKING</span> while any CHECK step is open; <span class="code">CHECKED</span> when all pass</td><td>No (corrections require checker return)</td><td>Author, checker, approvers</td></tr>
+<tr><td><span class="code">PENDING</span></td><td><span class="code">WAITING_APPROVAL</span></td><td>No</td><td>All assigned approvers plus author</td></tr>
+<tr><td><span class="code">CLOSED</span></td><td><span class="code">APPROVED</span></td><td>No &mdash; immutable (BR-04)</td><td>Everyone entitled to the document</td></tr>
+<tr><td><span class="code">CANCELLED</span></td><td><span class="code">REJECTED</span></td><td>Only as a new version</td><td>Everyone entitled, with reason shown</td></tr>
+</tbody></table>
+<p><span class="id">FSD-401</span> <b>approval_status is never written directly.</b> It is recomputed from the ordered set of <span class="id">ApprovalStep</span> rows on every read and cached for listing. A document cannot display <span class="code">APPROVED</span> while any required step lacks an approve decision. <span style="color:#647586">PRD: &sect;7.4, BR-02</span></p>
+
+<h3>4.2 Transition table</h3>
+<table>
+<thead><tr><th style="width:10%">Event</th><th style="width:16%">From</th><th style="width:8%">Actor</th><th style="width:22%">Guard</th><th style="width:18%">To</th><th>Side effects</th></tr></thead>
+<tbody>
+<tr><td class="id">T-01</td><td>DRAFT</td><td>Author</td><td>All mandatory fields valid; at least one assigned step exists</td><td>SUBMITTED</td><td>Notify first step actor; lock editing; audit; stamp submitted_at</td></tr>
+<tr><td class="id">T-02</td><td>SUBMITTED</td><td>Checker</td><td>Actor matches assigned step</td><td>PENDING / CHECKING</td><td>Notify author that checking started</td></tr>
+<tr><td class="id">T-03</td><td>CHECKING</td><td>Checker</td><td>Decision recorded</td><td>PASS &rarr; CHECKED, then WAITING_APPROVAL if no further check step; FAIL &rarr; CANCELLED</td><td>Notify author; on fail notify next approvers that the item left their queue</td></tr>
+<tr><td class="id">T-04</td><td>WAITING_APPROVAL</td><td>Approver</td><td>Actor matches an open APPROVE step; G-01</td><td>Remains WAITING_APPROVAL until all steps decided</td><td>Record decision; notify author and remaining approvers of the partial state</td></tr>
+<tr><td class="id">T-05</td><td>WAITING_APPROVAL</td><td>Approver</td><td>Last required APPROVE recorded, none rejected</td><td>CLOSED / APPROVED</td><td>Unlock dependent stage; notify author, all approvers, and project parties; audit; set document immutable</td></tr>
+<tr><td class="id">T-06</td><td>WAITING_APPROVAL</td><td>Approver</td><td>Any APPROVE rejected with reason (G-03)</td><td>CANCELLED / REJECTED</td><td>Notify author with reason; open rework task; earlier approve decisions retained but marked superseded</td></tr>
+<tr><td class="id">T-07</td><td>CANCELLED</td><td>Author</td><td>Reason acknowledged; document not referenced by a closed record</td><td>DRAFT (version+1)</td><td>New version created; prior version readable; link both in history</td></tr>
+<tr><td class="id">T-08</td><td>DRAFT or CANCELLED</td><td>Author</td><td>No approver has acted</td><td>CANCELLED (by author)</td><td>Notify assigned actors that the item left their queue</td></tr>
+<tr><td class="id">T-09</td><td>CLOSED</td><td>Any</td><td>&mdash;</td><td>Blocked</td><td><span class="code">MSG-042</span>; change requires a new document version (T-07 path is unavailable)</td></tr>
+</tbody></table>
+
+<h3>4.3 Approval chain templates</h3>
+<p>A chain template is configuration, not code: an ordered list of (sequence, role, action). Adding a step or swapping a role is a data change.</p>
+<table>
+<thead><tr><th style="width:20%">Template</th><th style="width:34%">Steps</th><th>Applies to</th></tr></thead>
+<tbody>
+<tr><td class="code">FAB-PRIMARY</td><td>1 author (Packaging Dev Staff) &middot; 2 CHECK (QC Supervisor) &middot; 3 APPROVE (QC Manager) &middot; 4 APPROVE (SCM Manager) &middot; 5 APPROVE (QA Manager)</td><td>Form Approval Bahan Kemas for Branch A (<span class="id">P-07</span>). Derived from OQ-01 and the Word form blocks.</td></tr>
+<tr><td class="code">FAB-SECONDARY</td><td>Same five steps as <span class="code">FAB-PRIMARY</span></td><td>Form Approval Bahan Kemas for Branch B (<span class="id">S-06</span>). The flowchart gives both branches the same form, so they share the chain.</td></tr>
+<tr><td class="code">DWG-REVIEW</td><td>1 author (R&amp;D) &middot; 2 CHECK (QC Supervisor) &middot; 3 APPROVE (QC Manager) &middot; 4 APPROVE (BOD)</td><td>Technical drawing review and approval (<span class="id">P-01</span>). Branch B drawing creation (<span class="id">S-01</span>) uses <span class="code">DWG-ISSUE</span> instead.</td></tr>
+<tr><td class="code">DWG-ISSUE</td><td>1 author (R&amp;D) &middot; 2 APPROVE (QC Manager)</td><td>Branch B drawing issue to enable pitching (<span class="id">S-01</span>).</td></tr>
+<tr><td class="code">CONCEPT-BOD</td><td>1 author (Marketing) &middot; 2 APPROVE (BOD)</td><td>Concept evaluation (<span class="id">NPD-01</span>).</td></tr>
+<tr><td class="code">ARTWORK-CIRC</td><td>1 author (Supplier via portal, submitted by QC on their behalf if needed) &middot; 2 APPROVE (QC) &middot; 3 APPROVE (QA) &middot; 4 APPROVE (R&amp;D) &middot; 5 APPROVE (Marketing) &mdash; strictly sequential</td><td>Artwork circulation (<span class="id">S-07</span>) and colour-range circulation. Sequence is enforced: step n+1 is invisible until step n approves.</td></tr>
+<tr><td class="code">QT-REVIEW</td><td>1 author (Supplier) &middot; 2 APPROVE (SCM Manager)</td><td>Quotation accept/reject (<span class="id">P-05</span>, <span class="id">S-05</span>).</td></tr>
+<tr><td class="code">STD-APPROVE</td><td>1 author (R&amp;D) &middot; 2 CHECK (QC Supervisor) &middot; 3 APPROVE (QC Manager)</td><td>Packaging standard creation (<span class="id">P-06</span>, <span class="id">S-08</span>).</td></tr>
+</tbody></table>
+<div class="callout"><b>Sequential versus parallel approvers is a template property, not a rule.</b> <span class="code">FAB-PRIMARY</span> runs its three approvers in parallel (any order, all must approve, BR-02). <span class="code">ARTWORK-CIRC</span> runs its four approvers in strict sequence because the flowchart and the dev-task list both specify <i>QC &rarr; QA &rarr; R&amp;D &rarr; MKT</i> with real-time position visibility (FR-1502, FR-1503). The engine supports both; a module states which it wants.</div>
+
+<h3>4.4 Stage gate rules</h3>
+<p>Guards that stop a branch advancing. Each is enforced server-side; the UI additionally hides or disables the action so the user is not invited to fail.</p>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:26%">Stage being entered</th><th>Precondition</th><th style="width:14%">Failure</th></tr></thead>
+<tbody>
+<tr><td class="id">G-01</td><td>Any APPROVE step</td><td>The acting user is not the document author.</td><td class="id">MSG-040</td></tr>
+<tr><td class="id">G-02</td><td>Any stage after NPD-01</td><td>Concept decision is APPROVED by BOD.</td><td class="id">MSG-054</td></tr>
+<tr><td class="id">G-03</td><td>Any rejection</td><td>A non-empty reason is supplied.</td><td class="id">MSG-041</td></tr>
+<tr><td class="id">G-04</td><td>P-02, S-02</td><td>An approved drawing exists for the item.</td><td class="id">MSG-053</td></tr>
+<tr><td class="id">G-05</td><td>P-04 T1 / T2, S-03 T1 / T2</td><td>The previous level exists with verdict PASS. T0 has no predecessor.</td><td class="id">MSG-050</td></tr>
+<tr><td class="id">G-06</td><td>P-05, S-05 (quotation)</td><td><b>All three</b> of T0, T1, T2 for this assignment have verdict PASS (OQ-05).</td><td class="id">MSG-050</td></tr>
+<tr><td class="id">G-07</td><td>P-07, S-06 (FAB)</td><td>An accepted quotation exists for this assignment <b>and</b> T2 passed.</td><td class="id">MSG-051</td></tr>
+<tr><td class="id">G-08</td><td>P-06, S-08 (standard)</td><td>The FAB for this assignment is CLOSED/APPROVED.</td><td class="id">MSG-052</td></tr>
+<tr><td class="id">G-09</td><td>S-07 (artwork circulation)</td><td>FAB approved and Marketing design review (S-04) completed.</td><td class="id">MSG-053</td></tr>
+<tr><td class="id">G-10</td><td>S-09 (proofprint)</td><td>Artwork circulation is APPROVED.</td><td class="id">MSG-053</td></tr>
+<tr><td class="id">G-11</td><td>P-08, S-10 (scale up)</td><td>Every earlier stage of this assignment is COMPLETED, and the referenced standard is APPROVED.</td><td class="id">MSG-053</td></tr>
+<tr><td class="id">G-12</td><td>Editing any record</td><td>Doc status is DRAFT or the user holds an explicit correction right.</td><td class="id">MSG-042</td></tr>
+<tr><td class="id">G-13</td><td>Deleting master data</td><td>The record is referenced by no assignment. Otherwise deactivate.</td><td class="id">MSG-070</td></tr>
+<tr><td class="id">G-14</td><td>Supplier acting on a record</td><td>The record belongs to the acting supplier.</td><td class="id">MSG-011</td></tr>
+</tbody></table>
+
+<h3>4.5 Derived values</h3>
+<table>
+<thead><tr><th style="width:22%">Value</th><th style="width:38%">Formula</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Assignment progress</td><td><span class="code">completed stages / applicable stages &times; 100</span>, rounded down</td><td>Applicable stages are those of the assignment's branch, excluding stages whose guard marks them not applicable. Never typed by a user (BR-12).</td></tr>
+<tr><td>Project progress</td><td>Mean of its assignments' progress, weighted equally per assignment</td><td>Shown with the assignment breakdown so an average cannot hide a stalled branch (BS-05).</td></tr>
+<tr><td>Branch completion</td><td>True when every applicable stage of every assignment in that branch is COMPLETED</td><td>An empty branch is NOT_APPLICABLE and never blocks (BS-06).</td></tr>
+<tr><td>Project completion</td><td>True when all non-empty branches are complete</td><td>Drives the archive eligibility.</td></tr>
+<tr><td>Overdue</td><td>Stage actual_end empty and planned_end &lt; today</td><td>Age counted in calendar days; shown per &sect;2.2 relative format.</td></tr>
+<tr><td>Current owner</td><td>The actor of the earliest open step, or the owner role of the earliest open stage</td><td>This is the field that answers "waiting on whom"; it is always derived, never stored.</td></tr>
+<tr><td>Queue count (badge)</td><td>Count of open items whose current owner is the signed-in user</td><td>Recomputed on notification events, not polled.</td></tr>
+</tbody></table>
+
+<h3>4.6 Stage gate map</h3>
+<p>Read left to right. A diamond is a guard from &sect;4.4; the branch runs until its own scale up, and the two branches never merge.</p>
+<svg viewBox="0 0 700 300" width="100%" style="font-family:Segoe UI,Arial,sans-serif;">
+  <style>
+    .box{fill:#eef3f8;stroke:#14416f;stroke-width:1;}
+    .gate{fill:#fdf3f4;stroke:#b5122b;stroke-width:1;}
+    .e{fill:none;stroke:#647586;stroke-width:1;marker-end:url(#ar);}
+    .t{font-size:8px;fill:#16202b;}
+    .g{font-size:7px;fill:#b5122b;font-weight:bold;}
+    .h{font-size:9px;fill:#0f2c4d;font-weight:bold;}
+  </style>
+  <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#647586"/></marker></defs>
+
+  <rect class="box" x="8" y="34" width="60" height="26" rx="2"/>
+  <text class="t" x="14" y="48">NPD-01</text><text class="t" x="14" y="56" style="font-size:7px">concept</text>
+  <polygon class="gate" points="92,47 112,32 132,47 112,62"/>
+  <text class="g" x="98" y="50">G-02</text>
+  <rect class="box" x="146" y="34" width="62" height="26" rx="2"/>
+  <text class="t" x="152" y="48">NPD-03/04</text><text class="t" x="152" y="56" style="font-size:7px">requirements</text>
+
+  <line class="e" x1="68" y1="47" x2="90" y2="47"/>
+  <line class="e" x1="134" y1="47" x2="144" y2="47"/>
+  <line class="e" x1="208" y1="47" x2="228" y2="20"/>
+  <line class="e" x1="208" y1="47" x2="228" y2="196"/>
+
+  <text class="h" x="230" y="14">Branch A &mdash; bahan kemas utama</text>
+  <g>
+    <rect class="box" x="230" y="20" width="52" height="22" rx="2"/><text class="t" x="235" y="34">P-01 draw.</text>
+    <rect class="box" x="292" y="20" width="52" height="22" rx="2"/><text class="t" x="297" y="34">P-02 blank</text>
+    <rect class="box" x="354" y="20" width="56" height="22" rx="2"/><text class="t" x="359" y="34">P-03 dummy</text>
+    <rect class="box" x="420" y="20" width="72" height="22" rx="2"/><text class="t" x="425" y="34">P-04 T0+T1+T2</text>
+    <rect class="box" x="502" y="20" width="52" height="22" rx="2"/><text class="t" x="507" y="34">P-05 quote</text>
+    <rect class="box" x="564" y="20" width="56" height="22" rx="2"/><text class="t" x="569" y="34">P-06 std</text>
+    <rect class="box" x="630" y="20" width="52" height="22" rx="2"/><text class="t" x="635" y="34">P-07 FAB</text>
+    <rect class="box" x="586" y="52" width="96" height="22" rx="2"/><text class="t" x="591" y="66">P-08 scale up &rarr; close A</text>
+    <line class="e" x1="282" y1="31" x2="290" y2="31"/><line class="e" x1="344" y1="31" x2="352" y2="31"/>
+    <line class="e" x1="410" y1="31" x2="418" y2="31"/><line class="e" x1="492" y1="31" x2="500" y2="31"/>
+    <line class="e" x1="554" y1="31" x2="562" y2="31"/><line class="e" x1="620" y1="31" x2="628" y2="31"/>
+    <line class="e" x1="656" y1="42" x2="656" y2="50"/>
+    <text class="g" x="236" y="54">G-04</text><text class="g" x="424" y="54">G-05/G-06</text><text class="g" x="568" y="54">G-07</text><text class="g" x="592" y="84">G-08 (std) &middot; G-11 (scale)</text>
+  </g>
+
+  <text class="h" x="230" y="190">Branch B &mdash; sekunder / tersier</text>
+  <g>
+    <rect class="box" x="230" y="196" width="52" height="22" rx="2"/><text class="t" x="235" y="210">S-01 draw.</text>
+    <rect class="box" x="292" y="196" width="60" height="22" rx="2"/><text class="t" x="297" y="210">S-02 pitching</text>
+    <rect class="box" x="362" y="196" width="72" height="22" rx="2"/><text class="t" x="367" y="210">S-03 T0+T1+T2</text>
+    <rect class="box" x="444" y="196" width="60" height="22" rx="2"/><text class="t" x="449" y="210">S-04 design</text>
+    <rect class="box" x="514" y="196" width="52" height="22" rx="2"/><text class="t" x="519" y="210">S-05 quote</text>
+    <rect class="box" x="576" y="196" width="56" height="22" rx="2"/><text class="t" x="581" y="210">S-06 FAB</text>
+    <rect class="box" x="642" y="196" width="48" height="22" rx="2"/><text class="t" x="647" y="210">S-07 awk</text>
+    <rect class="box" x="634" y="228" width="56" height="22" rx="2"/><text class="t" x="639" y="242">S-08 std</text>
+    <rect class="box" x="556" y="228" width="68" height="22" rx="2"/><text class="t" x="561" y="242">S-09 proofprint</text>
+    <rect class="box" x="440" y="228" width="106" height="22" rx="2"/><text class="t" x="445" y="242">S-10 scale up &rarr; close B</text>
+    <line class="e" x1="282" y1="207" x2="290" y2="207"/><line class="e" x1="352" y1="207" x2="360" y2="207"/>
+    <line class="e" x1="434" y1="207" x2="442" y2="207"/><line class="e" x1="504" y1="207" x2="512" y2="207"/>
+    <line class="e" x1="566" y1="207" x2="574" y2="207"/><line class="e" x1="632" y1="207" x2="640" y2="207"/>
+    <line class="e" x1="666" y1="218" x2="662" y2="226"/>
+    <line class="e" x1="634" y1="239" x2="626" y2="239"/>
+    <line class="e" x1="556" y1="239" x2="548" y2="239"/>
+    <text class="g" x="366" y="228">G-05/G-06</text>
+    <text class="g" x="596" y="190">G-09 (S-04+S-06)</text>
+    <text class="g" x="638" y="260">G-08</text>
+    <text class="g" x="578" y="260">G-10</text>
+    <text class="g" x="482" y="260">G-11</text>
+  </g>
+
+  <rect class="box" x="8" y="118" width="122" height="50" rx="2" style="fill:#f1f5f9;"/>
+  <text class="t" x="14" y="134">Both branches may</text>
+  <text class="t" x="14" y="144">loop back: rejection at</text>
+  <text class="t" x="14" y="154">any guard returns work</text>
+  <text class="t" x="14" y="164" style="fill:#b5122b">to the prior author (T-06).</text>
+</svg>
+
+<h2 class="pagebreak">5. Functional area specifications</h2>
+<p>The nineteen PRD modules are consolidated into nine functional areas so that a reviewer can validate one screen family at a time. The mapping is stated per area.</p>
+<table>
+<thead><tr><th style="width:8%">Area</th><th style="width:30%">Name</th><th style="width:22%">PRD modules</th><th>Principal flowchart stages</th></tr></thead>
+<tbody>
+<tr><td class="num">F1</td><td>Authentication, session, profile</td><td>M1, M2 (self-service)</td><td>&mdash;</td></tr>
+<tr><td class="num">F2</td><td>Administration and access control</td><td>M2, M3, M19 (audit)</td><td>NPD-00 role setup</td></tr>
+<tr><td class="num">F3</td><td>NPD project, concept, BOD, timeline, archive</td><td>M4, M5</td><td>NPD-01, NPD-02, NPD-03, NPD-04</td></tr>
+<tr><td class="num">F4</td><td>Master data and packaging specification</td><td>M6, M7</td><td>feeds S-03, P-04, P-06</td></tr>
+<tr><td class="num">F5</td><td>Sourcing, assignment, drawings, dummy/mold</td><td>M8, M9</td><td>P-01, P-02, P-03, S-01, S-02</td></tr>
+<tr><td class="num">F6</td><td>Supplier master, evaluation, portal, quotation</td><td>M10, M11, M12</td><td>P-03, P-05, S-02, S-05</td></tr>
+<tr><td class="num">F7</td><td>QC inspection, application/transport tests, colour, artwork circulation</td><td>M13, M14, M15</td><td>P-04, S-03, S-07</td></tr>
+<tr><td class="num">F8</td><td>Approval form, standards, marketing review, proofprint, scale up</td><td>M16, M17, M18</td><td>P-06, P-07, P-08, S-04, S-06, S-08, S-09, S-10</td></tr>
+<tr><td class="num">F9</td><td>Notifications, dashboards, reports, exports</td><td>M19, M3 (announcements)</td><td>cross-cutting</td></tr>
+</tbody></table>
+
+<h3>F1 &mdash; Authentication, session, profile</h3>
+<p class="code">Covers PRD FR-101..FR-112, NFR-04, NFR-09.</p>
+<div class="scr"><b>Screen SCR-1.1</b> <i>Masuk</i> &mdash; route <span class="code">/login</span>, guests only. <b>Screen SCR-1.2</b> <i>Lupa password</i> &mdash; <span class="code">/forgot-password</span>, <span class="code">/reset-password/{token}</span>. <b>Screen SCR-1.3</b> <i>Profil saya</i> &mdash; <span class="code">/profile</span>. <b>Screen SCR-1.4</b> <i>Sesi aktif</i> &mdash; <span class="code">/profile/sessions</span>.</div>
+<table>
+<thead><tr><th style="width:16%">Field</th><th style="width:18%">Label (ID)</th><th style="width:10%">Type</th><th style="width:6%">Req</th><th style="width:24%">Validation</th><th>Behaviour / notes</th></tr></thead>
+<tbody>
+<tr><td class="id">email</td><td>Email perusahaan</td><td>text</td><td class="num">M</td><td class="id">V-101</td><td>lowercased and trimmed before lookup; corporate domain enforced by Admin policy, failure is <i>Akun Anda tidak terdaftar di domain ini.</i></td></tr>
+<tr><td class="id">password</td><td>Kata sandi</td><td>password</td><td class="num">M</td><td class="id">V-102</td><td>Reveal toggle. Rate limited: 5 failures per account per 60 s &rarr; lockout 10 min with <i>Akun dikunci sementara.</i></td></tr>
+<tr><td class="id">remember</td><td>Ingat saya</td><td>checkbox</td><td class="num">O</td><td>&mdash;</td><td>30 days; disabled when the user's role holds <span class="code">admin.manage</span> (privileged sessions never persist).</td></tr>
+<tr><td class="id">name</td><td>Nama lengkap</td><td>text</td><td class="num">M</td><td class="id">V-103</td><td>Editable in SCR-1.3; drives the person formatting rule in &sect;2.2.</td></tr>
+<tr><td class="id">department</td><td>Departemen</td><td>select</td><td class="num">M</td><td>&mdash;</td><td>Admin-set, read-only for the user; used by the RBAC defaults and reports.</td></tr>
+<tr><td class="id">phone</td><td>No. telepon</td><td>text</td><td class="num">O</td><td class="id">V-104</td><td>Used for escalation in the overdue report; never shown to suppliers.</td></tr>
+</tbody></table>
+<h4>F1 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:34%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-101</td><td>Role is resolved at login into a permission set cached for the session and invalidated on any matrix change.</td><td>Menu renders only permitted entries; direct URL to a denied route yields <span class="id">MSG-010</span>.</td><td class="id">FR-102</td></tr>
+<tr><td class="id">FSD-102</td><td>Supplier accounts enter a restricted shell: one sidebar group, no global search across other suppliers, no dashboard widgets referencing internal projects.</td><td>G-14 on every supplier route.</td><td class="id">FR-1401, NFR-04</td></tr>
+<tr><td class="id">FSD-103</td><td>Idle warning at 25 minutes, expiry at 30, with permissive extend.</td><td><span class="id">MSG-004</span>, <span class="id">MSG-005</span>; intended route restored after re-login.</td><td class="id">NFR-04</td></tr>
+<tr><td class="id">FSD-104</td><td>First login with an admin-set password forces change before any other route.</td><td>V-102 plus strength: 10 chars, mixed case, one digit, not equal to email local part.</td><td class="id">FR-103</td></tr>
+<tr><td class="id">FSD-105</td><td>Active sessions listed with device, IP, approximate location, last action; revoke any except current.</td><td>Revocation is audited.</td><td class="id">FR-104</td></tr>
+<tr><td class="id">FSD-106</td><td>Language preference is stored per user; the interface is Indonesian, document output language follows the document type, not the preference.</td><td>SBK and FAB print in English-formatted labels as per the source paper documents.</td><td class="id">OQ-03</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F2 &mdash; Administration and access control</h3>
+<p class="code">Covers PRD FR-201..FR-215, FR-1901..FR-1903 (audit), NFR-06.</p>
+<div class="scr"><b>Screen SCR-2.1</b> <i>Pengguna</i> &mdash; <span class="code">/admin/users</span> (list) and <span class="code">/admin/users/{id}</span> (detail). <b>SCR-2.2</b> <i>Peran</i> &mdash; <span class="code">/admin/roles</span>. <b>SCR-2.3</b> <i>Matriks akses</i> &mdash; <span class="code">/admin/matrix</span>. <b>SCR-2.4</b> <i>Pengumuman</i> &mdash; <span class="code">/admin/announcements</span>. <b>SCR-2.5</b> <i>Catatan audit</i> &mdash; <span class="code">/admin/audit</span>.</div>
+<h4>SCR-2.1 Pengguna &mdash; list columns</h4>
+<p><span class="code">Nama (S)</span> &middot; <span class="code">Email (S)</span> &middot; <span class="code">Departemen</span> &middot; <span class="code">Peran</span> &middot; <span class="code">Status</span> &middot; <span class="code">Terakhir aktif</span> &middot; actions. Default sort by name; filters: department, role, status.</p>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Validation / message</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-201</td><td>Create user: name, email, department, roles (multi), supplier link (only when a supplier-scoped role is chosen), active. Password is set by the system and delivered as a single-use reset link.</td><td class="id">V-101</td><td class="id">FR-201</td></tr>
+<tr><td class="id">FSD-202</td><td>Deactivating a user removes them from all open assignment queues; documents they authored remain and their open steps are reassigned to the role (not the person), with a warning listing the affected count.</td><td>Confirm dialog enumerates affected items.</td><td class="id">FR-202, BR-11</td></tr>
+<tr><td class="id">FSD-203</td><td>Supplier account creation records who created it and which supplier it is bound to; rebinding requires SCM Manager plus a reason.</td><td>Audited; reason mandatory.</td><td class="id">FR-1401, OQ-07</td></tr>
+<tr><td class="id">FSD-204</td><td>The RBAC matrix is a grid of feature rows &times; role columns with three-state cells (Full / Read-only / None), click to cycle. Saving is per cell, optimistic, and takes effect for the target role's sessions within one request cycle.</td><td>Deny is the default for any cell never set. Admin cannot revoke their own <span class="code">admin.manage</span>.</td><td class="id">FR-203, BR-07</td></tr>
+<tr><td class="id">FSD-205</td><td>Matrix changes are previewable: before saving, a diff shows which roles gain or lose which features and how many users are affected.</td><td>&mdash;</td><td class="id">FR-204</td></tr>
+<tr><td class="id">FSD-206</td><td>Departments, packaging categories and role definitions are the editable reference lists; everything else is derived data.</td><td>G-13 on delete.</td><td class="id">FR-205</td></tr>
+<tr><td class="id">FSD-207</td><td>Audit viewer filters by actor, action type, target type, date range; row expands to before/after values. Read-only, exportable by <span class="code">report.export</span>.</td><td>No delete, no edit of audit rows.</td><td class="id">FR-1902, BR-10</td></tr>
+<tr><td class="id">FSD-208</td><td>Announcements have title, body, audience (all, by role, by department), publish-at, expire-at. Active announcements appear as a dismissible banner, remembered dismissed per user per announcement.</td><td>Publish in the past = immediate.</td><td class="id">FR-206</td></tr>
+</tbody></table>
+
+<h3>F3 &mdash; NPD project, concept evaluation, timeline, archive</h3>
+<p class="code">Covers PRD FR-301..FR-316, FR-401..FR-404; stages NPD-01..NPD-04.</p>
+<div class="scr"><b>SCR-3.1</b> <i>Project NPD</i> &mdash; <span class="code">/projects</span>. <b>SCR-3.2</b> <i>Detail project</i> &mdash; <span class="code">/projects/{id}</span> with tabs <i>Ringkasan &middot; Kemasan &middot; Jadwal &middot; Dokumen &middot; Riwayat</i>. <b>SCR-3.3</b> <i>Evaluasi konsep</i> &mdash; <span class="code">/projects/{id}/concept</span>. <b>SCR-3.4</b> <i>Tinjauan desain marketing</i> &mdash; <span class="code">/projects/{id}/design-review</span>. <b>SCR-3.5</b> <i>Arsip</i> &mdash; <span class="code">/projects/archived</span>.</div>
+<h4>SCR-3.1 list columns</h4>
+<p><span class="code">Kode (S)</span> &middot; <span class="code">Nama project (S)</span> &middot; <span class="code">Owner</span> &middot; <span class="code">Cabang A</span> &middot; <span class="code">Cabang B</span> &middot; <span class="code">Progres</span> &middot; <span class="code">Tenggat</span> &middot; <span class="code">Status</span>. Filters: owner, status, branch state, overdue-only toggle. Default sort: overdue first, then deadline ascending.</p>
+<h4>SCR-3.2 project fields</h4>
+<table>
+<thead><tr><th style="width:16%">Field</th><th style="width:16%">Label (ID)</th><th style="width:11%">Type</th><th style="width:5%">Req</th><th style="width:24%">Validation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="id">code</td><td>Kode project</td><td>computed</td><td class="num">C</td><td>&sect;2.3</td><td>Shown read-only, never typed.</td></tr>
+<tr><td class="id">name</td><td>Nama project</td><td>text</td><td class="num">M</td><td class="id">V-301</td><td>3&ndash;120 chars, unique among active projects.</td></tr>
+<tr><td class="id">concept</td><td>Deskripsi konsep</td><td>textarea</td><td class="num">M</td><td class="id">V-302</td><td>20&ndash;4000 chars; this is the text the BOD reads.</td></tr>
+<tr><td class="id">target_cogs</td><td>Target COGS kemasan</td><td>currency</td><td class="num">O</td><td class="id">V-303</td><td>&gt; 0; compared against accepted quotation totals in the FAB.</td></tr>
+<tr><td class="id">target_market</td><td>Pasar / segmen target</td><td>text</td><td class="num">O</td><td>&le;120</td><td>&mdash;</td></tr>
+<tr><td class="id">brand</td><td>Merek</td><td>select</td><td class="num">O</td><td>&mdash;</td><td>Reference list; feeds report grouping.</td></tr>
+<tr><td class="id">deadline</td><td>Tenggat target</td><td>date</td><td class="num">M</td><td class="id">V-304</td><td>Future date; drives overdue.</td></tr>
+<tr><td class="id">owner</td><td>PIC project</td><td>user select</td><td class="num">M</td><td>&mdash;</td><td>Must hold Marketing or Packaging Development role.</td></tr>
+<tr><td class="id">attachments</td><td>Lampiran</td><td>files</td><td class="num">O</td><td class="id">V-305</td><td>Brief, materi riset, foto kemasan pesaing.</td></tr>
+</tbody></table>
+<h4>F3 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-301</td><td>Creating a project immediately opens the concept tab; a project without a submitted concept shows as <i>Draft</i> and appears in no other queue.</td><td>&mdash;</td><td class="id">FR-301</td></tr>
+<tr><td class="id">FSD-302</td><td>Concept evaluation presents to BOD: project summary, target COGS, concept text, attachments, and prior decisions on similar projects. Decision = Approve / Reject / Return for revision, with comment mandatory on the latter two.</td><td>Chain <span class="code">CONCEPT-BOD</span>; G-01, G-03.</td><td class="id">FR-302, FR-303</td></tr>
+<tr><td class="id">FSD-303</td><td>On approval the project unlocks <i>Kebutuhan kemasan</i>; on rejection it returns to the owner as a draft with the comment attached and no branch may be created.</td><td><span class="id">MSG-054</span> if bypassed.</td><td class="id">FR-303, G-02</td></tr>
+<tr><td class="id">FSD-304</td><td>Packaging requirement capture is per row: category, item, branch (A primary / B secondary-tertiary), quantity per production run, target supplier if known, note. Saving creates one <span class="id">Assignment</span> per row and initialises its stage list to all-not-started.</td><td>At least one row before NPD-04 exit.</td><td class="id">FR-401, FR-402</td></tr>
+<tr><td class="id">FSD-305</td><td>Branch assignment is explicit, not inferred from category, because the client's own sheet mixed the two. The picker shows the flowchart branch label beside each row: <i>A &mdash; bahan kemas utama</i>, <i>B &mdash; bahan kemas sekunder/tersier</i>.</td><td>Changing branch after a stage is complete is refused; instead the row is closed and a new row created.</td><td class="id">FR-402, BR-08</td></tr>
+<tr><td class="id">FSD-306</td><td>Timeline tab shows two swimlanes (A and B) per assignment with planned and actual dates; planned dates are set by the owner, actual dates are written by the system on stage transitions and are not editable.</td><td>Actual edit requires <span class="code">workflow.correct</span> and is audited.</td><td class="id">FR-304, BR-12</td></tr>
+<tr><td class="id">FSD-307</td><td>Marketing design review (S-04) is a record, not an approval: reviewer, date, outcome (Diterima / Perlu revisi), note, attached mockup. Revisi outcome creates a task back to Packaging Development and does not block artwork circulation unless the reviewer marks it blocking.</td><td>&mdash;</td><td class="id">FR-305</td></tr>
+<tr><td class="id">FSD-308</td><td>Archiving requires both non-empty branches complete. Archive removes the project from active lists and dashboards, keeps every record readable and every document printable, and is reversible by Admin only.</td><td>Never deletes.</td><td class="id">FR-306, OQ-09</td></tr>
+<tr><td class="id">FSD-309</td><td>Cancelling a project keeps its identifiers and marks every open stage <span class="code">CANCELLED</span> with reason; a cancelled project cannot be re-activated &mdash; a new project is created and linked.</td><td>G-03.</td><td class="id">FR-307, BR-13</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F4 &mdash; Master data and packaging specification</h3>
+<p class="code">Covers PRD FR-501..FR-512, FR-1101..FR-1105; the 77-component Master Spec.</p>
+<div class="scr"><b>SCR-4.1</b> <i>Kategori kemasan</i> &mdash; <span class="code">/master/categories</span>. <b>SCR-4.2</b> <i>Item kemasan</i> &mdash; <span class="code">/master/items</span>. <b>SCR-4.3</b> <i>Spesifikasi bahan pengemas</i> &mdash; <span class="code">/spec</span> (list) / <span class="code">/spec/{id}</span> (the document itself). <b>SCR-4.4</b> <i>Impor spesifikasi</i> &mdash; <span class="code">/spec/import</span>. <b>SCR-4.5</b> <i>Master produk</i> &mdash; <span class="code">/master/products</span>.</div>
+<h4>SCR-4.2 item list columns</h4>
+<p><span class="code">Kode (S)</span> &middot; <span class="code">Nama item (S)</span> &middot; <span class="code">Kategori</span> &middot; <span class="code">Jenis material</span> &middot; <span class="code">Cabang</span> &middot; <span class="code">Spesifikasi</span> (link count) &middot; <span class="code">Standar</span> (active version) &middot; <span class="code">Status</span>. The count columns are populated from live data &mdash; a stated defect in the prototype was counts reading 0 while the specification held 77 components (FR-603).</p>
+<h4>SCR-4.3 specification document layout (mirrors the source paper form)</h4>
+<table>
+<thead><tr><th style="width:30%">Header block</th><th style="width:34%">Second block</th><th>Parameters table (repeating groups)</th></tr></thead>
+<tbody>
+<tr>
+<td>
+<span class="code">No. QC/BP/NNN/YY</span> (computed, &sect;2.3)<br>
+<span class="code">Nama produk</span> &mdash; select from product master<br>
+<span class="code">Nama bahan</span> &mdash; packaging item<br>
+<span class="code">Jenis bahan</span> &mdash; e.g. HDPE, PP, paper board<br>
+<span class="code">Tgl efektif</span> &mdash; date<br>
+<span class="code">Dibuat oleh</span> / <span class="code">Direview oleh</span> / <span class="code">Disetujui oleh</span> &mdash; person chips with role
+</td>
+<td>
+Repeating <span class="code">Ukuran</span> table: <span class="code">Code (TL/C/TH/OD/H)</span>, <span class="code">Spec</span>, <span class="code">Min</span>, <span class="code">Max</span>, <span class="code">Unit</span>, <span class="code">Metode analisa</span>.<br><br>
+Repeating <span class="code">Komponen &amp; bahan</span> table: <span class="code">Komponen</span>, <span class="code">Bahan</span>, <span class="code">%</span>, <span class="code">Catatan</span>.
+</td>
+<td>
+Groups in the observed order: <span class="code">Organoleptis</span>, <span class="code">Fisik</span>, <span class="code">Kimia</span>, <span class="code">Mikrobiologi</span>, <span class="code">Fungsi</span>, <span class="code">Tampilan</span>. Each parameter row: <span class="code">Parameter</span>, <span class="code">Spesifikasi</span>, <span class="code">Satuan</span>, <span class="code">Metode analisa</span>, <span class="code">Kriteria lulus</span>. Parameters copied into an inspection when its group is selected; the inspection cannot add a parameter that does not exist here.
+</td>
+</tr></tbody></table>
+<h4>F4 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-401</td><td>Category and item are two independent lists; an item must belong to exactly one category. Editing a category name is allowed (the client's own note said category is editable); deletion is not, once referenced.</td><td><span class="id">MSG-070</span>, G-13.</td><td class="id">FR-501, FR-502</td></tr>
+<tr><td class="id">FSD-402</td><td>Items are deactivated rather than deleted; inactive items stop appearing in new assignment pickers but keep every historical record and print correctly.</td><td>&mdash;</td><td class="id">FR-503, OQ-09</td></tr>
+<tr><td class="id">FSD-403</td><td>Every item carries a branch classification used to seed the assignment picker. The classification is metadata only &mdash; it does not replace the explicit branch choice at FSD-305.</td><td>&mdash;</td><td class="id">FR-402</td></tr>
+<tr><td class="id">FSD-404</td><td>Specification numbering follows <span class="code">QC/BP/NNN/YY</span>; the sequence is per year and never reused even when a specification is withdrawn.</td><td>&sect;2.3, BR-13.</td><td class="id">FR-1101</td></tr>
+<tr><td class="id">FSD-405</td><td>A specification must be Approved to be usable by an inspection. Draft and Pending specifications are visible in the list with their status but are absent from the inspection picker.</td><td>&mdash;</td><td class="id">FR-1104</td></tr>
+<tr><td class="id">FSD-406</td><td>Any change to an approved specification creates a new version (same number, version suffix) which restarts its own approval. Prior versions stay retrievable and every inspection records the exact version it used.</td><td>G-12 on editing an approved version.</td><td class="id">BR-04, FR-1105</td></tr>
+<tr><td class="id">FSD-407</td><td>Import accepts the existing Excel layout: one sheet, header row, one component per row, mapping screen first, then preview, then commit. Preview reports new / changed / unchanged rows and any row that would fail validation, and the user chooses whether changed rows overwrite.</td><td><span class="id">MSG-061</span>; commit is transactional per row group; error report downloadable.</td><td class="id">FR-504, NFR-10</td></tr>
+<tr><td class="id">FSD-408</td><td>Parameter groups and analysis methods are reference lists so the 77-component set can be extended without a release.</td><td>&mdash;</td><td class="id">FR-505</td></tr>
+<tr><td class="id">FSD-409</td><td>Product master holds brand/product names referenced by specifications and the marketing design review; a product may reference many specifications over time.</td><td>&mdash;</td><td class="id">FR-1701</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F5 &mdash; Sourcing, assignment, technical drawings, dummy/mold review</h3>
+<p class="code">Covers PRD FR-601..FR-612, FR-701..FR-710, FR-801..FR-806; stages NPD-04, P-01, P-02, P-03, S-01, S-02.</p>
+<div class="scr"><b>SCR-5.1</b> <i>Tugas saya</i> &mdash; <span class="code">/my-work</span>. <b>SCR-5.2</b> <i>Kemasan project</i> &mdash; <span class="code">/projects/{p}/packaging</span> (assignment board). <b>SCR-5.3</b> <i>Detail assignment</i> &mdash; <span class="code">/assignments/{id}</span> with tabs <i>Tahap &middot; Gambar teknis &middot; Sampel/Dummy &middot; Uji &middot; Dokumen</i>. <b>SCR-5.4</b> <i>Gambar teknis</i> &mdash; <span class="code">/drawings</span> / <span class="code">/drawings/{id}</span>. <b>SCR-5.5</b> <i>Tinjauan dummy/mold</i> &mdash; <span class="code">/assignments/{id}/dummy-review</span>.</div>
+<h4>SCR-5.2 assignment board</h4>
+<p>One row per assignment; columns <span class="code">Kode</span>, <span class="code">Item</span>, <span class="code">Cabang</span>, <span class="code">Tahap kini</span>, <span class="code">Pemilik</span>, <span class="code">Rencana selesai</span>, <span class="code">Status</span>, <span class="code">Progres</span>. Two visual bands, A above B. A branch with no assignments renders a single muted row <i>Tidak ada kemasan di jalur ini</i> rather than an empty table (BS-06).</p>
+<h4>SCR-5.4 drawing fields</h4>
+<table>
+<thead><tr><th style="width:16%">Field</th><th style="width:16%">Label (ID)</th><th style="width:11%">Type</th><th style="width:5%">Req</th><th style="width:24%">Validation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="id">number</td><td>Nomor gambar</td><td>computed</td><td class="num">C</td><td>&sect;2.3</td><td>Per item.</td></tr>
+<tr><td class="id">version</td><td>Versi</td><td>computed</td><td class="num">C</td><td><span class="code">vNN</span></td><td>Re-issue increments; the file is never replaced in place.</td></tr>
+<tr><td class="id">item</td><td>Item kemasan</td><td>select</td><td class="num">M</td><td>&mdash;</td><td>Active items only.</td></tr>
+<tr><td class="id">title</td><td>Judul</td><td>text</td><td class="num">M</td><td class="id">V-501</td><td>3&ndash;120 chars.</td></tr>
+<tr><td class="id">file</td><td>Berkas</td><td>file</td><td class="num">M</td><td class="id">V-502</td><td>PDF, DWG, DXF, STEP; &le;20 MB.</td></tr>
+<tr><td class="id">dimensions</td><td>Dimensi kunci</td><td>repeat</td><td class="num">O</td><td class="id">V-503</td><td>Label + nominal + tolerance; numeric tolerance format per &sect;2.2.</td></tr>
+<tr><td class="id">note</td><td>Catatan</td><td>textarea</td><td class="num">O</td><td>&le;1500</td><td>&mdash;</td></tr>
+</tbody></table>
+<h4>F5 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-501</td><td>The assignment is created by sourcing at NPD-04 and immediately receives its stage list for its branch. Nothing in the system advances a stage by hand; a stage completes as a consequence of its exit conditions.</td><td>&sect;4.4.</td><td class="id">FR-402, BR-08</td></tr>
+<tr><td class="id">FSD-502</td><td>Branch A stage list, in order: <span class="id">P-01</span> drawing review &amp; approval, <span class="id">P-02</span> blank sample, <span class="id">P-03</span> dummy/mold review, <span class="id">P-04</span> T0+T1+T2, <span class="id">P-05</span> quotation, <span class="id">P-06</span> standard, <span class="id">P-07</span> approval form, <span class="id">P-08</span> scale up.</td><td>&mdash;</td><td class="id">FR-403</td></tr>
+<tr><td class="id">FSD-503</td><td>Branch B stage list: <span class="id">S-01</span> drawing created, <span class="id">S-02</span> pitching &amp; dummy sample, <span class="id">S-03</span> T0+T1+T2, <span class="id">S-04</span> marketing design review, <span class="id">S-05</span> quotation, <span class="id">S-06</span> approval form, <span class="id">S-07</span> artwork circulation, <span class="id">S-08</span> standard, <span class="id">S-09</span> proofprint, <span class="id">S-10</span> scale up.</td><td>&mdash;</td><td class="id">FR-404</td></tr>
+<tr><td class="id">FSD-504</td><td>Drawing review (P-01) is a document on chain <span class="code">DWG-REVIEW</span>; the approved drawing becomes read-only and is what downstream stages reference. A re-issue creates v(n+1) which must be re-approved before it can replace the reference, and the board shows which version each stage used.</td><td>G-04 opens P-02 only on an approved version.</td><td class="id">FR-701, BR-04</td></tr>
+<tr><td class="id">FSD-505</td><td>Blank sample (P-02) records supplier, date, physical sample reference, observation, and verdict Lulus/Perlu revisi. Perlu revisi returns the item to the supplier as a portal task; a second revision automatically raises the item to the Packaging Development supervisor queue so the loop cannot repeat silently.</td><td>Two-round escalation counter per assignment; the count is fixed (Q-F2).</td><td class="id">FR-702, FR-703</td></tr>
+<tr><td class="id">FSD-506</td><td>Dummy/mold review (P-03) captures dimension check against the drawing, appearance, and fit/function observation, with photo attachments mandatory (minimum one).</td><td class="id">V-504</td><td class="id">FR-704</td></tr>
+<tr><td class="id">FSD-507</td><td>Pitching (S-02) is the Branch B equivalent: an invited supplier list, each invited supplier sees only its own invitation, submits dummy sample files plus remarks, and the buyer records an outcome per supplier. Invitations are time-boxed; expiry auto-closes an unanswered invitation as <i>Tidak menjawab</i>.</td><td>G-14.</td><td class="id">FR-1402, FR-1403</td></tr>
+<tr><td class="id">FSD-508</td><td>"Waiting for new drawing / design" is a real state, not an absence. When a stage needs an input that does not exist, it displays the blocked reason and the responsible role rather than a blank field.</td><td>&mdash;</td><td class="id">FR-404, NFR-07</td></tr>
+<tr><td class="id">FSD-509</td><td>The stage tab renders a vertical stepper per assignment with, for each stage: status chip, owner, planned/actual dates, the artefact that closed it (link), and the guard message if it is not yet open. Completed stages are collapsible, the current stage is expanded.</td><td>&mdash;</td><td class="id">FR-405</td></tr>
+<tr><td class="id">FSD-510</td><td>Reopening a completed stage requires <span class="code">workflow.correct</span>, a reason, and cascades the dependent stages to <i>Perlu tinjau ulang</i> instead of silently invalidating them.</td><td>Audited; downstream owners notified.</td><td class="id">FR-406, BR-09</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F6 &mdash; Supplier master, evaluation, portal, quotations</h3>
+<p class="code">Covers PRD FR-1201..FR-1212, FR-1401..FR-1412, FR-801..FR-806; stages P-03/P-05 and S-02/S-05 support.</p>
+<div class="scr"><b>SCR-6.1</b> <i>Master supplier</i> &mdash; <span class="code">/suppliers</span> / <span class="code">/suppliers/{id}</span> tabs <i>Profil &middot; Kemasan &middot; Penilaian &middot; Kutipan &middot; Dokumen</i>. <b>SCR-6.2</b> <i>Penilaian supply service</i> &mdash; <span class="code">/suppliers/{id}/evaluations</span>. <b>SCR-6.3</b> <i>Portal: tugas saya</i> &mdash; <span class="code">/portal</span>. <b>SCR-6.4</b> <i>Portal: ajukan kutipan</i> &mdash; <span class="code">/portal/quotations/new</span>. <b>SCR-6.5</b> <i>Kutipan masuk</i> (internal) &mdash; <span class="code">/quotations</span>.</div>
+<h4>SCR-6.1 supplier fields</h4>
+<table>
+<thead><tr><th style="width:16%">Field</th><th style="width:16%">Label (ID)</th><th style="width:11%">Type</th><th style="width:5%">Req</th><th style="width:24%">Validation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="id">code</td><td>Kode supplier</td><td>computed</td><td class="num">C</td><td><span class="code">SUP-NNNN</span></td><td>Never reused.</td></tr>
+<tr><td class="id">name</td><td>Nama perusahaan</td><td>text</td><td class="num">M</td><td class="id">V-601</td><td>Unique ignoring case/whitespace.</td></tr>
+<tr><td class="id">contact / email / phone</td><td>Kontak</td><td>text</td><td class="num">M/O/O</td><td class="id">V-602</td><td>Email is the account identity if a portal account exists.</td></tr>
+<tr><td class="id">categories</td><td>Kategori yang diproduksi</td><td>multi-select</td><td class="num">M</td><td>&ge;1</td><td>Drives who can be invited to pitch and who can quote.</td></tr>
+<tr><td class="id">capacity_note</td><td>Kapasitas / catatan</td><td>textarea</td><td class="num">O</td><td>&le;1500</td><td>&mdash;</td></tr>
+<tr><td class="id">account</td><td>Akun portal</td><td>link</td><td class="num">O</td><td>&mdash;</td><td>Created by Admin, assigned by SCM Manager (OQ-07).</td></tr>
+<tr><td class="id">ratings</td><td>Penilaian</td><td>computed</td><td class="num">C</td><td>&mdash;</td><td>Quality, delivery, price; latest and trailing-4-period average. Never typed here.</td></tr>
+<tr><td class="id">active</td><td>Status</td><td>toggle</td><td class="num">M</td><td>&mdash;</td><td>Inactive suppliers stop receiving invitations; history preserved.</td></tr>
+</tbody></table>
+<h4>SCR-6.4 quotation fields</h4>
+<table>
+<thead><tr><th style="width:18%">Field</th><th style="width:16%">Label (ID)</th><th style="width:10%">Type</th><th style="width:5%">Req</th><th style="width:22%">Validation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="id">assignment</td><td>Kemasan yang dikutip</td><td>select</td><td class="num">M</td><td class="id">V-603</td><td>Only assignments the supplier was invited to; G-14.</td></tr>
+<tr><td class="id">unit_price</td><td>Harga per unit</td><td>currency</td><td class="num">M</td><td class="id">V-604</td><td>&gt; 0, whole rupiah; displayed per &sect;2.2.</td></tr>
+<tr><td class="id">moq</td><td>MOQ</td><td>integer</td><td class="num">M</td><td class="id">V-605</td><td>&ge;1 unit.</td></tr>
+<tr><td class="id">lead_time</td><td>Waktu pengiriman</td><td>integer (days)</td><td class="num">M</td><td class="id">V-606</td><td>1&ndash;180.</td></tr>
+<tr><td class="id">valid_until</td><td>Berlaku sampai</td><td>date</td><td class="num">M</td><td class="id">V-607</td><td>Future; expired quotations cannot be accepted and are auto-marked <i>Kedaluwarsa</i>.</td></tr>
+<tr><td class="id">tooling_cost</td><td>Biaya tooling</td><td>currency</td><td class="num">O</td><td>&ge;0</td><td>Shown separately from unit price in comparisons.</td></tr>
+<tr><td class="id">incoterms / payment</td><td>Syarat</td><td>select</td><td class="num">O</td><td>&mdash;</td><td>Reference lists.</td></tr>
+<tr><td class="id">file</td><td>Lembar penawaran</td><td>file</td><td class="num">M</td><td class="id">V-502</td><td>PDF expected; the typed values are the system of record, the file is evidence.</td></tr>
+<tr><td class="id">revision_of</td><td>Revisi dari</td><td>link</td><td class="num">C</td><td>&mdash;</td><td>A rejected quotation may be revised; the revision is a new number linked to the parent, and both stay visible.</td></tr>
+</tbody></table>
+<h4>F6 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-601</td><td>Portal isolation is enforced on every read and every write: a supplier only ever sees invitations, submissions and quotations bound to its own supplier id. A URL guess returns <span class="id">MSG-011</span> and a security audit entry.</td><td>G-14.</td><td class="id">FR-1401, NFR-04</td></tr>
+<tr><td class="id">FSD-602</td><td>Quotation comparison view shows all quotations for the same assignment side by side, cheapest-unit-price and shortest-lead-time cells highlighted, validity flagged, and total-cost estimate computed from the assignment's quantity per production run.</td><td>Comparison is read-only; accepting one does not auto-reject others.</td><td class="id">FR-801, FR-802</td></tr>
+<tr><td class="id">FSD-603</td><td>Accepting a quotation records the decision, notifies the supplier and the assignment owner, and opens the FAB for that assignment. Rejecting requires a reason which is shown to the supplier.</td><td>G-06 must already be satisfied; chain <span class="code">QT-REVIEW</span>.</td><td class="id">FR-803, FR-804</td></tr>
+<tr><td class="id">FSD-604</td><td>An accepted quotation is frozen; a price change after acceptance is a new quotation plus a new FAB revision, never an edit.</td><td><span class="id">MSG-042</span>.</td><td class="id">BR-04</td></tr>
+<tr><td class="id">FSD-605</td><td>Supply-service evaluation scores quality and delivery on a 1&ndash;5 scale with weighted overall, conclusion (Dipertahankan / Dibina / Diganti), and an optional attachment. Evaluation period is quarterly by default.</td><td class="id">V-608</td><td class="id">FR-1201, FR-1202</td></tr>
+<tr><td class="id">FSD-606</td><td>Evaluations are visible to the evaluated supplier as a portal record (score, conclusion, note) &mdash; the supplier never sees another supplier's evaluation.</td><td>&mdash;</td><td class="id">FR-1203</td></tr>
+<tr><td class="id">FSD-607</td><td>A rejected evaluation conclusion on a supplier that holds an active accepted quotation raises a warning on the supplier profile and in the quotation comparison, without blocking the existing approval.</td><td>&mdash;</td><td class="id">FR-1204</td></tr>
+<tr><td class="id">FSD-608</td><td>Sample submissions in the portal follow the same round-escalation counter as FSD-505, so a supplier in a loop is visible to the buyer.</td><td>Fixed at two rounds (Q-F2).</td><td class="id">FR-1404</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F7 &mdash; QC inspection, application and transport tests, colour, artwork circulation</h3>
+<p class="code">Covers PRD FR-1101..FR-1105, FR-901..FR-912, FR-1501..FR-1506; stages P-04, S-03, S-07.</p>
+<div class="scr"><b>SCR-7.1</b> <i>Inspeksi</i> &mdash; <span class="code">/qc/inspections</span> / <span class="code">/qc/inspections/{id}</span>. <b>SCR-7.2</b> <i>Uji aplikasi &amp; transport</i> &mdash; <span class="code">/qc/tests</span>. <b>SCR-7.3</b> <i>Standar warna</i> &mdash; <span class="code">/qc/colour-standards</span>. <b>SCR-7.4</b> <i>Sirkulasi artwork / colour range</i> &mdash; <span class="code">/circulation</span> / <span class="code">/circulation/{id}</span>.</div>
+<h4>SCR-7.1 inspection form</h4>
+<table>
+<thead><tr><th style="width:16%">Field</th><th style="width:16%">Label (ID)</th><th style="width:11%">Type</th><th style="width:5%">Req</th><th style="width:24%">Validation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="id">code</td><td>Nomor inspeksi</td><td>computed</td><td class="num">C</td><td>&sect;2.3</td><td>Includes the assignment and level.</td></tr>
+<tr><td class="id">assignment</td><td>Kemasan</td><td>select</td><td class="num">M</td><td class="id">V-701</td><td>Level picker is filtered by G-05/G-06 so an unavailable level cannot be chosen.</td></tr>
+<tr><td class="id">level</td><td>Tingkat</td><td>select</td><td class="num">M</td><td class="id">V-702</td><td>T0 / T1 / T2. All three are mandatory for every item (OQ-05); there is no "not applicable" for a level.</td></tr>
+<tr><td class="id">spec_version</td><td>Spesifikasi acuan</td><td>select</td><td class="num">M</td><td class="id">V-703</td><td>Approved versions only; pinned at creation so a later spec change cannot rewrite history.</td></tr>
+<tr><td class="id">sample_ref</td><td>No. sampel / lot</td><td>text</td><td class="num">M</td><td class="id">V-704</td><td>&le;60 chars.</td></tr>
+<tr><td class="id">results</td><td>Hasil per parameter</td><td>repeat</td><td class="num">M</td><td class="id">V-705</td><td>Pre-populated from the pinned spec version. Per row: parameter, target, min, max, measured (text or numeric per parameter type), verdict, evidence.</td></tr>
+<tr><td class="id">groups</td><td>Grup yang diuji</td><td>multi-select</td><td class="num">M</td><td>&ge;1</td><td>Only chosen groups are required; unchosen groups render <i>Tidak diuji</i>, never an em dash that looks like a missing result.</td></tr>
+<tr><td class="id">conclusion</td><td>Kesimpulan</td><td>computed + text</td><td class="num">C</td><td class="id">V-706</td><td>Verdict derived: PASS only if every measured parameter is inside tolerance; the analyst adds a narrative note.</td></tr>
+<tr><td class="id">performed_by / checked_by</td><td>Dilaksanakan / diperiksa</td><td>user chips</td><td class="num">M</td><td>&mdash;</td><td>Checked-by must differ from performed-by (role separation, not author self-approval).</td></tr>
+</tbody></table>
+<h4>F7 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-701</td><td>T-sequences are strict. T1 cannot be started while T0 is absent or FAIL; T2 likewise behind T1. A FAIL level requires a retest (new code with <span class="code">-r2</span>) and the pass of the retest is what satisfies the gate.</td><td>G-05, <span class="id">MSG-050</span>.</td><td class="id">FR-901, OQ-05</td></tr>
+<tr><td class="id">FSD-702</td><td>Quotation stage cannot be opened until <b>all three</b> levels for that assignment hold verdict PASS. The stage card shows three chips (T0/T1/T2) with live state so the blocker is visible without opening anything.</td><td>G-06.</td><td class="id">FR-902, OQ-05</td></tr>
+<tr><td class="id">FSD-703</td><td>Application test (filling/line trial) and transport test are separate records from inspection with their own verdicts, referenced by the FAB but not gates on the quotation stage &mdash; they are gates on standard creation.</td><td>&mdash;</td><td class="id">FR-903, FR-904</td></tr>
+<tr><td class="id">FSD-704</td><td>A transport test records route, mode, duration, pack configuration, pre/post condition photos, and damage findings; damage severity decides the verdict and auto-creates a corrective-action task on FAIL.</td><td>&mdash;</td><td class="id">FR-905</td></tr>
+<tr><td class="id">FSD-705</td><td>Colour standards hold reference swatches (code, name, medium, batch, image) per packaging item. Deviation is judged against a standard and the standard version used is recorded on the artwork circulation.</td><td>&mdash;</td><td class="id">FR-1501</td></tr>
+<tr><td class="id">FSD-706</td><td>Artwork circulation runs chain <span class="code">ARTWORK-CIRC</span> strictly sequential QC &rarr; QA &rarr; R&amp;D &rarr; Marketing. The detail view shows a horizontal position bar naming each station, its owner, elapsed time and status, which is the "real-time position" requirement.</td><td>G-01, G-03, G-09.</td><td class="id">FR-1502, FR-1503</td></tr>
+<tr><td class="id">FSD-707</td><td>Any approver in the circulation chain may attach marked-up files; comments are threaded per step and the next approver sees the accumulated markups, not a fresh record.</td><td>&mdash;</td><td class="id">FR-1504</td></tr>
+<tr><td class="id">FSD-708</td><td>Rejection at any station returns the circulation to the author as <i>Perlu revisi</i> with all comments attached; a resubmission is a new circulation number and re-runs the whole chain, because a late-stage approver must see the corrected artwork, not inherit a stale approval.</td><td>&mdash;</td><td class="id">FR-1505</td></tr>
+<tr><td class="id">FSD-709</td><td>Colour-range circulation is the same engine with a different chain instance and the colour standard attached; it does not have its own status vocabulary.</td><td>&mdash;</td><td class="id">FR-1506</td></tr>
+<tr><td class="id">FSD-710</td><td>Completing a T-level posts the verdict to the assignment, updates the stage chips, notifies the owner, and writes an audit entry containing the measured values, since a QC record is evidence.</td><td>&mdash;</td><td class="id">FR-906, BR-10</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F8 &mdash; Approval form, packaging standards, proofprint, scale up</h3>
+<p class="code">Covers PRD FR-1601..FR-1612, FR-1701..FR-1706, FR-1801..FR-1806; stages P-06, P-07, P-08, S-06, S-08, S-09, S-10.</p>
+<div class="scr"><b>SCR-8.1</b> <i>Form Approval Bahan Kemas</i> &mdash; <span class="code">/approvals</span> (list) / <span class="code">/approvals/{id}</span> (form) / <span class="code">/approvals/{id}/print</span>. <b>SCR-8.2</b> <i>Standar kemasan</i> &mdash; <span class="code">/standards</span>. <b>SCR-8.3</b> <i>Proofprint</i> &mdash; <span class="code">/proofprints</span>. <b>SCR-8.4</b> <i>Scale up</i> &mdash; <span class="code">/scale-ups</span>.</div>
+<h4>SCR-8.1 Form Approval Bahan Kemas &mdash; fields</h4>
+<p>The form is a structured record, not a filled PDF. Every field below is typed or picked once and the print layout (&sect;7.1) is generated from it.</p>
+<table>
+<thead><tr><th style="width:20%">Field</th><th style="width:14%">Label (ID)</th><th style="width:10%">Type</th><th style="width:5%">Req</th><th style="width:20%">Validation</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td class="id">code</td><td>Nomor</td><td>computed</td><td class="num">C</td><td>&sect;2.3</td><td><span class="code">FAB-YYYY-NNN</span></td></tr>
+<tr><td class="id">branch</td><td>Jalur</td><td>select</td><td class="num">M</td><td>&mdash;</td><td>From the assignment; cannot be changed after submit.</td></tr>
+<tr><td class="id">project / assignment</td><td>Project &amp; kemasan</td><td>cascading select</td><td class="num">M</td><td class="id">V-801</td><td>Assignment list filtered to concept-approved projects and to the chosen branch.</td></tr>
+<tr><td class="id">item, category, material</td><td>Nama / kategori / jenis bahan</td><td>computed</td><td class="num">C</td><td>&mdash;</td><td>Pulled from PackagingItem; not retyped.</td></tr>
+<tr><td class="id">supplier, price, moq, lead_time</td><td>Pemasok &amp; harga</td><td>computed + text</td><td class="num">M</td><td class="id">V-802</td><td>Pulled from the accepted quotation; price editable only with a reason that is printed as a note.</td></tr>
+<tr><td class="id">spec_ref</td><td>Spesifikasi acuan</td><td>link</td><td class="num">M</td><td class="id">V-803</td><td>Approved specification version actually used by the T-levels.</td></tr>
+<tr><td class="id">t_levels</td><td>Hasil T0 / T1 / T2</td><td>computed</td><td class="num">C</td><td class="id">V-804</td><td>Three chips with links to each inspection; all must be PASS to submit (OQ-05).</td></tr>
+<tr><td class="id">test_refs</td><td>Uji aplikasi / transport</td><td>links</td><td class="num">M</td><td class="id">V-805</td><td>Branch B requires artwork circulation reference as well.</td></tr>
+<tr><td class="id">drawing_ref</td><td>Gambar teknis</td><td>link</td><td class="num">M</td><td>&mdash;</td><td>Approved version number printed on the form.</td></tr>
+<tr><td class="id">reason</td><td>Alasan pengajuan</td><td>textarea</td><td class="num">M</td><td class="id">V-806</td><td>20&ndash;1500 chars; this is the text the approvers read.</td></tr>
+<tr><td class="id">impact</td><td>Dampak bila disetujui</td><td>repeat</td><td class="num">O</td><td>&mdash;</td><td>Area, description; printed in the body of the form.</td></tr>
+<tr><td class="id">attachments</td><td>Lampiran</td><td>files</td><td class="num">M</td><td>&ge;1</td><td>At least one supporting document or photo.</td></tr>
+</tbody></table>
+<h4>F8 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-801</td><td>The FAB author is Packaging Development Staff; the form auto-populates from upstream records so that no data is re-keyed. Any field that would need re-keying is a defect: it means the upstream record is missing or disconnected.</td><td>G-06, G-07.</td><td class="id">FR-1601, NFR-07</td></tr>
+<tr><td class="id">FSD-802</td><td>Approval follows <span class="code">FAB-PRIMARY</span> / <span class="code">FAB-SECONDARY</span>: author, then QC Supervisor check, then QC Manager, SCM Manager and QA Manager approve in parallel; all three must approve (BR-02, OQ-01).</td><td>G-01, G-03.</td><td class="id">FR-1602</td></tr>
+<tr><td class="id">FSD-803</td><td>Each approver sees, on one screen: the summary header, the reason, the impact rows, the three T chips, the quotation, the linked specification (openable inline) and the prior decisions already recorded. Approving without the T results loaded is not possible &mdash; the action button stays disabled.</td><td>&mdash;</td><td class="id">FR-1603</td></tr>
+<tr><td class="id">FSD-804</td><td>The printed form renders the four signature blocks as typed name, role and date taken from the recorded decisions, per OQ-01 and OQ-08. Nothing is signed on screen; signing happens on the printed sheet, and the system record is the evidence of the decision.</td><td>&sect;7.1.</td><td class="id">FR-1604</td></tr>
+<tr><td class="id">FSD-805</td><td>An approved FAB is immutable and printable indefinitely. Editing means creating a revision which supersedes it and re-runs the chain; the superseded number is retained and both are cross-linked.</td><td><span class="id">MSG-042</span>, G-12.</td><td class="id">BR-04, BR-13</td></tr>
+<tr><td class="id">FSD-806</td><td>Rejection sends the FAB to <span class="code">CANCELLED</span> with the rejecting approver's reason attached, creates a rework task for the author, and leaves the quotation accepted &mdash; a rejected form does not silently undo an accepted price (Q-F1, confirmed at the gate).</td><td>G-03.</td><td class="id">FR-1605</td></tr>
+<tr><td class="id">FSD-807</td><td>Packaging standard creation is blocked until the FAB is approved; the standard is assembled by copying the pinned specification parameters plus the drawing dimensions, then the R&amp;D author adds inspection frequency and sampling plan.</td><td>G-08, <span class="id">MSG-052</span>.</td><td class="id">FR-1702, FR-1703</td></tr>
+<tr><td class="id">FSD-808</td><td>A standard has an effective date and a review cycle; at review, the owner either confirms (new version, unchanged content) or revises. Expired standards appear in a report, and an assignment referencing an expired standard shows a warning but keeps its history.</td><td>&mdash;</td><td class="id">FR-1704</td></tr>
+<tr><td class="id">FSD-809</td><td>Proofprint (S-09) records the approved artwork reference, print supplier, colour standard used, physical sample images, and a QC verdict; it is a gate on the standard stage of branch B.</td><td>G-10.</td><td class="id">FR-1801</td></tr>
+<tr><td class="id">FSD-810</td><td>Scale up closes a branch. Recording it requires G-11 and captures date, batch, line, quantity, observations, and who attended. It is one record per assignment (Q-F5); a genuine restart is recorded as a new event explicitly linked to the first, never as an edit. It cannot be changed after the branch closes, only corrected by a linked follow-up record.</td><td><span class="id">MSG-053</span>.</td><td class="id">FR-1802, FR-1803</td></tr>
+<tr><td class="id">FSD-811</td><td>When every assignment in a branch is scaled up, the branch is marked complete; when both non-empty branches complete, the project becomes eligible for archive and the owner is notified once.</td><td>&sect;4.5.</td><td class="id">FR-1804</td></tr>
+<tr><td class="id">FSD-812</td><td>Product master maintenance (brand, product name, variant, pack size) feeds specifications and design review; a product cannot be deactivated while referenced by an open assignment.</td><td>G-13.</td><td class="id">FR-1701</td></tr>
+</tbody></table>
+
+<h3 class="pagebreak">F9 &mdash; Notifications, dashboards, reports, exports</h3>
+<p class="code">Covers PRD FR-1901..FR-1907, FR-201..FR-206 (announcements), NFR-02, NFR-08.</p>
+<div class="scr"><b>SCR-9.1</b> <i>Beranda</i> &mdash; <span class="code">/dashboard</span>, role-adaptive. <b>SCR-9.2</b> <i>Notifikasi</i> &mdash; bell panel + <span class="code">/notifications</span>. <b>SCR-9.3</b> <i>Laporan</i> &mdash; <span class="code">/reports</span> with one route per report. <b>SCR-9.4</b> <i>Ekspor</i> &mdash; per-report action, not a separate screen.</div>
+<h4>F9 behaviours</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:38%">Behaviour</th><th style="width:22%">Rules / messages</th><th>PRD</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-901</td><td>The dashboard is composed of role cards, not a single layout: queue (what waits on me), overdue (what waits on others and is late), recent decisions (last 10 approval events), stage distribution (where the portfolio sits), and announcements.</td><td>Cards the user has no permission for are absent, not greyed.</td><td class="id">FR-1901, BR-07</td></tr>
+<tr><td class="id">FSD-902</td><td>Every workflow event produces exactly one notification with a deep link to the record. A notification is never the only source of truth: the record itself always shows the same state.</td><td>&sect;8 catalogue.</td><td class="id">FR-1904</td></tr>
+<tr><td class="id">FSD-903</td><td>The queue card is the same query as <i>Tugas saya</i>; the badge count and the list can never disagree.</td><td>&sect;4.5.</td><td class="id">FR-1905</td></tr>
+<tr><td class="id">FSD-904</td><td>Notifications are in-app and email; per-user channel preference defaults to both for approval events and in-app only for informationals. Supplier-facing events are delivered as one daily digest at 08:00 WIB, except N-11 invitations and deadline notices which are sent immediately (Q-F4). Email failures retry three times and are surfaced in the admin health panel rather than lost.</td><td>&mdash;</td><td class="id">FR-1906</td></tr>
+<tr><td class="id">FSD-905</td><td>Digest: <b>approver</b> steps older than 3 working days generate one daily 08:00 email to the approver and, from day 5, a copy to the author's manager. Checker steps are excluded and are tracked only through the queue and the "waiting on whom" report (Q-F3).</td><td>Derived overdue rules, not hard-coded dates.</td><td class="id">FR-1907, NFR-02</td></tr>
+<tr><td class="id">FSD-906</td><td>Every list and every report exports to XLSX with the formatted values shown on screen, not raw values, and the export carries the filter description in a header row.</td><td>Requires <span class="code">report.export</span>.</td><td class="id">FR-1908, NFR-07</td></tr>
+<tr><td class="id">FSD-907</td><td>Audit trail records actor, role at the time, action, object, before/after, IP and timestamp for: approval decisions, stage transitions, master-data changes, permission changes, exports, and failed permission attempts.</td><td>Append-only (BR-10).</td><td class="id">FR-1902</td></tr>
+<tr><td class="id">FSD-908</td><td>Reads of a supplier's commercial data by users outside SCM/QA-approved roles are logged as access events, not only as edits.</td><td>&mdash;</td><td class="id">NFR-09</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">6. Permission matrix</h2>
+<p>Twelve business roles plus two system identities. <b>F</b> = read and act, <b>R</b> = read only, <b>&mdash;</b> = no access. The five roles left blank in the client's source sheet (R&amp;D, SCM Staff, QC Supervisor, QC Manager, QA Supervisor) are filled from the duties the flowchart assigns them, as decided in OQ-04, and are now normative.</p>
+<table style="font-size:7.4pt;">
+<thead><tr><th style="width:24%">Feature</th><th>Mkt</th><th>R&amp;D S</th><th>R&amp;D M</th><th>PD S</th><th>PD M</th><th>QC Spv</th><th>QC Mgr</th><th>SCM S</th><th>SCM Mgr</th><th>QA Spv</th><th>QA Mgr</th><th>BOD</th></tr></thead>
+<tbody>
+<tr><td>Project NPD &mdash; buat / ubah</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td></tr>
+<tr><td>Evaluasi konsep (NPD-01)</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td></tr>
+<tr><td>Kebutuhan kemasan / assignment</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td></tr>
+<tr><td>Jadwal &amp; tahapan</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td></tr>
+<tr><td>Gambar teknis</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td></tr>
+<tr><td>Sampel / dummy review</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Master kategori &amp; item</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Spesifikasi bahan pengemas (SBK)</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">&mdash;</td></tr>
+<tr><td>Impor spesifikasi</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Inspeksi T0 / T1 / T2</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Uji aplikasi &amp; transport</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Standar warna</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Master supplier</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Penilaian supplier</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Kutipan &mdash; bandingkan</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Kutipan &mdash; terima / tolak</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Tinjauan desain marketing (S-04)</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Sirkulasi artwork / colour range</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Form Approval Bahan Kemas &mdash; buat</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>FAB &mdash; periksa (checker)</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>FAB &mdash; setujui</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">&mdash;</td><td class="num">F</td><td class="num">R</td></tr>
+<tr><td>Standar kemasan</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Master produk</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Proofprint</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">F</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+<tr><td>Scale up</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td></tr>
+<tr><td>Arsip project</td><td class="num">F</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td></tr>
+<tr><td>Laporan &amp; ekspor</td><td class="num">R</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">F</td><td class="num">R</td></tr>
+<tr><td>Pengaturan akses / pengguna</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td></tr>
+<tr><td>Catatan audit</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td><td class="num">R</td><td class="num">&mdash;</td></tr>
+</tbody></table>
+<h4>6.1 System identities</h4>
+<table>
+<thead><tr><th style="width:18%">Identity</th><th>Grants</th></tr></thead>
+<tbody>
+<tr><td class="code">Admin</td><td>Full on users, roles, RBAC matrix, reference lists, announcements, audit viewer, system health. Read-only on business records for support. Never an approver on any chain, and cannot grant themselves a business approval right (segregation of duties).</td></tr>
+<tr><td class="code">Supplier (portal)</td><td>Own invitations, own sample submissions, own quotations, own evaluation results, own artwork requests. No search beyond own records. No dashboard other than <i>Tugas saya</i>. See FSD-601.</td></tr>
+</tbody></table>
+<h4>6.2 Derived duty rules that the matrix cannot express</h4>
+<table>
+<thead><tr><th style="width:9%">ID</th><th>Rule</th></tr></thead>
+<tbody>
+<tr><td class="id">FSD-611</td><td>Holding a feature's <b>F</b> does not authorise self-approval: G-01 applies everywhere.</td></tr>
+<tr><td class="id">FSD-612</td><td>An approval right also grants view of every artefact referenced by that decision, even where the role would otherwise have no access (e.g. QA Manager sees the specification and T-results of a FAB in front of them).</td></tr>
+<tr><td class="id">FSD-613</td><td>Branch visibility is not filtered by branch: both branches of a project are visible to every entitled role, because the flowchart's own re-entry paths cross branches. Editing remains role-bound.</td></tr>
+<tr><td class="id">FSD-614</td><td>The matrix is the single source of menu, button and API authorisation. A screen must not add its own role test.</td></tr>
+<tr><td class="id">FSD-615</td><td>A user may hold two or more roles (Q-F6). Effective permissions are the union of the held roles. Two constraints still apply: G-01 blocks approving a document the same person authored, and one person may not be assigned two different steps of the same approval chain &mdash; the engine resolves the next open step to a different holder when a clash occurs and warns the author at submit time if no other eligible actor exists.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">7. Document output specifications</h2>
+<p>Two official forms are printed. Both are generated from structured records; neither is a manual PDF fill-in.</p>
+<h3>7.1 Form Approval Bahan Kemas (FAB)</h3>
+<table>
+<thead><tr><th style="width:22%">Region</th><th style="width:34%">Content</th><th>Rules</th></tr></thead>
+<tbody>
+<tr><td>Header</td><td>Company name and division line; form title <span class="code">FORM APPROVAL BAHAN KEMAS</span>; <span class="code">Nomor</span>, <span class="code">Tanggal</span>, <span class="code">Jalur</span> (A/B), <span class="code">Project</span>, <span class="code">Kemasan</span>.</td><td>Number and date are the record's; date printed is the submit date, not the print date, with "dicetak pada" in the footer.</td></tr>
+<tr><td>Identification block</td><td>Nama bahan, kategori, jenis material, ukuran/dimensi from the approved drawing, kode komponen if any.</td><td>Blank cells are impossible: the block is populated only from linked records.</td></tr>
+<tr><td>Justification block</td><td>Alasan pengajuan (multi-line), dampak rows, harga, MOQ, lead time, pemasok, spesifikasi acuan.</td><td>Price printed with the &sect;2.2 currency format.</td></tr>
+<tr><td>Evidence block</td><td>Three rows: T0, T1, T2 &mdash; inspection number, date, verdict, and the checked-by name. Application/transport test references. Attachments list.</td><td>All three rows always printed (OQ-05); an incomplete level prints <span class="code">BELUM SELESAI</span> and the form cannot be approved in that state, so in practice it never prints that way.</td></tr>
+<tr><td>Signature strip</td><td>Four blocks per OQ-01: <b>Dibuat Oleh</b> &middot; <b>Diperiksa Oleh</b> &middot; <b>Disetujui Oleh</b> (three sub-columns: <b>QC Manager</b>, <b>SCM Manager</b>, <b>QA Manager</b>) &middot; each block carries a printed name, role and date beneath the signing line, and the "coret yang tidak sesuai" instruction line is retained above the strip as in the source form.</td><td>Names and roles come from the recorded decisions, never typed on the PDF. Approver blocks print as <span class="code">(menunggu)</span> until their decision exists.</td></tr>
+<tr><td>Footer</td><td>Version, page <span class="code">x dari y</span>, print timestamp, "dokumen terkendali &mdash; salinan tidak bervalidasi tanpa tanda tangan basah".</td><td>&mdash;</td></tr>
+</tbody></table>
+
+<h3>7.2 Spesifikasi Bahan Pengemas (SBK)</h3>
+<table>
+<thead><tr><th style="width:22%">Region</th><th style="width:34%">Content</th><th>Rules</th></tr></thead>
+<tbody>
+<tr><td>Header table</td><td><span class="code">No. QC/BP/NNN/YY</span>, <span class="code">Nama produk</span>, <span class="code">Nama bahan</span>, <span class="code">Jenis bahan</span>, <span class="code">Tgl efektif</span>, page count.</td><td>Matches the observed source document layout so the printed output is interchangeable with existing paper records.</td></tr>
+<tr><td>Signature row</td><td>Three columns: <span class="code">Dibuat oleh</span> / <span class="code">Direview oleh</span> / <span class="code">Disetujui oleh</span> with name, role and date.</td><td>Bound to the specification's own chain, not the FAB chain. Three blocks here (the SBK is a specification, the FAB is the approval &mdash; OQ-01 governs the FAB only).</td></tr>
+<tr><td>Dimension table</td><td>Code, description, nominal, min, max, unit, method.</td><td>Row height grows with content; wide tables paginate without truncation (the truncation defect is explicitly out of scope for the new build).</td></tr>
+<tr><td>Parameter groups</td><td>Organoleptis, Fisik, Kimia, Mikrobiologi, Fungsi, Tampilan &mdash; each as a sub-table with parameter, specification, unit, method, criteria.</td><td>Only groups present in the record are printed; a group with zero parameters is omitted entirely rather than printed empty.</td></tr>
+<tr><td>Component table</td><td>Komponen, bahan, persen, catatan &mdash; the 77-component set imports here.</td><td>Page break inside long tables repeats the header row.</td></tr>
+<tr><td>Revision note</td><td>Change note and prior version number when the version is &gt; 1.</td><td>FSD-406.</td></tr>
+</tbody></table>
+
+<h3>7.3 Other printable outputs</h3>
+<table>
+<thead><tr><th style="width:26%">Output</th><th>Content and rules</th></tr></thead>
+<tbody>
+<tr><td>Quotation summary</td><td>Supplier letterhead-free internal print view: quotation fields plus comparison context if more than one exists; used in SCM review meetings.</td></tr>
+<tr><td>Scale-up report</td><td>Assignment header, stage history table, all evidence links, attendance; one page per assignment plus attachments index.</td></tr>
+<tr><td>Packaging standard sheet</td><td>Standard header, pinned specification parameters, sampling plan and frequency, effective and review dates, approver strip.</td></tr>
+<tr><td>Stage summary (project)</td><td>Two swimlanes with per-stage owner, planned/actual, artefact links; A4 landscape, single page per branch.</td></tr>
+</tbody></table>
+
+<h2>8. Notification catalogue</h2>
+<p>One row per event. "Recipients" are resolved by role, not by name, so a matrix change re-routes notifications without a release.</p>
+<table>
+<thead><tr><th style="width:14%">Code</th><th style="width:26%">Event</th><th style="width:22%">Recipients</th><th style="width:9%">Channel</th><th>Message intent</th></tr></thead>
+<tbody>
+<tr><td class="id">N-01</td><td>Concept submitted</td><td>BOD</td><td>both</td><td>"A concept awaits your evaluation" + deep link.</td></tr>
+<tr><td class="id">N-02</td><td>Concept approved / rejected</td><td>Owner, PD roles</td><td>both</td><td>Rejection carries the comment.</td></tr>
+<tr><td class="id">N-03</td><td>Assignment created</td><td>Owner role of first stage</td><td>in-app</td><td>Informational.</td></tr>
+<tr><td class="id">N-04</td><td>Document submitted to checker</td><td>Assigned checker</td><td>both</td><td>Enters their queue.</td></tr>
+<tr><td class="id">N-05</td><td>Checking passed / failed</td><td>Author, next approvers</td><td>both</td><td>Failure states the reason.</td></tr>
+<tr><td class="id">N-06</td><td>Awaiting approval</td><td>All parallel approvers</td><td>both</td><td>Includes the T-status summary so an approver knows what they are being asked about.</td></tr>
+<tr><td class="id">N-07</td><td>Partial approval recorded</td><td>Author, remaining approvers</td><td>in-app</td><td>"2 of 3 approvals received".</td></tr>
+<tr><td class="id">N-08</td><td>Fully approved</td><td>Author, approvers, project parties</td><td>both</td><td>States which stage this unlocked.</td></tr>
+<tr><td class="id">N-09</td><td>Rejected</td><td>Author, checker</td><td>both</td><td>Reason verbatim + rework task link.</td></tr>
+<tr><td class="id">N-10</td><td>Escalation (3 / 5 working days)</td><td>Approver, approver's manager</td><td>email</td><td>FSD-905 digest.</td></tr>
+<tr><td class="id">N-11</td><td>Supplier invitation sent</td><td>Supplier contact</td><td>email + in-app</td><td>Deadline explicit; stays immediate &mdash; digesting an invitation would defeat its purpose.</td></tr>
+<tr><td class="id">N-12</td><td>Supplier submission received</td><td>SCM Staff, PD Staff</td><td>both</td><td>Internal recipients stay immediate.</td></tr>
+<tr><td class="id">N-13</td><td>Quotation accepted / rejected</td><td>Supplier, SCM</td><td>supplier: digest + in-app; SCM: both</td><td>Rejection carries the reason. Supplier copy rides the daily digest (Q-F4).</td></tr>
+<tr><td class="id">N-14</td><td>Invitation expires</td><td>Supplier, SCM Staff</td><td>email (immediate)</td><td>Auto-close notice; stays immediate because it is a deadline event (Q-F4).</td></tr>
+<tr><td class="id">N-15</td><td>T-level passed / failed</td><td>Assignment owner, QC Supervisor</td><td>both</td><td>Failure names the out-of-tolerance parameters.</td></tr>
+<tr><td class="id">N-16</td><td>Next T-level unlocked</td><td>QC</td><td>in-app</td><td>Only when G-05 becomes satisfiable.</td></tr>
+<tr><td class="id">N-17</td><td>Artwork moved to station n</td><td>Next station's role, author</td><td>both</td><td>Position bar value is the same computation.</td></tr>
+<tr><td class="id">N-18</td><td>Standard expiring / expired</td><td>R&amp;D, QC</td><td>email</td><td>30 days before, then on expiry.</td></tr>
+<tr><td class="id">N-19</td><td>Scale up recorded</td><td>Project parties, both branch owners</td><td>both</td><td>States whether it completed a branch.</td></tr>
+<tr><td class="id">N-20</td><td>Branch complete / project archivable</td><td>Owner, Marketing</td><td>both</td><td>Once each, not repeatedly.</td></tr>
+<tr><td class="id">N-21</td><td>Permission matrix changed</td><td>Affected users</td><td>in-app</td><td>Names the feature and the new state.</td></tr>
+<tr><td class="id">N-22</td><td>Stage reopened</td><td>Downstream owners</td><td>both</td><td>Includes the correction reason.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">9. Reports and exports</h2>
+<table>
+<thead><tr><th style="width:20%">Report</th><th style="width:26%">Columns</th><th style="width:22%">Filters</th><th>Rule</th></tr></thead>
+<tbody>
+<tr><td>NPD pipeline</td><td>Project, branch, assignment, current stage, owner, planned, actual, age in stage, status</td><td>Owner, branch, stage, date range, status</td><td>Rows for both branches always present; a branch with no items is a labelled row, not a missing one.</td></tr>
+<tr><td>Waiting on whom</td><td>Document, type, current actor, entered-at, age, SLA state</td><td>Actor, type, age threshold</td><td>Actor resolved by &sect;4.5; never stored, so it cannot go stale.</td></tr>
+<tr><td>Approval status by period</td><td>Type, submitted, approved, rejected, median cycle time</td><td>Period, type, role</td><td>Cycle time measured between submit and final decision, working days.</td></tr>
+<tr><td>Specification register</td><td>Number, item, version, status, effective date, approvers</td><td>Category, status, date</td><td>Version 1 and later both listed, current flagged.</td></tr>
+<tr><td>Inspection history</td><td>Code, assignment, level, date, verdict, out-of-tolerance count, analyst</td><td>Level, item, result, period</td><td>FAIL rows expand to the failing parameters.</td></tr>
+<tr><td>Supplier performance</td><td>Supplier, quotation count, acceptance rate, on-time delivery, evaluation scores, trend</td><td>Category, period</td><td>Aggregated from evaluations and quotations; no manual entry point.</td></tr>
+<tr><td>Quotation comparison</td><td>Assignment, supplier, unit price, tooling, MOQ, lead time, validity, status</td><td>Project, item</td><td>Total-cost column computed from the assignment quantity.</td></tr>
+<tr><td>Standard register &amp; review due</td><td>Standard, item, version, effective, next review, status</td><td>Due window</td><td>Due within 30 days flagged.</td></tr>
+<tr><td>Archive export</td><td>Full project package: assignments, stage history, all documents and files</td><td>Project</td><td>Requires <span class="code">report.export</span> and is itself audited (FSD-906).</td></tr>
+</tbody></table>
+<p>All reports are lists first and charts second: every chart has an equivalent list reachable from it, because a chart that cannot be read as rows cannot be acted upon.</p>
+
+<h2>10. Acceptance mapping and items deferred to the TSD</h2>
+<h3>10.1 PRD acceptance criteria &rarr; FSD clauses</h3>
+<table>
+<thead><tr><th style="width:10%">AC</th><th style="width:40%">What is tested</th><th>FSD clauses that make it testable</th></tr></thead>
+<tbody>
+<tr><td class="id">AC-C1</td><td>A Branch A item runs NPD-01 to P-08 with correct gating.</td><td>FSD-502, &sect;4.2, &sect;4.4 G-02..G-11, FSD-702.</td></tr>
+<tr><td class="id">AC-C2</td><td>Branch B with artwork and proofprint closes independently of A.</td><td>FSD-503, FSD-811, &sect;4.5 branch completion, FSD-613.</td></tr>
+<tr><td class="id">AC-C3</td><td>No stage advances when its guard fails, with a stated blocker.</td><td>&sect;4.4, <span class="id">MSG-050..054</span>, FSD-508.</td></tr>
+<tr><td class="id">AC-C4</td><td>FAB approval requires checker plus all three approvers; author cannot self-approve.</td><td><span class="code">FAB-PRIMARY</span>, FSD-802, G-01, FSD-401.</td></tr>
+<tr><td class="id">AC-C5</td><td>Supplier sees only its own records.</td><td>FSD-601, G-14, <span class="id">MSG-011</span>, FSD-908.</td></tr>
+<tr><td class="id">AC-C6</td><td>All twelve roles see only permitted features; matrix editable at runtime.</td><td>&sect;6, FSD-204, FSD-205, FSD-614.</td></tr>
+<tr><td class="id">AC-C7</td><td>Printed FAB and SBK match the official layouts and carry the recorded signatories.</td><td>&sect;7.1, &sect;7.2, FSD-804.</td></tr>
+<tr><td class="id">AC-C8</td><td>No raw machine values anywhere.</td><td>&sect;2.2, &sect;2.4, &sect;2.7, Rule N-1, FSD-906.</td></tr>
+<tr><td class="id">AC-C9</td><td>77 imported specification components are queryable and print.</td><td>FSD-407, &sect;7.2 component table, &sect;9 specification register.</td></tr>
+<tr><td class="id">AC-C10</td><td>Every approval, stage transition and permission change is auditable.</td><td>FSD-907, &sect;8 catalogue, FSD-207.</td></tr>
+</tbody></table>
+
+<h3>10.2 Deferred to the TSD</h3>
+<table>
+<thead><tr><th style="width:26%">Item</th><th>What the TSD must decide</th></tr></thead>
+<tbody>
+<tr><td>Persistence design</td><td>Tables, keys, indexes for the &sect;3 entities; how doc+approval status caching stays consistent; retention implementation for OQ-09.</td></tr>
+<tr><td>Workflow engine implementation</td><td>How chain templates are stored and resolved to users; transaction boundaries for T-01..T-09; idempotency of notification writes.</td></tr>
+<tr><td>Permission implementation</td><td>Package choice, ability naming, matrix caching, session invalidation on change.</td></tr>
+<tr><td>Document generation</td><td>PDF pipeline, layout library, pagination rules for wide tables in &sect;7.2.</td></tr>
+<tr><td>Import pipeline</td><td>Streaming vs in-memory for the 77-row baseline and larger future sets; row-group transactions.</td></tr>
+<tr><td>Notification delivery</td><td>Queue, retry, working-day calendar, email template and bounce handling.</td></tr>
+<tr><td>Front-end structure</td><td>Shared list/form components that realise &sect;2.4 and &sect;2.5 once rather than per screen.</td></tr>
+<tr><td>Environment &amp; release</td><td>Local Laragon/MySQL bring-up, seed data, migration ordering, GitHub repository layout.</td></tr>
+<tr><td>Non-functional sizing</td><td>How NFR-01 latency and NFR-05 backup windows are met and measured.</td></tr>
+</tbody></table>
+
+<h3>10.3 Review instructions for the FSD gate</h3>
+<table>
+<thead><tr><th style="width:22%">Reviewer</th><th>What to check first</th></tr></thead>
+<tbody>
+<tr><td>QC Manager</td><td>&sect;4.4 guard table, FSD-701/702 (T0+T1+T2), &sect;7.2 specification layout fidelity.</td></tr>
+<tr><td>Packaging Development</td><td>F5 stage lists, FSD-510 reopen cascade, &sect;7.1 FAB field completeness.</td></tr>
+<tr><td>SCM</td><td>&sect;6 quotation rows, FSD-601/602/603, quotation field set in SCR-6.4.</td></tr>
+<tr><td>R&amp;D</td><td>FSD-401..409 master data rules, &sect;7.3 standard sheet, scale-up ownership.</td></tr>
+<tr><td>Marketing</td><td>FSD-307 design review, FSD-304 requirement capture, artwork circulation as final station.</td></tr>
+<tr><td>QA</td><td>&sect;2 status vocabulary, &sect;6.2 derived duty rules, &sect;10.1 acceptance mapping.</td></tr>
+</tbody></table>
+
+<div class="good"><b>FSD-level questions closed at the gate (23 November 2026).</b> Q-F1 accepted as written &middot; Q-F2 fixed at two rounds &middot; Q-F3 approver steps only &middot; Q-F4 supplier daily digest &middot; Q-F5 one scale-up per assignment &middot; Q-F6 multi-role holding permitted with the segregation rule in FSD-615. All six are recorded in &sect;1.5 and are the configuration defaults carried into the TSD.</div>
+
+<div class="foot">FSD-PDS-002 v0.2 &middot; baseline PRD-PDS-001 v0.2 &middot; PT PPM &mdash; Quality Management &amp; Quality Control Division &middot; approved requirement baseline for the TSD.</div>
+
+<h2 class="pagebreak">11. Approval and sign-off</h2>
+<p>This document is the behaviour contract for the build. Signing it means the signatory accepts that the screens, fields, validations, states and permissions described here are what will be developed, and that any later change is a versioned amendment to this document &mdash; not a verbal instruction to a developer.</p>
+<table>
+<thead><tr><th style="width:24%">Role</th><th style="width:22%">Name</th><th style="width:12%">Signature</th><th style="width:12%">Date</th><th>Scope of their sign-off</th></tr></thead>
+<tbody>
+<tr><td>Author &mdash; Packaging Development</td><td></td><td></td><td></td><td>Stage lists, FAB content, guard behaviour.</td></tr>
+<tr><td>Checker &mdash; QC Supervisor</td><td></td><td></td><td></td><td>Inspection model, specification layout.</td></tr>
+<tr><td>QC Manager</td><td></td><td></td><td></td><td>T0/T1/T2 gating, SBK approval chain.</td></tr>
+<tr><td>SCM Manager</td><td></td><td></td><td></td><td>Supplier portal isolation, quotation and evaluation behaviour.</td></tr>
+<tr><td>QA Manager</td><td></td><td></td><td></td><td>Permission matrix, status vocabulary, audit.</td></tr>
+<tr><td>R&amp;D</td><td></td><td></td><td></td><td>Master data, standards, scale up.</td></tr>
+<tr><td>Marketing</td><td></td><td></td><td></td><td>Concept, requirement capture, design review, artwork station order.</td></tr>
+</tbody></table>
+
+</body>
+</html>

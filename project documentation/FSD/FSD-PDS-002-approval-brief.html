@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>FSD Approval Brief</title>
+<style>
+  @page { size: A4; margin: 7mm 8mm 5mm 8mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 6.8pt; line-height: 1.24; color: #16202b; margin: 0; }
+  h1 { font-size: 11pt; margin: 0; color: #0f2c4d; letter-spacing: -0.2pt; }
+  h2 { font-size: 7pt; margin: 4pt 0 1.5pt 0; color: #0f2c4d; text-transform: uppercase; letter-spacing: 0.5pt; border-bottom: 1pt solid #0f2c4d; padding-bottom: 0.8pt; break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5pt 0 2.5pt 0; font-size: 6pt; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 1.6pt 2.4pt; font-weight: 600; border: 0.5pt solid #0f2c4d; }
+  td { padding: 1.6pt 2.4pt; border: 0.5pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f4f7fa; }
+  .num { text-align: center; white-space: nowrap; }
+  .id { font-family: Consolas, monospace; font-size: 5.8pt; color: #14416f; font-weight: 700; white-space: nowrap; }
+  .code { font-family: Consolas, monospace; font-size: 5.8pt; color: #3a3a3a; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2pt solid #0f2c4d; padding-bottom: 2.5pt; margin-bottom: 3pt; }
+  .hdr .brand { color: #b5122b; font-size: 7pt; font-weight: 700; letter-spacing: 1.5pt; }
+  .hdr .meta { text-align: right; font-size: 6pt; color: #44586c; }
+  .badge { display: inline-block; background: #b06d00; color: #fff; padding: 1pt 4pt; font-size: 5.8pt; font-weight: 700; letter-spacing: 0.7pt; }
+  .two { display: flex; gap: 4pt; }
+  .two > div { flex: 1; }
+  .two ul { margin: 0; padding-left: 8pt; }
+  .two li { margin-bottom: 1.2pt; }
+  .ans { background: #fffbe6 !important; }
+  .sign td { height: 12mm; }
+  .foot { font-size: 5.6pt; color: #647586; text-align: center; margin-top: 2pt; border-top: 0.5pt solid #c3cdd8; padding-top: 1.5pt; }
+  ul { margin: 0; padding-left: 9pt; }
+  li { margin-bottom: 0.8pt; }
+  svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="brand">PT. PPM</div>
+    <h1>Lembar Persetujuan &mdash; Gate FSD</h1>
+    <div style="font-size:6.2pt;color:#44586c;">FSD-PDS-002 v0.1 (36 hal.) &middot; dasar: PRD-PDS-001 v0.2 yang sudah disetujui &middot; 23 Nov 2026</div>
+  </div>
+  <div class="meta">
+    <span class="badge">1 HALAMAN &middot; BAWA KE RAPAT</span><br>
+    Setelah gate: TSD &rarr; Pengembangan<br>
+    Isi kolom kuning pada bagian 4 &amp; 5.
+  </div>
+</div>
+
+<h2>1. Apa yang FSD tetapkan, dan apa yang tidak</h2>
+<div class="two">
+  <div>
+    <ul>
+      <li><b>Ditetapkan:</b> semua layar, field, tipe, wajib/tidak, validasi, dan sumber datanya (F1&ndash;F9; 84 butir perilaku <span class="id">FSD-xxx</span>).</li>
+      <li>Mesin persetujuan satu-enjin: 9 transisi, 8 rantai; status dokumen dan status persetujuan terpisah, selalu diturunkan bukan diketik.</li>
+      <li>14 gerbang G-01&hellip;G-14 yang memaksa urutan flowchart, termasuk T0+T1+T2 untuk semua kemasan.</li>
+      <li>Matriks izin lengkap 12 peran + Admin + Supplier, dapat diubah saat jalan.</li>
+      <li>Layout cetak Form Approval Bahan Kemas (4 blok tanda tangan) dan Spesifikasi Bahan Pengemas.</li>
+      <li>22 peristiwa notifikasi, 9 laporan, aturan penomoran, aturan format (tidak ada nilai mentah di layar).</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Ke TSD:</b> DDL/indeks/cache, pemilihan paket, queue email, pipeline PDF, streaming impor, topologi server, alat uji.</li>
+      <li><b>Ke design system:</b> warna, jarak, tipografi produk.</li>
+      <li><b>Tidak diubah:</b> lingkup dan aturan bisnis PRD v0.2. Bila FSD bertentangan dengan PRD, PRD menang dan FSD dikoreksi.</li>
+      <li><b>Tidak ada</b> alur substitusi bahan dan tidak ada layar tiruan mockup Excel &mdash; keduanya sudah ditolak sebagai rujukan.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>2. Peta gerbang tahap &mdash; acuan utama diskusi</h2>
+<svg viewBox="0 0 700 118">
+  <style>
+    .bx{fill:#eef3f8;stroke:#14416f;stroke-width:1;}
+    .gt{fill:#fdf3f4;stroke:#b5122b;stroke-width:1;}
+    .ln{fill:none;stroke:#647586;stroke-width:1;marker-end:url(#a2);}
+    .tx{font-size:7.2px;fill:#16202b;font-family:Segoe UI,Arial,sans-serif;}
+    .gg{font-size:6.2px;fill:#b5122b;font-weight:bold;font-family:Segoe UI,Arial,sans-serif;}
+    .hh{font-size:7.6px;fill:#0f2c4d;font-weight:bold;font-family:Segoe UI,Arial,sans-serif;}
+  </style>
+  <defs><marker id="a2" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#647586"/></marker></defs>
+
+  <rect class="bx" x="4" y="14" width="54" height="19" rx="2"/><text class="tx" x="9" y="26">NPD-01</text>
+  <polygon class="gt" points="72,24 87,13 102,24 87,35"/><text class="gg" x="77" y="26">G-02</text>
+  <rect class="bx" x="114" y="14" width="58" height="19" rx="2"/><text class="tx" x="119" y="26">NPD-03/04</text>
+  <line class="ln" x1="58" y1="24" x2="70" y2="24"/><line class="ln" x1="104" y1="24" x2="112" y2="24"/>
+  <line class="ln" x1="172" y1="20" x2="188" y2="14"/><line class="ln" x1="172" y1="28" x2="188" y2="74"/>
+
+  <text class="hh" x="6" y="9">Cabang A &mdash; bahan kemas utama</text>
+  <rect class="bx" x="190" y="14" width="46" height="19" rx="2"/><text class="tx" x="195" y="26">P-01</text>
+  <rect class="bx" x="242" y="14" width="46" height="19" rx="2"/><text class="tx" x="247" y="26">P-02</text>
+  <rect class="bx" x="294" y="14" width="46" height="19" rx="2"/><text class="tx" x="299" y="26">P-03</text>
+  <rect class="bx" x="346" y="14" width="72" height="19" rx="2"/><text class="tx" x="351" y="26">P-04 T0+T1+T2</text>
+  <rect class="bx" x="424" y="14" width="46" height="19" rx="2"/><text class="tx" x="429" y="26">P-05</text>
+  <rect class="bx" x="476" y="14" width="46" height="19" rx="2"/><text class="tx" x="481" y="26">P-06</text>
+  <rect class="bx" x="528" y="14" width="46" height="19" rx="2"/><text class="tx" x="533" y="26">P-07</text>
+  <rect class="bx" x="580" y="14" width="116" height="19" rx="2"/><text class="tx" x="585" y="26">P-08 scale up &rarr; tutup A</text>
+  <line class="ln" x1="236" y1="24" x2="240" y2="24"/><line class="ln" x1="288" y1="24" x2="292" y2="24"/>
+  <line class="ln" x1="340" y1="24" x2="344" y2="24"/><line class="ln" x1="418" y1="24" x2="422" y2="24"/>
+  <line class="ln" x1="470" y1="24" x2="474" y2="24"/><line class="ln" x1="522" y1="24" x2="526" y2="24"/>
+  <line class="ln" x1="574" y1="24" x2="578" y2="24"/>
+  <text class="gg" x="196" y="41">G-04</text><text class="gg" x="352" y="41">G-05 / G-06</text><text class="gg" x="482" y="41">G-07</text><text class="gg" x="586" y="41">G-08 (P-06) &middot; G-11</text>
+
+  <text class="hh" x="6" y="66">Cabang B &mdash; sekunder / tersier</text>
+  <rect class="bx" x="190" y="72" width="46" height="19" rx="2"/><text class="tx" x="195" y="84">S-01</text>
+  <rect class="bx" x="242" y="72" width="46" height="19" rx="2"/><text class="tx" x="247" y="84">S-02</text>
+  <rect class="bx" x="294" y="72" width="72" height="19" rx="2"/><text class="tx" x="299" y="84">S-03 T0+T1+T2</text>
+  <rect class="bx" x="372" y="72" width="46" height="19" rx="2"/><text class="tx" x="377" y="84">S-04</text>
+  <rect class="bx" x="424" y="72" width="46" height="19" rx="2"/><text class="tx" x="429" y="84">S-05</text>
+  <rect class="bx" x="476" y="72" width="46" height="19" rx="2"/><text class="tx" x="481" y="84">S-06</text>
+  <rect class="bx" x="528" y="72" width="46" height="19" rx="2"/><text class="tx" x="533" y="84">S-07</text>
+  <rect class="bx" x="580" y="72" width="46" height="19" rx="2"/><text class="tx" x="585" y="84">S-08</text>
+  <rect class="bx" x="632" y="72" width="46" height="19" rx="2"/><text class="tx" x="637" y="84">S-09</text>
+  <line class="ln" x1="236" y1="82" x2="240" y2="82"/><line class="ln" x1="288" y1="82" x2="292" y2="82"/>
+  <line class="ln" x1="366" y1="82" x2="370" y2="82"/><line class="ln" x1="418" y1="82" x2="422" y2="82"/>
+  <line class="ln" x1="470" y1="82" x2="474" y2="82"/><line class="ln" x1="522" y1="82" x2="526" y2="82"/>
+  <line class="ln" x1="574" y1="82" x2="578" y2="82"/><line class="ln" x1="626" y1="82" x2="630" y2="82"/>
+  <rect class="bx" x="190" y="95" width="116" height="19" rx="2"/><text class="tx" x="195" y="107">S-10 scale up &rarr; tutup B</text>
+  <polyline class="ln" points="655,91 655,104 310,104"/>
+  <text class="gg" x="298" y="68">G-05 / G-06</text><text class="gg" x="452" y="68">G-09 (S-04+S-06)</text><text class="gg" x="586" y="68">G-08</text><text class="gg" x="638" y="68">G-10</text><text class="gg" x="240" y="116">G-11</text>
+</svg>
+
+<h2>3. Tiga keputusan PRD yang sudah menjadi aturan &mdash; cukup dikonfirmasi</h2>
+<table>
+<thead><tr><th style="width:7%">Sumber</th><th style="width:22%">Keputusan Anda</th><th style="width:60%">Wujudnya di FSD</th><th>Konfirmasi</th></tr></thead>
+<tbody>
+<tr><td class="id">OQ-01</td><td>Empat blok tanda tangan form Word.</td><td>Rantai <span class="id">FAB-PRIMARY</span>/<span class="id">FAB-SECONDARY</span>: penulis &rarr; checker QC Supervisor &rarr; QC Manager, SCM Manager, QA Manager paralel (&sect;4.3). Cetak: <span class="code">Dibuat Oleh &middot; Diperiksa Oleh &middot; Disetujui Oleh (3 kolom)</span>; nama, peran, tanggal diambil dari keputusan terekam, bukan diketik di PDF (&sect;7.1, FSD-804).</td><td class="ans num">&#9744;&nbsp;sesuai</td></tr>
+<tr><td class="id">OQ-04</td><td>Lima peran yang kosong diberi hak sesuai tugas flowchart.</td><td>&sect;6 matriks 12 peran penuh dan normatif: R&amp;D pegang gambar teknis, standar warna, standar kemasan, scale up; SCM Staff pegang master supplier, penilaian, kutipan; QC Supervisor checker SBK/FAB dan pelaksana inspeksi; QC Manager dan QA Manager approver FAB; QA Supervisor approver rantai artwork dan baca audit.</td><td class="ans num">&#9744;&nbsp;sesuai</td></tr>
+<tr><td class="id">OQ-05</td><td>Semua kemasan wajib T0, T1, T2.</td><td>G-06 menutup tahap kutipan sampai ketiganya lulus; FSD-701 melarang T1 sebelum T0 lulus dan T2 sebelum T1 lulus; tidak ada aksi lewati level; kartu tahap menampilkan tiga chip; FAB mencetak tiga baris T (FSD-702, &sect;7.1).</td><td class="ans num">&#9744;&nbsp;sesuai</td></tr>
+</tbody></table>
+
+<h2>4. Enam pertanyaan yang jawabannya menjadi bawaan TSD</h2>
+<table>
+<thead><tr><th style="width:6%">ID</th><th style="width:13%">Area</th><th style="width:70%">Pertanyaan (tebal = bawaan FSD)</th><th>Jawaban</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-F1</td><td>FAB &times; kutipan</td><td>Form approval ditolak &mdash; kutipan yang sudah diterima <b>tetap berdiri</b> (FSD-806) karena harga bukan objek yang salah, atau kutipan ikut kembali ke menunggu?</td><td class="ans"></td></tr>
+<tr><td class="id">Q-F2</td><td>Sampel / dummy</td><td>Eskalasi otomatis setelah <b>2</b> putaran revisi (FSD-505) cukup, atau batasnya perlu bisa diatur per kategori?</td><td class="ans"></td></tr>
+<tr><td class="id">Q-F3</td><td>SLA</td><td>Peringatan 3 hari kerja dan tembusan ke manajer pada hari ke-5 (FSD-905) juga berlaku untuk langkah <i>checker</i>, atau <b>hanya approver</b>?</td><td class="ans"></td></tr>
+<tr><td class="id">Q-F4</td><td>Portal supplier</td><td>Supplier menerima email untuk <b>setiap</b> peristiwa N-11&hellip;N-14, atau ringkasan harian kecuali undangan mendekati tenggat?</td><td class="ans"></td></tr>
+<tr><td class="id">Q-F5</td><td>Scale up</td><td><b>Satu</b> record scale up per assignment (FSD-810), atau satu per batch produksi sehingga satu kemasan boleh punya beberapa?</td><td class="ans"></td></tr>
+<tr><td class="id">Q-F6</td><td>Peran rangkap</td><td>Satu orang boleh memegang dua peran (misal QC Supervisor + QC Manager di tim kecil)? Bila ya, FSD-611/G-01 tetap melarang ia memeriksa lalu menyetujui dokumennya sendiri &mdash; perlu dikonfirmasi.</td><td class="ans"></td></tr>
+</tbody></table>
+
+<h2>5. Tanda tangan gate FSD &mdash; per peran, beserta butir yang ia setujui</h2>
+<p style="margin:0 0 1.5pt 0;font-size:6pt;">Menandatangani berarti perilaku, field, validasi, status, dan izin pada FSD-PDS-002 v0.1 adalah yang akan dibangun; perubahan setelah ini adalah adendum berversi, bukan instruksi lisan ke pengembang. Kolom bagian 4 yang dibiarkan kosong dianggap menerima bawaan yang tertulis.</p>
+<table class="sign">
+<thead><tr><th style="width:13%">Peran</th><th style="width:39%">Butir FSD yang menjadi tanggung jawabnya</th><th style="width:16%">Nama</th><th style="width:10%">Tanda tangan</th><th style="width:8%">Tanggal</th><th>Putusan</th></tr></thead>
+<tbody>
+<tr><td>Penulis &mdash; Packaging Dev.</td><td>Daftar tahap P/S (FSD-502/503), cascade buka-kembali (FSD-510), kelengkapan dan kepengisian field FAB (FSD-801&hellip;806).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>QC Supervisor</td><td>Peran checker SBK dan FAB, template inspeksi dari spesifikasi, grup uji, pemisahan pelaksana/pemeriksa (S-7.1, FSD-701&hellip;710).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>QC Manager</td><td>Gerbang T0/T1/T2 (G-05/G-06), rantai spesifikasi, versi spesifikasi yang dipaku pada inspeksi (FSD-405/406, FSD-702).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>SCM Manager</td><td>Isolasi data supplier (FSD-601), field dan perbandingan kutipan, terima/tolak, penilaian supply service (S-6.4, FSD-602&hellip;608).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>QA Manager</td><td>Kosakata status (&sect;2.2.1), aturan tugas turunan (&sect;6.2), audit dan jejak akses (FSD-907/908), matriks izin (&sect;6).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>R&amp;D</td><td>Master kategori/item dan impor spesifikasi (FSD-401&hellip;409), standar kemasan (FSD-807/808), scale up (FSD-810/811).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+<tr><td>Marketing</td><td>Konsep dan BOD, tangkap kebutuhan kemasan, tinjauan desain (FSD-301&hellip;309), stasiun akhir sirkulasi artwork (FSD-706).</td><td></td><td></td><td></td><td class="num">&#9744; terima<br>&#9744; revisi</td></tr>
+</tbody></table>
+
+<div class="foot">Lembar persetujuan gate FSD &middot; FSD-PDS-002 v0.1 &middot; 23 Nov 2026 &middot; rujukan: PRD-PDS-001 v0.2 (30 hal.) dan FSD-PDS-002 v0.1 (36 hal.) &middot; salinan tanpa bagian 4 terisi dianggap persetujuan atas seluruh bawaan.</div>
+
+</body>
+</html>

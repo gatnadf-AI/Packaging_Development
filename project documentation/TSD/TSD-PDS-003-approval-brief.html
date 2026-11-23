@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>TSD Approval Brief</title>
+<style>
+  @page { size: A4; margin: 7mm 8mm 5mm 8mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 6.8pt; line-height: 1.24; color: #16202b; margin: 0; }
+  h1 { font-size: 11pt; margin: 0; color: #0f2c4d; letter-spacing: -0.2pt; }
+  h2 { font-size: 7pt; margin: 4pt 0 1.5pt 0; color: #0f2c4d; text-transform: uppercase; letter-spacing: 0.5pt; border-bottom: 1pt solid #0f2c4d; padding-bottom: 0.8pt; break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5pt 0 2.5pt 0; font-size: 6pt; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 1.6pt 2.4pt; font-weight: 600; border: 0.5pt solid #0f2c4d; }
+  td { padding: 1.6pt 2.4pt; border: 0.5pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f4f7fa; }
+  .num { text-align: center; white-space: nowrap; }
+  .id { font-family: Consolas, monospace; font-size: 5.8pt; color: #14416f; font-weight: 700; white-space: nowrap; }
+  .code { font-family: Consolas, monospace; font-size: 5.8pt; color: #3a3a3a; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2pt solid #0f2c4d; padding-bottom: 2.5pt; margin-bottom: 3pt; }
+  .hdr .brand { color: #b5122b; font-size: 7pt; font-weight: 700; letter-spacing: 1.5pt; }
+  .hdr .meta { text-align: right; font-size: 6pt; color: #44586c; }
+  .badge { display: inline-block; background: #b06d00; color: #fff; padding: 1pt 4pt; font-size: 5.8pt; font-weight: 700; letter-spacing: 0.7pt; }
+  .two { display: flex; gap: 4pt; }
+  .two > div { flex: 1; }
+  .two ul { margin: 0; padding-left: 8pt; }
+  .two li { margin-bottom: 1.2pt; }
+  .ans { background: #fffbe6 !important; }
+  .sign td { height: 11mm; }
+  .foot { font-size: 5.6pt; color: #647586; text-align: center; margin-top: 2pt; border-top: 0.5pt solid #c3cdd8; padding-top: 1.5pt; }
+  ul { margin: 0; padding-left: 9pt; }
+  li { margin-bottom: 0.8pt; }
+  svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="brand">PT. PPM</div>
+    <h1>Lembar Persetujuan &mdash; Gate TSD</h1>
+    <div style="font-size:6.2pt;color:#44586c;">TSD-PDS-003 v0.1 (30 hal.) &middot; dasar: PRD-PDS-001 v0.2 &amp; FSD-PDS-002 v0.2 (gate FSD sudah disetujui) &middot; 23 Nov 2026</div>
+  </div>
+  <div class="meta">
+    <span class="badge">1 HALAMAN &middot; BAWA KE RAPAT</span><br>
+    Setelah gate: Pengembangan Fase 1&ndash;6<br>
+    Isi kolom kuning pada bagian 4 &amp; 5.
+  </div>
+</div>
+
+<h2>1. Apa yang TSD tetapkan, dan apa yang tetap dari FSD</h2>
+<div class="two">
+  <div>
+    <ul>
+      <li><b>Ditetapkan:</b> cara membangun, bukan apa yang dibangun. 50 butir <span class="id">TSD-xxx</span> dan 12 ADR.</li>
+      <li>Skema logis lengkap: &plusmn;45 tabel, tipe kolom, indeks, dan aturan immutability <span class="code">audit_entries</span> sampai level grant MySQL.</li>
+      <li>Implementasi mesin persetujuan: snapshot rantai saat submit, penurunan status (bukan kolom status), 14 kelas gerbang G-01&hellip;G-14.</li>
+      <li>Lapisan format satu sumber (PHP = JS, fixture bersama) sehingga tanggal/angka rupiah tidak pernah tampil mentah.</li>
+      <li>Enam fase bertanda tangan, tiap fase punya exit check yang menunjuk klausa FSD.</li>
+      <li>Lingkungan diverifikasi nyata, bukan diasumsikan: PHP 8.3.30, MySQL 8.4.3, Node 22.22, tanpa Redis, tanpa xdebug.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Tidak diubah:</b> seluruh perilaku FSD. Bila TSD bertentangan dengan FSD, FSD menang dan TSD yang direvisi.</li>
+      <li>Alur flowchart, 2 cabang, T0+T1+T2 wajib, matriks izin, 4 blok tanda tangan FAB &mdash; semua diwarisi apa adanya.</li>
+      <li>Workflow <i>Substitusi Bahan Kemas</i> dan mockup layar dari file Excel tetap ditolak; tidak muncul di skema.</li>
+      <li><b>Masih di luar TSD:</b> design system visual (warna akhir, ikon, spacing) dan copy layar per kata; keduanya divalidasi saat demo Fase 1.</li>
+      <li>Isi <span class="code">.env</span> produksi, hosting, dan kebijakan backup di sisi IT &mdash; TSD hanya menetapkan bentuknya.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>2. Enam fase dan titik tanda tangannya (&sect;15)</h2>
+<svg viewBox="0 0 700 46">
+  <style>
+    .p{fill:#eef3f8;stroke:#14416f;stroke-width:1;} .t{font-size:7.4px;fill:#0f2c4d;font-weight:bold;font-family:Segoe UI,Arial;}
+    .s{font-size:6.2px;fill:#44586c;font-family:Segoe UI,Arial;} .a{fill:none;stroke:#647586;stroke-width:1;marker-end:url(#h);} .g{font-size:5.8px;fill:#b5122b;font-family:Segoe UI,Arial;font-weight:bold;}
+  </style>
+  <defs><marker id="h" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#647586"/></marker></defs>
+  <rect class="p" x="2" y="4" width="104" height="36" rx="2"/><text class="t" x="8" y="17">1 Pondasi</text><text class="s" x="8" y="26">peran &amp; izin</text><text class="g" x="8" y="36">gate: uji matriks</text>
+  <rect class="p" x="118" y="4" width="104" height="36" rx="2"/><text class="t" x="124" y="17">2 Master &amp; SBK</text><text class="s" x="124" y="26">impor 77 komp.</text><text class="g" x="124" y="36">gate: AC-C9</text>
+  <rect class="p" x="234" y="4" width="104" height="36" rx="2"/><text class="t" x="240" y="17">3 Mesin &amp; NPD</text><text class="s" x="240" y="26">tahap, gerbang</text><text class="g" x="240" y="36">gate: uji negatif G</text>
+  <rect class="p" x="350" y="4" width="104" height="36" rx="2"/><text class="t" x="356" y="17">4 Supplier &amp; QC</text><text class="s" x="356" y="26">portal &#183; T0&#8211;T2</text><text class="g" x="356" y="36">gate: AC-C1/2/3/5</text>
+  <rect class="p" x="466" y="4" width="104" height="36" rx="2"/><text class="t" x="472" y="17">5 FAB &amp; Scale Up</text><text class="s" x="472" y="26">dokumen resmi</text><text class="g" x="472" y="36">gate: AC-C4/7/10</text>
+  <rect class="p" x="582" y="4" width="116" height="36" rx="2"/><text class="t" x="588" y="17">6 Laporan &amp; serah</text><text class="s" x="588" y="26">laporan, push</text><text class="g" x="588" y="36">gate: AC-C6/8</text>
+  <line class="a" x1="106" y1="22" x2="118" y2="22"/><line class="a" x1="222" y1="22" x2="234" y2="22"/><line class="a" x1="338" y1="22" x2="350" y2="22"/><line class="a" x1="454" y1="22" x2="466" y2="22"/><line class="a" x1="570" y1="22" x2="582" y2="22"/>
+</svg>
+
+<h2>3. Enam keputusan gate FSD &mdash; periksa sudah benar dieksekusi</h2>
+<table>
+<thead><tr><th style="width:7%">Q-F</th><th style="width:22%">Keputusan Anda</th><th style="width:52%">Wujud teknis di TSD</th><th style="width:19%">Sesuai?</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-F1</td><td>Kutipan tetap (tidak dianulir)</td><td>Penolakan FAB tidak menyentuh status <span class="code">quotations</span>; uji fitur menegaskan tidak ada kaskade.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+<tr><td class="id">Q-F2</td><td>Dua putaran revisi</td><td><span class="code">workflow.revision_escalation_rounds = 2</span>; putaran ketiga menaikkan ke atasan approver.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+<tr><td class="id">Q-F3</td><td>SLA hanya approver</td><td>Job eskalasi menyaring <span class="code">action = 'APPROVE'</span>; langkah <i>checker</i> sengaja tidak ikut.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+<tr><td class="id">Q-F4</td><td>Ringkasan harian supplier</td><td>Baris <span class="code">digest = 1</span> dikirim satu email 08:00 WIB; undangan (N-11) dan tenggat (N-14) tetap langsung.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+<tr><td class="id">Q-F5</td><td>Satu scale-up per assignment</td><td>Partial unique index per assignment aktif; penugasan ulang memakai <span class="code">restart_of_id</span>, bukan menimpa.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+<tr><td class="id">Q-F6</td><td>Boleh rangkap dua peran</td><td>Hak di-union (TSD-520), tapi satu orang hanya boleh satu langkah per rantai; bila tidak bisa, submit ditolak dengan sebab yang disebut.</td><td class="ans">&#9744; sesuai &nbsp; &#9744; ubah</td></tr>
+</tbody></table>
+
+<h2>4. Enam pertanyaan yang harus dijawab di gate TSD</h2>
+<table>
+<thead><tr><th style="width:7%">Q-T</th><th style="width:29%">Keputusan</th><th style="width:47%">Pilihan dan akibatnya</th><th style="width:17%">Jawaban</th></tr></thead>
+<tbody>
+<tr><td class="id">Q-T1</td><td>Mesin cetak PDF (ADR-11)</td><td><b>Default: Dompdf</b> &mdash; murni PHP, tanpa dependensi, cocok untuk FAB. <span class="code">chrome</span> sebagai pilihan per dokumen untuk tabel SBK yang lebar. Alternatif: Chrome saja (lebih mirip browser, butuh path absolut di server).</td><td class="ans"></td></tr>
+<tr><td class="id">Q-T2</td><td>Tanpa Redis (ADR-05)</td><td>Antrean = <span class="code">database</span>, cache = <span class="code">file</span>, satu worker. Cukup untuk &plusmn;12 pengguna bersamaan. Bila Redis dipasang nanti, hanya nama driver yang berubah.</td><td class="ans"></td></tr>
+<tr><td class="id">Q-T3</td><td>Uji lewat browser (Dusk)</td><td><b>Rekomendasi: 3 alur saja</b> (login, satu persetujuan dengan lampiran, satu penawaran supplier). Sisanya uji otomatis di level server. Alternatif: tanpa Dusk, hanya checklist manual.</td><td class="ans"></td></tr>
+<tr><td class="id">Q-T4</td><td>Irama tanda tangan</td><td><b>Rekomendasi: demo + tanda tangan tiap fase</b> (6 kali). Risiko lebih kecil; penyimpangan terlihat di Fase 1, bukan di akhir. Alternatif: satu UAT besar setelah Fase 6.</td><td class="ans"></td></tr>
+<tr><td class="id">Q-T5</td><td>Data awal untuk uji</td><td>Impor spesifikasi 77 komponen asli pada Fase 2 dan pakai data nyata untuk UAT (uji format FAB/SBK jadi berarti). Alternatif: data contoh dulu, data asli saat go-live.</td><td class="ans"></td></tr>
+<tr><td class="id">Q-T6</td><td>Perawatan peran &amp; kalender</td><td>Siapa yang memastikan tiap peran punya pemegang (kalau kosong, rantai ditolak) dan mengisi kalender hari kerja: Admin internal, atau bagian tertentu (HR/IT) dengan hak terbatas?</td><td class="ans"></td></tr>
+</tbody></table>
+<div style="font-size:5.9pt;color:#44586c;margin:1pt 0 2pt 0;"><b>Tiga hal yang perlu Anda siapkan sebelum Fase 1 dimulai (bukan keputusan desain, hanya prasarana):</b> (1) nyalakan service MySQL 8.4.3 di Laragon &mdash; saat dokumen ini disusun port 3306 tertutup; (2) Composer tidak ada di PATH, jadi jalur penuh <span class="code">C:\laragon\bin\composer\composer.phar</span> yang dipakai; (3) untuk push ke <span class="code">github.com/gatnadf-AI/Packaging_Development</span> di Fase 6, Personal Access Token dari Anda tetap diperlukan (tidak disimpan di repo).</div>
+
+<h2>5. Tanda tangan gate TSD &mdash; mengesahkan mulai pembangunan</h2>
+<table>
+<thead><tr><th style="width:15%">Peran</th><th style="width:26%">Butir TSD yang disetujui</th><th style="width:16%">Nama</th><th style="width:14%">Tanda tangan</th><th style="width:9%">Tanggal</th><th style="width:16%">Putusan</th></tr></thead>
+<tbody>
+<tr class="sign"><td>Penulis &mdash; Teknik</td><td>Arsitektur, skema, mesin, rencana fase</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>QC Manager</td><td>&sect;3.3 inspeksi, &sect;4.4 gerbang T0/T1/T2, pin versi spesifikasi</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>SCM Manager</td><td>&sect;5.3 isolasi supplier, &sect;10 surat/antrean, pembekuan kutipan</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>QA Manager</td><td>&sect;11 audit immutabel, &sect;13 strategi uji, &sect;5 model izin</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>R&amp;D / Packaging Dev.</td><td>&sect;8 cetak FAB &amp; SBK, &sect;9 impor, &sect;15 urutan fase</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>Marketing</td><td>&sect;7 layar proyek/konsep, posisi sirkulasi artwork</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>IT / pemilik sistem</td><td>&sect;2.1 &amp; &sect;14 lingkungan, backup, scheduler, asumsi hosting</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+<tr class="sign"><td>Project Owner</td><td>Seluruh &sect;16 ADR dan &sect;15; persetujuan mulai koding</td><td></td><td></td><td></td><td>&#9744; terima &nbsp; &#9744; revisi</td></tr>
+</tbody></table>
+
+<div class="foot">TSD-PDS-003-v0.1.pdf &middot; lembar ini ringkasan rapat, isi yang mengikat adalah dokumen TSD dan FSD di atasnya &middot; PT PPM &mdash; Quality Management &amp; Quality Control Division</div>
+
+</body>
+</html>

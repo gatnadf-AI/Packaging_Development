@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRD — Packaging Development System</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 9.6pt; line-height: 1.5; color: #16202b; margin: 0;
+  }
+  h1 { font-size: 20pt; margin: 0 0 4pt 0; color: #0f2c4d; letter-spacing: -0.3pt; }
+  h2 { font-size: 13pt; margin: 20pt 0 6pt 0; color: #0f2c4d;
+       border-bottom: 2px solid #0f2c4d; padding-bottom: 3pt; break-after: avoid; }
+  h3 { font-size: 10.8pt; margin: 13pt 0 4pt 0; color: #14416f; break-after: avoid; }
+  h4 { font-size: 9.8pt; margin: 10pt 0 3pt 0; color: #14416f; break-after: avoid; }
+  p  { margin: 0 0 6pt 0; text-align: justify; }
+  ul, ol { margin: 0 0 7pt 0; padding-left: 15pt; }
+  li { margin-bottom: 2.5pt; }
+  table { width: 100%; border-collapse: collapse; margin: 5pt 0 10pt 0; font-size: 8.7pt; }
+  th { background: #0f2c4d; color: #fff; text-align: left; padding: 4pt 5pt; font-weight: 600;
+       border: 0.5pt solid #0f2c4d; }
+  td { padding: 3.5pt 5pt; border: 0.5pt solid #c3cdd8; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f4f7fa; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  table + p, table + h3 { break-before: avoid; }
+  .num { text-align: center; white-space: nowrap; }
+  .id { font-family: Consolas, monospace; font-size: 8.2pt; white-space: nowrap; color: #14416f; font-weight: 600; }
+  .cover { text-align: center; padding-top: 45mm; break-after: page; }
+  .cover .brand { color: #b5122b; font-size: 12pt; font-weight: 700; letter-spacing: 3pt; }
+  .cover .sub { font-size: 12.5pt; color: #44586c; margin-top: 6pt; }
+  .cover .meta { margin: 30pt auto 0 auto; width: 92mm; font-size: 9.5pt; text-align: left; }
+  .cover .meta td { border: none; padding: 2.5pt 4pt; }
+  .cover .meta td:first-child { color: #647586; width: 34mm; }
+  .badge { display: inline-block; background: #b5122b; color: #fff; padding: 2pt 8pt;
+           border-radius: 2pt; font-size: 8.5pt; font-weight: 700; letter-spacing: 1pt; }
+  .callout { border-left: 3pt solid #b5122b; background: #fdf3f4; padding: 7pt 9pt; margin: 8pt 0 10pt 0; }
+  .note { border-left: 3pt solid #14416f; background: #f1f5f9; padding: 7pt 9pt; margin: 8pt 0 10pt 0; }
+  .pagebreak { break-before: page; }
+  .toc { columns: 2; column-gap: 12mm; font-size: 9.2pt; }
+  .toc div { margin-bottom: 2.5pt; }
+  .toc .l1 { font-weight: 600; color: #0f2c4d; }
+  .toc .l2 { padding-left: 9pt; color: #44586c; }
+  .pri-h { color: #b5122b; font-weight: 700; }
+  .pri-m { color: #b06d00; font-weight: 700; }
+  .pri-l { color: #3f7d3f; font-weight: 700; }
+  svg { width: 100%; height: auto; display: block; margin: 4pt 0 8pt 0; }
+  .n-rect { fill: #eef3f8; stroke: #14416f; stroke-width: 1; }
+  .n-rect-q { fill: #fdf0f1; stroke: #b5122b; stroke-width: 1; }
+  .n-rect-e { fill: #eef7ee; stroke: #3f7d3f; stroke-width: 1; }
+  .n-txt { font-family: "Segoe UI", Arial; font-size: 8.2pt; fill: #16202b; text-anchor: middle; }
+  .n-code { font-family: Consolas, monospace; font-size: 6.6pt; fill: #647586; text-anchor: middle; }
+  .e { stroke: #44586c; stroke-width: 1; fill: none; marker-end: url(#ar); }
+  .lbl { font-family: "Segoe UI", Arial; font-size: 8pt; fill: #0f2c4d; font-weight: 700; }
+  .sm { font-family: "Segoe UI", Arial; font-size: 8.4pt; fill: #16202b; }
+  .sign { margin-top: 14pt; }
+  .sign td { height: 42pt; vertical-align: bottom; }
+  .foot { font-size: 8pt; color: #647586; text-align: center; margin-top: 16pt;
+          border-top: 0.5pt solid #c3cdd8; padding-top: 5pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">PT. PPM</div>
+  <div style="margin-top:6pt;font-size:9pt;color:#647586;">Quality Management &amp; Quality Control Division</div>
+  <div style="margin-top:26pt;"><span class="badge">DRAFT FOR APPROVAL</span></div>
+  <h1 style="margin-top:14pt;">Product Requirements Document</h1>
+  <div class="sub">Packaging Development System<br>New Product Development (NPD) Workflow Management</div>
+  <table class="meta">
+    <tr><td>Document ID</td><td><b>PRD-PDS-001</b></td></tr>
+    <tr><td>Version</td><td><b>0.2</b> — requirement baseline</td></tr>
+    <tr><td>Date</td><td>21 November 2026 (v0.1 issued 20 November 2026)</td></tr>
+    <tr><td>Status</td><td>Approved to proceed to FSD — OQ-01/04/05 resolved 21 Nov 2026</td></tr>
+    <tr><td>Author</td><td>Business Analysis (AI-assisted)</td></tr>
+    <tr><td>Primary source</td><td>NPD process flowchart (stakeholder-supplied)</td></tr>
+    <tr><td>Next gate</td><td>Approval &rarr; FSD &rarr; TSD &rarr; Development</td></tr>
+  </table>
+</div>
+
+<h2>1. Document Control</h2>
+
+<h3>1.1 Version history</h3>
+<table>
+<thead><tr><th style="width:12%">Version</th><th style="width:16%">Date</th><th style="width:22%">Author</th><th>Change summary</th></tr></thead>
+<tbody>
+<tr><td class="num">0.1</td><td class="num">2026-11-20</td><td>Business Analysis</td><td>First issue. Process model rebuilt from the NPD flowchart as the authoritative source; Excel-defined substitution workflow and its screen mockups removed from the requirement basis.</td></tr>
+<tr><td class="num">0.2</td><td class="num">2026-11-21</td><td>Business Analysis</td><td>Blocking open questions closed by the Product Owner. <b>OQ-01</b> resolved to the Word form signature blocks. <b>OQ-04</b> resolved: the five roles left blank in the source access matrix are granted exactly the duties the flowchart assigns them. <b>OQ-05</b> resolved <i>against</i> the drafting assumption: T0, T1 and T2 are all mandatory for every packaging item, not only for primary packs — FR-1105, BR-05 and the stage exits of P-04 / S-03 amended accordingly. Remaining open questions carry their stated defaults into the FSD.</td></tr>
+</tbody></table>
+
+<h3>1.2 Source-of-truth hierarchy</h3>
+<p>Two supplied sources conflict. This document resolves the conflict explicitly, and every requirement below carries a source column so reviewers can see exactly where each statement came from.</p>
+<table>
+<thead><tr><th style="width:8%">Rank</th><th style="width:34%">Source</th><th style="width:20%">Status</th><th>How it is used</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><b>NPD process flowchart</b> (stakeholder image)</td><td class="pri-h">AUTHORITATIVE</td><td>Defines the end-to-end business process, all stages, both packaging branches, handoffs and the scale-up exit. Where any other source disagrees, the flowchart wins.</td></tr>
+<tr><td class="num">2</td><td><b>Spesifikasi Bahan Pengemas</b> document (PT PPM, ref. QC/BP/013/04)</td><td class="pri-h">AUTHORITATIVE</td><td>Defines the real content and layout of the packaging-material specification record and its test parameters.</td></tr>
+<tr><td class="num">3</td><td><b>Form Approval Bahan Kemas</b> template (Word)</td><td class="pri-m">AUTHORITATIVE for document output only</td><td>Defines the printed approval form layout and signature blocks. Not used to define process flow.</td></tr>
+<tr><td class="num">4</td><td><b>SBK Rancangan Web V1.xlsx</b> — <i>Hak Akses</i>, <i>User Story</i>, <i>Dev Task Timeline</i> sheets</td><td class="pri-m">SECONDARY — valid input</td><td>Role inventory, access matrix, user stories and technical feature list are retained as supporting requirements.</td></tr>
+<tr><td class="num">5</td><td><b>SBK Rancangan Web V1.xlsx</b> — <i>Sheet1</i>, <i>desain &amp; mockup</i>, <i>approval level</i> sheets</td><td class="pri-h">REJECTED as requirement source</td><td>The "Substitusi Bahan Kemas" workflow and the two screen mockups are withdrawn. They describe a substitution side-process and screen layouts that do not match the NPD flowchart.</td></tr>
+<tr><td class="num">6</td><td>Existing prototype application (screen recording)</td><td class="pri-h">REJECTED — negative reference</td><td>Built from source #5. Retained only as evidence of what must not be repeated (see §3.3).</td></tr>
+</tbody></table>
+
+<div class="callout">
+<b>Consequence of the rejection in rank 5.</b> The rejected Excel specified a document type called "Request Approval Bahan Kemas" with columns <i>Doc. No / Jenis Kemasan / Nama Kemasan / Dibuat Oleh / No. Quotation / Status Approval</i> and a four-state document lifecycle. That object does not exist in the NPD flowchart and is <b>not</b> a requirement of this system. The flowchart's approval object is the <b>Form Approval Bahan Kemas</b> at the end of each packaging branch (stage <span class="id">P-07</span> / <span class="id">S-06</span>), and its approval chain must be re-derived from the flowchart and the Word template rather than inherited from the withdrawn Excel. This is recorded as open question <span class="id">OQ-01</span>, <b>now resolved</b>: the approval chain is taken from the Word form signature blocks (see &sect;18).
+</div>
+
+<h3>1.3 Intended audience</h3>
+<p>Product Owner and approving management (BOD), the user representatives who operate the process today (Marketing, R&amp;D / Packaging Development, SCM, QC, QA, Suppliers liaison), and the delivery team who will produce the Functional Specification Document (FSD) and Technical Specification Document (TSD) from this baseline. The PRD deliberately stops at <i>what</i> the system must do and <i>why</i>; field-level validation, screen behaviour and schema appear in the FSD and TSD.</p>
+
+<h3>1.4 Definitions and abbreviations</h3>
+<table>
+<thead><tr><th style="width:16%">Term</th><th>Meaning as used in this document</th></tr></thead>
+<tbody>
+<tr><td class="id">NPD</td><td>New Product Development — creation of a product that did not previously exist.</td></tr>
+<tr><td class="id">COGS</td><td>Cost of Goods Sold — the production cost target set during concept development.</td></tr>
+<tr><td class="id">BOD</td><td>Board of Directors — evaluates and approves or rejects the concept before work proceeds.</td></tr>
+<tr><td class="id">SCM</td><td>Supply Chain Management — sources packaging material, reviews supplier supply-service quality, reviews quotations.</td></tr>
+<tr><td class="id">QC / QA</td><td>Quality Control / Quality Assurance — perform and approve packaging inspection.</td></tr>
+<tr><td class="id">R&amp;D / Pkg Dev</td><td>Research &amp; Development / Packaging Development — produces and approves technical drawings and packaging standards.</td></tr>
+<tr><td class="id">MKT</td><td>Marketing — owns the product brief, the NPD timeline, and packaging design review.</td></tr>
+<tr><td class="id">Kemasan Primer</td><td>Primary packaging — touches the bulk product directly (bottle, crimp pump, tube, sachet).</td></tr>
+<tr><td class="id">Kemasan Sekunder</td><td>Secondary packaging — protects/groups the primary pack (sticker, label, carton box, display).</td></tr>
+<tr><td class="id">Kemasan Tersier</td><td>Tertiary packaging — shipping and storage (inner, partition, master box, pallet, shrink wrap).</td></tr>
+<tr><td class="id">T0 / T1 / T2</td><td>Successive packaging trial rounds. Each is checked technically and visually before the next.</td></tr>
+<tr><td class="id">Dummy / Mold</td><td>Sample of the primary-packaging moulding before production tooling is committed.</td></tr>
+<tr><td class="id">Blank sample</td><td>Unprinted sample supplied by a candidate supplier during pitching.</td></tr>
+<tr><td class="id">Proofprint</td><td>Printed sample of secondary packaging used to fix colour and artwork before mass production.</td></tr>
+<tr><td class="id">Artwork / CRB</td><td>Print-ready artwork and Colour Reference Book standard circulated for multi-party approval.</td></tr>
+<tr><td class="id">PPOS</td><td>Production/quality sign-off circulation referenced alongside colour-range approval.</td></tr>
+<tr><td class="id">MOQ</td><td>Minimum Order Quantity — quoted by supplier alongside price and lead time.</td></tr>
+<tr><td class="id">SBK</td><td>Spesifikasi Bahan Kemas — packaging material specification document.</td></tr>
+<tr><td class="id">Scale Up</td><td>Transition from development to mass production against the approved standard.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">2. Executive Summary</h2>
+<p>PT. PPM develops new products whose packaging must pass through a long, multi-party chain before mass production can begin. Today that chain runs across paper forms, Word documents, spreadsheets and hallway handoffs. Nothing in the current state can answer, at any moment, the two questions management actually asks: <i>which NPD products are stuck, at which packaging stage, waiting on whom</i>, and <i>what was the approved standard and who signed it</i>.</p>
+<p>This project delivers a <b>Packaging Development System</b>: a web application that models the NPD packaging process exactly as the authoritative flowchart defines it — concept and COGS target with BOD evaluation, marketing product brief and NPD timeline, packaging material sourcing, then the two parallel packaging tracks (primary, and secondary/tertiary) through technical drawing, supplier pitching and trial samples, T0/T1/T2 inspection, marketing design review, quotation, the packaging-material approval form, master product and standard creation, artwork and proofprint circulation, and finally scale up.</p>
+<p>The system is built around one organising idea: <b>a stage is never "done" until the party who owns it records a decision, and every decision is permanent, attributable and retrievable.</b> That single property turns the flowchart from a picture into a working tracker, a document repository and an audit trail at the same time. Access is controlled per role per action using the supplied access matrix, and the two documents the business already signs — the packaging-material approval form and the packaging material specification — are generated by the system in their current official layout rather than re-typed.</p>
+<p>Delivery follows a formal SDLC: this PRD is approved first, then the FSD, then the TSD, then phased development. Scope is deliberately bounded to the NPD flowchart plus the supplier portal and the QC module, with explicit exclusions in §5.2.</p>
+
+<h2>3. Background and Problem Statement</h2>
+
+<h3>3.1 Current process</h3>
+<p>Packaging development for a new product involves at least eight internal parties (Marketing, BOD, R&amp;D/Packaging Development, SCM, QC, QA, and the supplier) and three packaging categories that do not progress at the same speed. A primary pack such as a crimp pump requires mould/dummy approval before tooling is committed; a secondary pack such as a sticker requires artwork and colour-range circulation. These run in parallel and rejoin only near the end, at scale up.</p>
+
+<h3>3.2 Problems observed</h3>
+<table>
+<thead><tr><th style="width:6%">#</th><th style="width:30%">Problem</th><th>Consequence today</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>No single view of process state</td><td>Management cannot see which stage an NPD packaging item is at or who is holding it; status is gathered by asking people.</td></tr>
+<tr><td class="num">2</td><td>Decisions are not attributable</td><td>Approvals on paper or in chat cannot be reliably reconstructed later; when a mass-production defect traces back to packaging, the approved standard and its sign-off cannot be produced quickly.</td></tr>
+<tr><td class="num">3</td><td>Parallel branches desynchronise</td><td>Primary and secondary/tertiary tracks advance independently; one branch reaches quotation while the other is still at drawing review, and nobody is forced to reconcile before scale up.</td></tr>
+<tr><td class="num">4</td><td>Documents are re-typed</td><td>The packaging material specification and the approval form are recreated per product in Word, introducing transcription errors in test parameters, tolerances and effective dates.</td></tr>
+<tr><td class="num">5</td><td>Supplier interaction is unrecorded</td><td>Pitching, blank samples, quotations and supply-service evaluations live in email; there is no comparable history to judge a supplier on, and no trail when a quotation changes.</td></tr>
+<tr><td class="num">6</td><td>Inspection results are not structured</td><td>T0/T1/T2 technical and visual results are captured as free text, so pass/fail trends per packaging item cannot be measured.</td></tr>
+</tbody></table>
+
+<h3>3.3 Negative reference — the existing prototype</h3>
+<p>A prototype built from the now-rejected Excel mockups was reviewed and is recorded here as a negative reference, so that the same failures are not repeated in delivery. Its defects are requirements in disguise.</p>
+<table>
+<thead><tr><th style="width:34%">Observed defect</th><th>What this system must do instead</th></tr></thead>
+<tbody>
+<tr><td>Substitution modelled as a project pipeline with progress cards</td><td>Model the process the flowchart actually defines, with named stages, owners and decisions (§7).</td></tr>
+<tr><td>Navigation repeated the same three items under NPD, EPD and SBK</td><td>One menu entry per real module; no duplicated sub-menus (§11).</td></tr>
+<tr><td>Raw machine values surfaced in the UI (unformatted ISO timestamps, "not set" placeholders)</td><td>Every displayed value is formatted for a human, or the field is hidden (§10, NFR-07).</td></tr>
+<tr><td>Master-data counts read zero while the specification table held 77 components</td><td>Master data is one connected model; derived counts are computed from live relations (§12).</td></tr>
+<tr><td>Wide tables truncating nearly every column</td><td>Lists show the columns a decision needs; full detail opens in a detail view (§11).</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">4. Goals and Success Metrics</h2>
+<table>
+<thead><tr><th style="width:6%">#</th><th style="width:26%">Goal</th><th style="width:30%">Metric</th><th style="width:16%">Baseline (manual)</th><th>Target after Go-Live</th></tr></thead>
+<tbody>
+<tr><td class="num">G-1</td><td>Single source of truth for NPD packaging status</td><td>Percentage of active NPD packaging items whose current stage and pending owner are visible without asking</td><td>0%</td><td>100% within 1 working day of the stage change</td></tr>
+<tr><td class="num">G-2</td><td>Full attribution of every approval decision</td><td>Decisions with actor, role, timestamp, comment and version retrievable on demand</td><td>Not measurable</td><td>100%, exportable in under 1 minute</td></tr>
+<tr><td class="num">G-3</td><td>Shorter approval cycle time</td><td>Median elapsed days from quotation accepted to Form Approval Bahan Kemas closed</td><td>To be measured in first 30 days</td><td>30% reduction against measured baseline</td></tr>
+<tr><td class="num">G-4</td><td>Eliminate re-typed specification errors</td><td>Specification documents generated from data vs. typed by hand</td><td>0% generated</td><td>100% generated from stored data</td></tr>
+<tr><td class="num">G-5</td><td>Comparable supplier history</td><td>Suppliers with recorded supply-service evaluation and quotation history</td><td>0</td><td>100% of suppliers used on NPD items</td></tr>
+<tr><td class="num">G-6</td><td>Structured inspection data</td><td>T0/T1/T2 results stored as pass/fail per parameter rather than free text</td><td>0%</td><td>100% of inspections</td></tr>
+<tr><td class="num">G-7</td><td>Adoption</td><td>Active users per role group logging in during a week</td><td>n/a</td><td>&ge;90% of provisioned users by end of month 2</td></tr>
+</tbody></table>
+<div class="note"><b>Baseline note.</b> G-3 has no trustworthy manual baseline today. The first 30 days after Go-Live are used to measure it; the reduction target is then confirmed against that measurement rather than asserted now.</div>
+
+<h2>5. Scope</h2>
+
+<h3>5.1 In scope</h3>
+<ol>
+<li>The complete NPD packaging process exactly as the authoritative flowchart defines it: concept development with COGS target and BOD evaluation; product summary and NPD form by Marketing; NPD timeline; packaging material sourcing; the <b>primary packaging</b> branch; the <b>secondary and tertiary packaging</b> branch; and scale up as the exit of both branches.</li>
+<li>Master data: packaging items and categories (primary/secondary/tertiary), suppliers, packaging material specifications.</li>
+<li><b>Supplier portal</b> — a restricted supplier-facing area for pitching and blank-sample submission, quotation entry, and receipt of artwork/proofprint requests and revision notes.</li>
+<li><b>QC module</b> — T0/T1/T2 inspection with per-parameter pass/fail, application and transport testing, and colour-range circulation.</li>
+<li>Approval workflows with permanent decision history, in-app and email notifications, audit trail, dashboards, and PDF/Excel export of project, inspection, supplier-evaluation and approval records.</li>
+<li>Generation of the two official documents — Form Approval Bahan Kemas and Spesifikasi Bahan Pengemas — in their existing layout.</li>
+<li>Administration: user management, role assignment, configurable access matrix, announcements, password reset.</li>
+</ol>
+
+<h3>5.2 Out of scope</h3>
+<ol>
+<li><b>The substitution-of-packaging-material process as specified in the rejected Excel sheets.</b> The flowchart does not contain it. If the business still needs substitution, it is a separate change request and a separate PRD — see <span class="id">OQ-02</span>.</li>
+<li><b>EPD (existing product development)</b> as a distinct process. The flowchart models NPD only. The data model will not prevent adding EPD later as a project type.</li>
+<li>Integration with ERP, inventory, procurement or finance systems; no purchase orders, stock or costing postings leave this system.</li>
+<li>Legally certified digital signatures. Approval is recorded as an attributed in-system decision plus a printed signature block, matching how the paper form works today.</li>
+<li>Native mobile applications; the web interface is responsive but no app is delivered.</li>
+<li>Formula/product development, stability testing, and regulatory/registration workflows.</li>
+<li>Migration of historical paper records. Legacy data is loaded only where it exists in usable electronic form (see §17 dependencies).</li>
+<li>Multi-language interface. The interface is delivered in one language; see <span class="id">OQ-03</span>.</li>
+</ol>
+
+<h2 class="pagebreak">6. Stakeholders, Roles and Access</h2>
+
+<h3>6.1 Role inventory and responsibilities</h3>
+<p>Roles are taken from the <i>Hak Akses</i> sheet of the supplied workbook (secondary but valid input), then mapped onto the parties who actually own stages in the flowchart.</p>
+<table>
+<thead><tr><th style="width:18%">Role</th><th style="width:30%">Responsibility in the process</th><th style="width:26%">Flowchart stages owned</th><th>System rights summary</th></tr></thead>
+<tbody>
+<tr><td><b>Admin</b></td><td>Owns the platform, not the process.</td><td>—</td><td>Full: users, roles, access matrix, audit log, announcements, all data.</td></tr>
+<tr><td><b>Marketing</b></td><td>Creates the concept and product brief; owns the NPD timeline; reviews packaging design.</td><td><span class="id">NPD-01</span> <span class="id">NPD-02</span> <span class="id">NPD-03</span> <span class="id">S-04</span></td><td>Create/edit briefs and timeline; artwork circulation; view all projects; export reports.</td></tr>
+<tr><td><b>BOD</b></td><td>Evaluates and approves or rejects the concept before work continues; approves technical drawings.</td><td><span class="id">NPD-01</span> decision, <span class="id">P-01</span></td><td>Record concept decision; approve technical drawing; view all projects and approval history.</td></tr>
+<tr><td><b>R&amp;D / Packaging Dev Staff</b></td><td>Produces and approves technical drawings; reviews dummy/mould and blank samples; builds master product and packaging standards.</td><td><span class="id">P-01</span> <span class="id">P-03</span> <span class="id">S-01</span> <span class="id">S-02</span> <span class="id">P-06</span> <span class="id">S-08</span></td><td>CRUD packaging master data; upload drawings; review samples; manage standards; create approval requests.</td></tr>
+<tr><td><b>Supplier</b></td><td>Submits capability, blank samples, artwork and proofprints; quotes price, MOQ and lead time.</td><td><span class="id">S-02</span> <span class="id">S-09</span> inputs, <span class="id">P-05</span>/<span class="id">S-05</span> inputs</td><td>Portal only: own pitching, samples, quotations, artwork; read own history. Approval history is read-only.</td></tr>
+<tr><td><b>SCM Staff</b></td><td>Sources packaging material; prepares quotations for review.</td><td><span class="id">NPD-04</span></td><td>Operational sourcing and quotation preparation.</td></tr>
+<tr><td><b>SCM Manager</b></td><td>Reviews and evaluates supplier supply-service quality; reviews and approves quotations; manages supplier master.</td><td><span class="id">P-02</span> <span class="id">P-05</span> <span class="id">S-05</span></td><td>CRUD supplier master; evaluate suppliers; approve/reject quotations; export reports.</td></tr>
+<tr><td><b>QC Supervisor</b></td><td>Checks packaging approval requests; inspects dummy/mould and samples; circulates artwork.</td><td>Support <span class="id">P-03</span> <span class="id">P-04</span> <span class="id">S-03</span></td><td>Check and forward decisions; record inspections.</td></tr>
+<tr><td><b>QC Manager</b></td><td>Approves packaging material; owns colour-range approval; approves technical drawings.</td><td><span class="id">P-01</span> <span class="id">P-07</span> <span class="id">S-06</span> colour range</td><td>Approve; manage colour standards; export reports.</td></tr>
+<tr><td><b>QA Supervisor</b></td><td>Supports artwork circulation and specification conformity.</td><td>Support <span class="id">S-07</span></td><td>Participate in circulation; view inspection history.</td></tr>
+<tr><td><b>QA Manager</b></td><td>Approves packaging material and artwork circulation; inspects T0/T1/T2 and transport tests.</td><td><span class="id">P-04</span> <span class="id">S-03</span> <span class="id">S-07</span> <span class="id">P-07</span>/<span class="id">S-06</span> approval</td><td>Approve; record and approve inspections and transport tests.</td></tr>
+</tbody></table>
+
+<div class="callout">
+<b>Gap found in the supplied access matrix.</b> The <i>Hak Akses</i> sheet lists twelve role columns but populates grants for only seven of them (Admin, Marketing, BOD, Packaging Dev Staff, Supplier, SCM Manager, QA Manager). <b>R&amp;D, SCM Staff, QC Supervisor, QC Manager and QA Supervisor have no explicit grants at all</b>, even though the flowchart makes QC Supervisor and QC Manager unavoidable participants in drawing approval, sample review and the packaging approval form. The responsibilities in §6.1 for those five roles are therefore <b>my inference from the flowchart, not data from the source</b>, and must be confirmed before the FSD fixes the permission model. See <span class="id">OQ-04</span>.
+</div>
+
+<h3>6.2 Access model principles</h3>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:28%">Principle</th><th>Requirement</th></tr></thead>
+<tbody>
+<tr><td class="id">AC-01</td><td>Three grant levels</td><td>Each role/feature pair resolves to one of: <b>Full</b> (read, create, edit, decide), <b>Read-only</b>, or <b>No access</b>, matching the source matrix notation.</td></tr>
+<tr><td class="id">AC-02</td><td>Feature-level granularity</td><td>Permissions are granted per feature within a module, not per module, so that e.g. Supplier can act on quotations but only read approval history.</td></tr>
+<tr><td class="id">AC-03</td><td>Decide is a distinct right</td><td>Recording an approval or rejection is a separate right from editing the underlying record; a user cannot both author and approve the same document version.</td></tr>
+<tr><td class="id">AC-04</td><td>Runtime-configurable</td><td>Admin can change the matrix without a code release; changes take effect on the affected user's next request.</td></tr>
+<tr><td class="id">AC-05</td><td>Deny by default</td><td>A role with no explicit grant has no access. Nothing is visible because it was forgotten.</td></tr>
+<tr><td class="id">AC-06</td><td>Supplier isolation</td><td>A supplier can never see another supplier's prices, samples, evaluations or quotations.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">7. Process Model (Primary Requirement)</h2>
+<p>This section is the authoritative translation of the NPD flowchart. Every stage carries an identifier used by the functional requirements in §8 and by the FSD. Stage ownership comes from the flowchart; where the flowchart does not name an actor, the actor is inferred and marked <i>[inferred]</i>.</p>
+
+<h3>7.1 Stage map</h3>
+<svg viewBox="0 0 1000 610" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#44586c"/></marker></defs>
+<text x="20" y="18" class="lbl">Common front end — Marketing, BOD, SCM</text>
+<g><rect x="20" y="28" width="200" height="46" class="n-rect"/><text x="120" y="48" class="n-txt">Concept development</text><text x="120" y="59" class="n-txt">+ COGS target, BOD eval.</text><text x="120" y="69" class="n-code">NPD-01</text></g>
+<g><rect x="250" y="28" width="200" height="46" class="n-rect"/><text x="350" y="48" class="n-txt">Product summary &amp;</text><text x="350" y="59" class="n-txt">NPD form (Marketing)</text><text x="350" y="69" class="n-code">NPD-02</text></g>
+<g><rect x="480" y="28" width="200" height="46" class="n-rect"/><text x="580" y="48" class="n-txt">NPD timeline</text><text x="580" y="59" class="n-txt">made by Marketing</text><text x="580" y="69" class="n-code">NPD-03</text></g>
+<g><rect x="710" y="28" width="200" height="46" class="n-rect"/><text x="810" y="48" class="n-txt">Sourcing packaging</text><text x="810" y="59" class="n-txt">material</text><text x="810" y="69" class="n-code">NPD-04</text></g>
+<path class="e" d="M220,51 L250,51"/><path class="e" d="M450,51 L480,51"/><path class="e" d="M680,51 L710,51"/>
+<path class="e" d="M810,74 L810,104 L120,104 L120,132"/>
+<text x="20" y="126" class="lbl">Branch A — Primary packaging (bottle / crimp pump: touches the bulk)</text>
+<g><rect x="20" y="136" width="170" height="46" class="n-rect"/><text x="105" y="156" class="n-txt">Review &amp; approval</text><text x="105" y="167" class="n-txt">technical drawing</text><text x="105" y="177" class="n-code">P-01</text></g>
+<g><rect x="215" y="136" width="170" height="46" class="n-rect"/><text x="300" y="156" class="n-txt">SCM review &amp; eval of</text><text x="300" y="167" class="n-txt">supply service quality</text><text x="300" y="177" class="n-code">P-02</text></g>
+<g><rect x="410" y="136" width="170" height="46" class="n-rect"/><text x="495" y="156" class="n-txt">Review sample</text><text x="495" y="167" class="n-txt">dummy (mold)</text><text x="495" y="177" class="n-code">P-03</text></g>
+<g><rect x="605" y="136" width="170" height="46" class="n-rect-q"/><text x="690" y="156" class="n-txt">Inspection T0/T1/T2</text><text x="690" y="167" class="n-txt">technical &amp; visual</text><text x="690" y="177" class="n-code">P-04</text></g>
+<g><rect x="800" y="136" width="170" height="46" class="n-rect"/><text x="885" y="161" class="n-txt">Quotation</text><text x="885" y="177" class="n-code">P-05</text></g>
+<path class="e" d="M190,159 L215,159"/><path class="e" d="M385,159 L410,159"/><path class="e" d="M580,159 L605,159"/><path class="e" d="M775,159 L800,159"/>
+<path class="e" d="M885,182 L885,212 L105,212 L105,240"/>
+<g><rect x="20" y="244" width="170" height="46" class="n-rect"/><text x="105" y="264" class="n-txt">Master product</text><text x="105" y="275" class="n-txt">&amp; standard</text><text x="105" y="285" class="n-code">P-06</text></g>
+<g><rect x="215" y="244" width="170" height="46" class="n-rect-q"/><text x="300" y="264" class="n-txt">Form approval</text><text x="300" y="275" class="n-txt">bahan kemas</text><text x="300" y="285" class="n-code">P-07</text></g>
+<g><rect x="410" y="244" width="170" height="46" class="n-rect-e"/><text x="495" y="269" class="n-txt">Scale Up</text><text x="495" y="285" class="n-code">P-08</text></g>
+<path class="e" d="M190,267 L215,267"/><path class="e" d="M385,267 L410,267"/>
+
+<text x="20" y="330" class="lbl">Branch B — Secondary (sticker, kotak) and Tertiary (inner, partisi, master box)</text>
+<g><rect x="20" y="340" width="150" height="46" class="n-rect"/><text x="95" y="360" class="n-txt">Technical drawing</text><text x="95" y="371" class="n-txt">created</text><text x="95" y="381" class="n-code">S-01</text></g>
+<g><rect x="195" y="340" width="150" height="46" class="n-rect"/><text x="270" y="360" class="n-txt">Supplier pitching &amp;</text><text x="270" y="371" class="n-txt">blank sample trial</text><text x="270" y="381" class="n-code">S-02</text></g>
+<g><rect x="370" y="340" width="150" height="46" class="n-rect-q"/><text x="445" y="360" class="n-txt">Inspection T0/T1/T2</text><text x="445" y="371" class="n-txt">technical &amp; visual</text><text x="445" y="381" class="n-code">S-03</text></g>
+<g><rect x="545" y="340" width="150" height="46" class="n-rect"/><text x="620" y="360" class="n-txt">Design review</text><text x="620" y="371" class="n-txt">by Marketing</text><text x="620" y="381" class="n-code">S-04</text></g>
+<g><rect x="720" y="340" width="150" height="46" class="n-rect"/><text x="795" y="365" class="n-txt">Quotation</text><text x="795" y="381" class="n-code">S-05</text></g>
+<path class="e" d="M170,363 L195,363"/><path class="e" d="M345,363 L370,363"/><path class="e" d="M520,363 L545,363"/><path class="e" d="M695,363 L720,363"/>
+<path class="e" d="M795,386 L795,416 L95,416 L95,444"/>
+<g><rect x="20" y="448" width="150" height="46" class="n-rect-q"/><text x="95" y="468" class="n-txt">Form approval</text><text x="95" y="479" class="n-txt">bahan kemas</text><text x="95" y="489" class="n-code">S-06</text></g>
+<g><rect x="195" y="448" width="150" height="46" class="n-rect-q"/><text x="270" y="468" class="n-txt">Artwork request &amp;</text><text x="270" y="479" class="n-txt">circulation</text><text x="270" y="489" class="n-code">S-07</text></g>
+<g><rect x="370" y="448" width="150" height="46" class="n-rect"/><text x="445" y="468" class="n-txt">Master product</text><text x="445" y="479" class="n-txt">created</text><text x="445" y="489" class="n-code">S-08</text></g>
+<g><rect x="545" y="448" width="150" height="46" class="n-rect"/><text x="620" y="468" class="n-txt">Proofprint sample</text><text x="620" y="479" class="n-txt">&amp; standard</text><text x="620" y="489" class="n-code">S-09</text></g>
+<g><rect x="720" y="448" width="150" height="46" class="n-rect-e"/><text x="795" y="473" class="n-txt">Scale Up</text><text x="795" y="489" class="n-code">S-10</text></g>
+<path class="e" d="M170,471 L195,471"/><path class="e" d="M345,471 L370,471"/><path class="e" d="M520,471 L545,471"/><path class="e" d="M695,471 L720,471"/>
+<path d="M120,104 L120,132" class="e"/>
+<g><rect x="20" y="530" width="860" height="52" fill="#f4f7fa" stroke="#c3cdd8"/>
+<text x="34" y="549" class="sm"><tspan font-weight="700">Legend.</tspan>  Blue = process stage  ·  Red = inspection or approval gate (a decision must be recorded to advance)</text>
+<text x="34" y="565" class="sm">Green = Scale Up, the exit of a branch. Branch A and Branch B run in parallel from NPD-04 and must both reach Scale Up.</text>
+<text x="34" y="578" class="sm">Stage identifiers NPD-nn / P-nn / S-nn are used throughout this PRD, the FSD and the TSD for traceability.</text></g>
+</svg>
+
+<h3>7.2 Stage definitions</h3>
+<table>
+<thead><tr><th style="width:8%">Stage</th><th style="width:24%">Name</th><th style="width:16%">Owner</th><th>Entry condition / what happens / exit</th></tr></thead>
+<tbody>
+<tr><td class="id">NPD-01</td><td>Concept development incl. COGS target</td><td>Marketing</td><td>Concept, target COGS and target market are defined, then submitted to BOD for evaluation. <b>Exit:</b> BOD records Approved (proceed) or Rejected (returned to Marketing with reason).</td></tr>
+<tr><td class="id">NPD-02</td><td>Product summary &amp; NPD form</td><td>Marketing</td><td>Formal product summary and NPD form are completed and become the reference document for the whole project. <b>Exit:</b> form submitted.</td></tr>
+<tr><td class="id">NPD-03</td><td>NPD timeline</td><td>Marketing</td><td>Timeline of stages with owners and planned dates is published to all parties. <b>Exit:</b> timeline approved.</td></tr>
+<tr><td class="id">NPD-04</td><td>Sourcing packaging material</td><td>SCM Staff</td><td>Required packaging items are identified against packaging master data and split into the two branches. <b>Exit:</b> at least one packaging item assigned to a branch.</td></tr>
+<tr><td class="id">P-01</td><td>Review &amp; approval technical drawing</td><td>R&amp;D / Pkg Dev, approved by BOD &amp; QC Mgr</td><td>Drawing of the primary pack (bottle, crimp pump) is reviewed for form, dimension and function. <b>Exit:</b> drawing approved, or returned with revision note.</td></tr>
+<tr><td class="id">P-02</td><td>SCM review &amp; evaluation of supply service quality</td><td>SCM Manager</td><td>Supplier's quality, delivery reliability and capacity for this pack are scored and stored as history. <b>Exit:</b> evaluation recorded as acceptable or not.</td></tr>
+<tr><td class="id">P-03</td><td>Review sample dummy (mold)</td><td>R&amp;D / Pkg Dev, checked by QC Supervisor</td><td>Dummy/mould sample is checked for shape, dimension and function before tooling is committed. <b>Exit:</b> OK, or Revisi with note to supplier.</td></tr>
+<tr><td class="id">P-04</td><td>Inspection T0 / T1 / T2 — technical &amp; visual</td><td>QC / QA</td><td>Successive trial rounds are tested against the specification parameters. <b>Exit:</b> pass at T0, T1 <i>and</i> T2 — all three mandatory — or fail with a rework loop at the failed level.</td></tr>
+<tr><td class="id">P-05</td><td>Quotation</td><td>Supplier proposes, SCM Manager reviews</td><td>Price, MOQ and lead time are quoted and reviewed. <b>Exit:</b> quotation accepted or rejected.</td></tr>
+<tr><td class="id">P-06</td><td>Master product &amp; standard creation</td><td>R&amp;D / Pkg Dev</td><td>The official product and packaging standard record is created as the reference for mass production. <b>Exit:</b> standard created.</td></tr>
+<tr><td class="id">P-07</td><td>Form approval bahan kemas</td><td>QC Manager (with QA Manager)</td><td>The packaging-material approval form is issued as proof the pack meets quality standard. <b>Exit:</b> form approved.</td></tr>
+<tr><td class="id">P-08</td><td>Scale Up</td><td>R&amp;D / Pkg Dev</td><td>Transition to mass production against the approved standard. <b>Exit:</b> branch closed.</td></tr>
+<tr><td class="id">S-01</td><td>Technical drawing created</td><td>R&amp;D / Pkg Dev</td><td>Drawing for secondary (sticker, kotak) and tertiary (inner, partisi, master box) packs is produced as the basis for supplier pitching. <b>Exit:</b> drawing issued.</td></tr>
+<tr><td class="id">S-02</td><td>Supplier pitching &amp; blank sample trial</td><td>Supplier submits, R&amp;D decides</td><td>Candidate suppliers present capability and send unprinted blank samples for evaluation. <b>Exit:</b> supplier shortlisted or rejected.</td></tr>
+<tr><td class="id">S-03</td><td>Inspection T0 / T1 / T2 — technical &amp; visual</td><td>QC / QA</td><td>As <span class="id">P-04</span>, applied to secondary/tertiary packs. <b>Exit:</b> pass at T0, T1 <i>and</i> T2 — all three mandatory.</td></tr>
+<tr><td class="id">S-04</td><td>Packaging design review from Marketing</td><td>Marketing</td><td>Marketing gives direction and approves the visual design before it goes to the supplier. <b>Exit:</b> design approved or revised.</td></tr>
+<tr><td class="id">S-05</td><td>Quotation</td><td>Supplier proposes, SCM Manager reviews</td><td>As <span class="id">P-05</span> for secondary/tertiary packs. <b>Exit:</b> accepted or rejected.</td></tr>
+<tr><td class="id">S-06</td><td>Form approval bahan kemas</td><td>QC Manager / QA Manager</td><td>Approval form issued for secondary/tertiary packs. <b>Exit:</b> form approved.</td></tr>
+<tr><td class="id">S-07</td><td>Artwork request &amp; circulation</td><td>QC/QA leads; QC&rarr;QA&rarr;R&amp;D&rarr;MKT in sequence</td><td>Artwork and colour-range (CRB) circulate for multi-party approval. <b>Exit:</b> all parties approved, or rejected back to supplier.</td></tr>
+<tr><td class="id">S-08</td><td>Master product created</td><td>R&amp;D / Pkg Dev</td><td>Master product record created for this branch. <b>Exit:</b> created.</td></tr>
+<tr><td class="id">S-09</td><td>Proofprint sample &amp; standard</td><td>Supplier submits, QC/QA &amp; Marketing accept</td><td>Printed proofprint fixes colour and artwork; the standard is recorded. <b>Exit:</b> proofprint accepted.</td></tr>
+<tr><td class="id">S-10</td><td>Scale Up</td><td>R&amp;D / Pkg Dev</td><td>Transition to mass production. <b>Exit:</b> branch closed.</td></tr>
+</tbody></table>
+
+<h3>7.3 Branching and synchronisation rules</h3>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:30%">Rule</th><th>Statement</th></tr></thead>
+<tbody>
+<tr><td class="id">BS-01</td><td>Branch selection at sourcing</td><td>At <span class="id">NPD-04</span> each packaging item is assigned to exactly one branch by its category: primary &rarr; Branch A; secondary and tertiary &rarr; Branch B.</td></tr>
+<tr><td class="id">BS-02</td><td>Branches run independently</td><td>No stage in Branch A waits for a stage in Branch B, and vice versa. Progress is tracked per branch.</td></tr>
+<tr><td class="id">BS-03</td><td>Different internal order</td><td>Branch A reviews and approves the drawing <i>before</i> supplier evaluation and dummy review. Branch B creates the drawing, then pitches suppliers, then inspects, then has Marketing review the design. The system must not force one order on both.</td></tr>
+<tr><td class="id">BS-04</td><td>Scale Up is per branch</td><td>Each branch reaches its own Scale Up. A project is fully complete only when every branch that has at least one packaging item has closed.</td></tr>
+<tr><td class="id">BS-05</td><td>Project-level visibility</td><td>Project view shows both branches side by side with the current stage of each, so desynchronisation is visible rather than discovered.</td></tr>
+<tr><td class="id">BS-06</td><td>Empty branch is not a blocker</td><td>A branch with no packaging item is marked not-applicable and never blocks project completion.</td></tr>
+</tbody></table>
+
+<h3>7.4 Status model</h3>
+<p>Two orthogonal statuses apply to every stage record: the <b>document status</b> (where the record is in its life) and the <b>approval status</b> (where it is in the decision chain). Separating them is what makes "stuck, waiting on whom" answerable.</p>
+<table>
+<thead><tr><th style="width:22%">Document status</th><th style="width:22%">Approval status</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><b>Draft</b></td><td>—</td><td>Being prepared by its author; not yet visible to approvers.</td></tr>
+<tr><td><b>Submitted</b></td><td>Submitted</td><td>Handed to the checker; author can no longer edit it.</td></tr>
+<tr><td><b>Pending</b></td><td>Pending checking / Checking / Checked</td><td>With the checker (QC Supervisor) before it reaches approvers.</td></tr>
+<tr><td><b>Pending</b></td><td>Waiting approval</td><td>Checked and released to the approver(s); all approvers must approve.</td></tr>
+<tr><td><b>Closed</b></td><td>Approved</td><td>All approvers approved. The stage is complete and the record is locked.</td></tr>
+<tr><td><b>Cancelled</b></td><td>Rejected</td><td>One or more approvers rejected. Returns to the author with a mandatory reason; a new version can be raised.</td></tr>
+</tbody></table>
+<div class="note"><b>Derived, not asserted.</b> Approval status is always computed from the recorded decisions of the assigned approvers, never set directly by a user. This prevents a record from reading "Approved" while an approver's decision is missing.</div>
+
+<h3>7.5 Rejection and rework loops</h3>
+<ol>
+<li>Any rejection at any stage returns the record to its author with a <b>mandatory reason</b>; the reason is retained permanently against the record.</li>
+<li>Re-submission creates a new <b>version</b> of the record. Prior versions remain readable; nothing is overwritten.</li>
+<li>A rejected concept at <span class="id">NPD-01</span> returns the project to Marketing and does not create downstream branch records.</li>
+<li>A failed inspection at <span class="id">P-04</span> / <span class="id">S-03</span> opens a rework task to the responsible party and re-enters the same trial level; advancing to the next trial level requires the previous level to have passed.</li>
+<li>Rejected artwork at <span class="id">S-07</span> returns to the supplier through the portal with the commenting party's note attached.</li>
+<li>Scale Up cannot be recorded while any earlier stage of the same branch is open.</li>
+</ol>
+
+<h2 class="pagebreak">8. Functional Requirements</h2>
+<p>Priority: <span class="pri-h">M</span> = Must (system is not acceptable without), <span class="pri-m">S</span> = Should (expected, may follow first release), <span class="pri-l">C</span> = Could (valuable, deferred). Source: <b>FC</b> = flowchart (authoritative), <b>SD</b> = specification document, <b>FA</b> = approval form template, <b>XL</b> = Excel secondary input (access matrix / user stories / dev task list), <b>IN</b> = inferred.</p>
+
+<h3>M1 — Authentication, session and profile</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-101</td><td>Users sign in with email and password; a session token is issued and the user is redirected to the dashboard appropriate to their role.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-102</td><td>Sign out destroys the session and clears client-side state.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-103</td><td>Forgotten password sends a reset link by email; the link is valid for a limited window and leads to a new-password form.</td><td class="num pri-m">S</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-104</td><td>Users change their own password after confirming the current one, with strength validation.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-105</td><td>Idle sessions expire automatically, with an on-screen warning before timeout.</td><td class="num pri-m">S</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-106</td><td>Users edit their own name, photo and contact number; email and role are not self-editable.</td><td class="num pri-m">S</td><td class="num">XL</td><td>All</td></tr>
+</tbody></table>
+
+<h3>M2 — User, role and access administration</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-201</td><td>Admin creates, edits, deactivates and deletes user accounts (name, email, role, department, active status).</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-202</td><td>Admin assigns one or more roles to a user; the change takes effect without re-login.</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-203</td><td>Admin edits the feature &times; role access matrix and saves it so it applies immediately.</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-204</td><td>The matrix is presented as a readable table (rows = feature, columns = role) with a distinct mark for full, read-only and no access, filterable by module.</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-205</td><td>Deactivating a user blocks login but preserves all historical records attributed to them.</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-206</td><td>User list with filter by role, status and department, and export to spreadsheet.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-207</td><td>Admin triggers a password-reset email to a specific user without knowing their password.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-208</td><td>Admin broadcasts an announcement to all users or to selected roles; it appears in-app.</td><td class="num pri-l">C</td><td class="num">XL</td><td>Admin</td></tr>
+</tbody></table>
+
+<h3>M3 — NPD concept and product brief (NPD-01, NPD-02)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-301</td><td>Marketing creates an NPD project carrying product name, concept description, target COGS, target market and planned deadline; it can be saved as draft.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Marketing</td></tr>
+<tr><td class="id">FR-302</td><td>Each project receives a unique, human-readable code generated automatically.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-303</td><td>Submitting the concept for BOD evaluation locks it for editing and notifies BOD.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Marketing</td></tr>
+<tr><td class="id">FR-304</td><td>Marketing completes the product summary and NPD form; the form is the persistent reference for the project and is exportable.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Marketing</td></tr>
+<tr><td class="id">FR-305</td><td>Attachments (reference images, competitor packs, briefs) can be added to a project at any stage.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Marketing, R&amp;D</td></tr>
+<tr><td class="id">FR-306</td><td>Completed or cancelled projects move to an archive that is readable but not editable.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Marketing, Admin</td></tr>
+</tbody></table>
+
+<h3>M4 — BOD concept evaluation (NPD-01 decision)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-401</td><td>BOD is notified automatically when a concept is submitted for evaluation.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-402</td><td>BOD records Approved or Rejected together with a note; rejection requires a reason and returns the project to Marketing.</td><td class="num pri-h">M</td><td class="num">FC</td><td>BOD</td></tr>
+<tr><td class="id">FR-403</td><td>No downstream stage can be opened while the concept is unapproved.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+<tr><td class="id">FR-404</td><td>Re-submission after rejection is versioned and shows the previous decision alongside the new one.</td><td class="num pri-m">S</td><td class="num">IN</td><td>Marketing, BOD</td></tr>
+</tbody></table>
+
+<h3>M5 — NPD timeline and project tracking (NPD-03)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-501</td><td>Marketing builds the NPD timeline as a sequence of stages with owner and planned start/end dates.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Marketing</td></tr>
+<tr><td class="id">FR-502</td><td>The timeline is shown as a Gantt-style view per project and can be adjusted by dragging dates.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Marketing</td></tr>
+<tr><td class="id">FR-503</td><td>Stages past their planned end date are flagged as overdue and surfaced on dashboards.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-504</td><td>Actual start and finish are recorded automatically from stage transitions, so planned-vs-actual is measurable without data entry.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-505</td><td>Project dashboard lists all active projects with type, current stage, progress, deadline and responsible party, filterable by type and status.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-506</td><td>Progress percentage is computed from completed stages of the applicable branches, never typed in by a user.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M6 — Packaging master data and sourcing (NPD-04)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-601</td><td>Packaging categories are maintained as Primary, Secondary and Tertiary with editable descriptions.</td><td class="num pri-h">M</td><td class="num">XL</td><td>R&amp;D, Admin</td></tr>
+<tr><td class="id">FR-602</td><td>Packaging items are maintained with a name and an assigned category; the category of an item is editable, while an item itself is deactivated rather than deleted, preserving history.</td><td class="num pri-h">M</td><td class="num">XL</td><td>R&amp;D, Admin</td></tr>
+<tr><td class="id">FR-603</td><td>Category lists show the live count of items belonging to each category, computed from current data.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-604</td><td>At sourcing, the project's required packaging items are selected from master data and assigned to a branch by category.</td><td class="num pri-h">M</td><td class="num">FC</td><td>SCM Staff</td></tr>
+<tr><td class="id">FR-605</td><td>Material type of a pack (e.g. PP-LDPE, PET, Kertas Karton, PP White) is recorded against the item.</td><td class="num pri-h">M</td><td class="num">SD</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-606</td><td>Deactivated items cannot be selected for new projects but remain visible in historical records.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M7 — Technical drawing (P-01, S-01)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-701</td><td>R&amp;D/Packaging Development creates and uploads the technical drawing for a packaging item, with version number and status Draft / In review / Approved.</td><td class="num pri-h">M</td><td class="num">FC</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-702</td><td>Branch A drawings go to review and approval before supplier evaluation; Branch B drawings are issued to enable pitching. Both use the same record type with a different route.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+<tr><td class="id">FR-703</td><td>Approvers (BOD, QC Manager, and SCM where applicable) record approve/reject with comment; all assigned approvers must approve.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Approvers</td></tr>
+<tr><td class="id">FR-704</td><td>Full version history is retained and any prior version can be opened and compared.</td><td class="num pri-m">S</td><td class="num">XL</td><td>R&amp;D, QC</td></tr>
+</tbody></table>
+
+<h3>M8 — Supplier management and supply-service evaluation (P-02)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-801</td><td>Supplier master data is maintained: name, contact, packaging categories supplied, capacity, active status, and quality/delivery ratings.</td><td class="num pri-h">M</td><td class="num">XL</td><td>SCM Manager, Admin</td></tr>
+<tr><td class="id">FR-802</td><td>SCM records a supply-service quality evaluation for a supplier on a specific packaging item, scoring quality and delivery reliability with a conclusion.</td><td class="num pri-h">M</td><td class="num">FC</td><td>SCM Manager</td></tr>
+<tr><td class="id">FR-803</td><td>Evaluations accumulate as a supplier's permanent track record, visible on the supplier's profile with dates and evaluators.</td><td class="num pri-h">M</td><td class="num">FC</td><td>SCM Manager</td></tr>
+<tr><td class="id">FR-804</td><td>A supplier account is provisioned and linked to one external organisation; it can only see its own records (AC-06).</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin, SCM</td></tr>
+</tbody></table>
+
+<h3>M9 — Sample dummy / mould review (P-03)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-901</td><td>Supplier uploads photos and files of the dummy/mould sample against a packaging item.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Supplier</td></tr>
+<tr><td class="id">FR-902</td><td>R&amp;D reviews shape, dimension and function and records OK or Revisi with a note; QC Supervisor checks before the decision is final.</td><td class="num pri-h">M</td><td class="num">FC</td><td>R&amp;D, QC Supervisor</td></tr>
+<tr><td class="id">FR-903</td><td>The outcome notifies the supplier automatically through the portal.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-904</td><td>Each review round is stored separately, so repeated revisions are visible as a history.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M10 — Pitching and blank sample trial (S-02)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1001</td><td>Supplier registers capability and submits blank samples against a packaging item and drawing version.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Supplier</td></tr>
+<tr><td class="id">FR-1002</td><td>R&amp;D evaluates submitted blank samples and records accept or reject per supplier, with reason.</td><td class="num pri-h">M</td><td class="num">FC</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-1003</td><td>Pitching is comparable: all submitted samples for the same item are listed together for side-by-side decision.</td><td class="num pri-m">S</td><td class="num">IN</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-1004</td><td>Rejected suppliers are notified with the reason; accepted suppliers advance to quotation.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M11 — Packaging inspection T0 / T1 / T2 (P-04, S-03)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1101</td><td>QC/QA performs an inspection at a chosen trial level (T0, T1 or T2) for a packaging item of a project.</td><td class="num pri-h">M</td><td class="num">FC</td><td>QC, QA</td></tr>
+<tr><td class="id">FR-1102</td><td>The inspection is a checklist of parameters grouped as the official specification does — physical examination (shape, base colour, print colour), dimensions (thickness, inner diameter, outer diameter, tube length), weight, leak test, strength test, design conformity and marking conformity — each with specification value, measured value, method of analysis and Pass/Fail.</td><td class="num pri-h">M</td><td class="num">SD</td><td>QC</td></tr>
+<tr><td class="id">FR-1103</td><td>Photos and attachments can be added as evidence for any parameter.</td><td class="num pri-h">M</td><td class="num">XL</td><td>QC</td></tr>
+<tr><td class="id">FR-1104</td><td>An inspection passes only if every parameter passes; a single failure marks the inspection failed and opens a rework task.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-1105</td><td>Trial levels are sequential and <b>all three are mandatory for every packaging item, in any branch</b>: T1 cannot be recorded as passed unless T0 passed; T2 cannot be recorded as passed unless T1 passed; the stage itself is not complete until T2 has passed.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+<tr><td class="id">FR-1106</td><td>All results for a packaging item appear in one timeline from T0 to T2, with trends by parameter.</td><td class="num pri-m">S</td><td class="num">XL</td><td>QC, R&amp;D</td></tr>
+<tr><td class="id">FR-1107</td><td>An inspection report is exportable as PDF in the official layout.</td><td class="num pri-m">S</td><td class="num">XL</td><td>QC</td></tr>
+</tbody></table>
+
+<h3>M12 — Application and transport test</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1201</td><td>QC records application-test results (fit and function of the pack with the product) as pass/fail with findings.</td><td class="num pri-h">M</td><td class="num">FC</td><td>QC, QA</td></tr>
+<tr><td class="id">FR-1202</td><td>QC records transport-simulation results describing pack condition after simulation, with findings and recommendation.</td><td class="num pri-h">M</td><td class="num">FC</td><td>QA Manager</td></tr>
+<tr><td class="id">FR-1203</td><td>Both tests attach to the packaging item and are visible in its history alongside inspections.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M13 — Quotation (P-05, S-05)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1301</td><td>Supplier enters price, minimum order quantity and lead time for a packaging item; the quotation is linked to the project and item.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Supplier</td></tr>
+<tr><td class="id">FR-1302</td><td>SCM reviews a quotation for price reasonableness and supply reliability and sets it to accepted or rejected with reason.</td><td class="num pri-h">M</td><td class="num">FC</td><td>SCM Manager</td></tr>
+<tr><td class="id">FR-1303</td><td>The supplier is notified of the outcome automatically.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-1304</td><td>Quotation revisions are versioned; the accepted version is the one referenced by downstream approval.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-1305</td><td>Quotations for the same item from different suppliers can be compared in one view.</td><td class="num pri-m">S</td><td class="num">IN</td><td>SCM Manager</td></tr>
+</tbody></table>
+
+<h3>M14 — Marketing design review (S-04)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1401</td><td>Marketing reviews the secondary-packaging design and records direction and a visual decision (approved or revise) before it is sent to the supplier.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Marketing</td></tr>
+<tr><td class="id">FR-1402</td><td>Design versions and Marketing's comments are retained against the packaging item.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M15 — Artwork and colour-range circulation (S-07)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1501</td><td>Artwork is requested from the supplier and circulated for approval in the fixed sequence QC &rarr; QA &rarr; R&amp;D &rarr; Marketing.</td><td class="num pri-h">M</td><td class="num">FC</td><td>QC/QA</td></tr>
+<tr><td class="id">FR-1502</td><td>Each party in the sequence approves or rejects with a comment; the next party is only enabled after the previous approves.</td><td class="num pri-h">M</td><td class="num">FC</td><td>QC, QA, R&amp;D, Marketing</td></tr>
+<tr><td class="id">FR-1503</td><td>Current position in the circulation is visible in real time to all parties.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-1504</td><td>Colour-range (CRB) standards are held as documents and circulated with the same sequence.</td><td class="num pri-m">S</td><td class="num">FC</td><td>QC/QA</td></tr>
+<tr><td class="id">FR-1505</td><td>Rejection returns the artwork to the supplier through the portal with the rejecting party's note.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M16 — Form Approval Bahan Kemas (P-07, S-06)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1601</td><td>An approval form is raised for a packaging item once its inspection has passed and its quotation is accepted, distinguishing primary, secondary and tertiary pack types.</td><td class="num pri-h">M</td><td class="num">FA</td><td>R&amp;D / QC</td></tr>
+<tr><td class="id">FR-1602</td><td>The form records the sample verdict (sample acceptable / not acceptable) and free-text notes.</td><td class="num pri-h">M</td><td class="num">FA</td><td>QC</td></tr>
+<tr><td class="id">FR-1603</td><td>The form carries the three signature blocks of the official template: prepared by, checked by, and approved by (Quality Control Manager, SCM Manager, QA Manager), with the "strike out what does not apply" convention preserved on the printed output.</td><td class="num pri-h">M</td><td class="num">FA</td><td>System</td></tr>
+<tr><td class="id">FR-1604</td><td>Each signature block is filled from the actual in-system decision of that person — name, role and date — and cannot be typed manually.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-1605</td><td>The completed form is exportable as PDF in the official layout.</td><td class="num pri-h">M</td><td class="num">FA</td><td>QC, Admin</td></tr>
+<tr><td class="id">FR-1606</td><td>An approved form locks the record and makes the packaging item eligible for master product and standard creation.</td><td class="num pri-h">M</td><td class="num">FC</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M17 — Master product, packaging standard and proofprint (P-06, S-08, S-09)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1701</td><td>R&amp;D creates the master product record that becomes the official reference for mass production.</td><td class="num pri-h">M</td><td class="num">FC</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-1702</td><td>Packaging standards are versioned with change history; only R&amp;D and Admin can edit them.</td><td class="num pri-h">M</td><td class="num">XL</td><td>R&amp;D, Admin</td></tr>
+<tr><td class="id">FR-1703</td><td>The packaging material specification (SBK) is held as structured data — document number, effective date, material name, material type, and the parameter / specification / method-of-analysis table — and is the source of the inspection checklist.</td><td class="num pri-h">M</td><td class="num">SD</td><td>QC, R&amp;D</td></tr>
+<tr><td class="id">FR-1704</td><td>The specification document is printable in the official layout, including the prepared/checked/approved blocks with names and dates.</td><td class="num pri-h">M</td><td class="num">SD</td><td>QC</td></tr>
+<tr><td class="id">FR-1705</td><td>Supplier submits the proofprint sample; QC/QA and Marketing accept it, and the accepted proofprint becomes part of the standard.</td><td class="num pri-h">M</td><td class="num">FC</td><td>Supplier, QC, Marketing</td></tr>
+</tbody></table>
+
+<h3>M18 — Scale Up (P-08, S-10)</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1801</td><td>R&amp;D records the scale-up event for a branch against the approved standard, with date and responsible party.</td><td class="num pri-h">M</td><td class="num">FC</td><td>R&amp;D</td></tr>
+<tr><td class="id">FR-1802</td><td>Scale up is blocked while any earlier stage of that branch is open, or while the referenced standard is not approved.</td><td class="num pri-h">M</td><td class="num">IN</td><td>System</td></tr>
+<tr><td class="id">FR-1803</td><td>Recording scale up closes the branch and notifies all parties attached to the project.</td><td class="num pri-m">S</td><td class="num">IN</td><td>System</td></tr>
+</tbody></table>
+
+<h3>M19 — Notifications, audit trail and reporting</h3>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:52%">Requirement</th><th style="width:7%">Pri</th><th style="width:7%">Src</th><th>Actor</th></tr></thead>
+<tbody>
+<tr><td class="id">FR-1901</td><td>In-app notifications are raised for new assignments, pending approvals, deadlines and status changes; users can mute categories.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-1902</td><td>Email accompanies the notifications a user opts into.</td><td class="num pri-m">S</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-1903</td><td>Every meaningful action is logged: who, when, what, and the before/after values.</td><td class="num pri-h">M</td><td class="num">XL</td><td>System</td></tr>
+<tr><td class="id">FR-1904</td><td>Audit log is readable by Admin only and is filterable by user, action and period.</td><td class="num pri-h">M</td><td class="num">XL</td><td>Admin</td></tr>
+<tr><td class="id">FR-1905</td><td>Approval history for any document is readable by every party entitled to that document, showing each decision, date and comment.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+<tr><td class="id">FR-1906</td><td>Reports export to PDF and spreadsheet: project status, inspection results, supplier evaluations, approval history.</td><td class="num pri-m">S</td><td class="num">XL</td><td>Admin, SCM, QC/QA</td></tr>
+<tr><td class="id">FR-1907</td><td>Role-specific dashboard: counts of items awaiting the signed-in user's own action, overdue stages, and branch status.</td><td class="num pri-h">M</td><td class="num">XL</td><td>All</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">9. Business Rules</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Rule</th><th>Statement</th></tr></thead>
+<tbody>
+<tr><td class="id">BR-01</td><td>Author cannot approve own document</td><td>The person who authored a record is never an approver of that same record version.</td></tr>
+<tr><td class="id">BR-02</td><td>All approvers must approve</td><td>A document becomes Approved only when every approver assigned to it has approved; a single rejection makes it Rejected.</td></tr>
+<tr><td class="id">BR-03</td><td>Rejection always carries a reason</td><td>A rejection cannot be recorded without a reason; the reason is permanent.</td></tr>
+<tr><td class="id">BR-04</td><td>Approved records are immutable</td><td>An Approved record and its decisions cannot be edited. Change requires a new version.</td></tr>
+<tr><td class="id">BR-05</td><td>Sequential trial levels</td><td>All three trial rounds are mandatory for every packaging item in both branches: T1 requires T0 passed, T2 requires T1 passed, and the inspection stage closes only after T2 passes (FR-1105, OQ-05).</td></tr>
+<tr><td class="id">BR-06</td><td>Quotation precedes approval form</td><td>The packaging approval form cannot be raised before an accepted quotation exists for that item.</td></tr>
+<tr><td class="id">BR-07</td><td>Approval form precedes standard</td><td>Master product and standard creation requires an approved form (FR-1606).</td></tr>
+<tr><td class="id">BR-08</td><td>Standard precedes scale up</td><td>Scale up requires an approved standard for the branch (FR-1802).</td></tr>
+<tr><td class="id">BR-09</td><td>Concept gates everything</td><td>No branch stage exists before BOD approval of the concept (FR-403).</td></tr>
+<tr><td class="id">BR-10</td><td>Supplier data isolation</td><td>A supplier sees only its own quotations, samples, artwork and evaluations (AC-06).</td></tr>
+<tr><td class="id">BR-11</td><td>Deactivate, do not delete</td><td>Master-data records referenced by history are deactivated, never deleted (FR-602).</td></tr>
+<tr><td class="id">BR-12</td><td>Derived progress</td><td>Progress percentages and stage counts are computed, never entered (FR-506).</td></tr>
+<tr><td class="id">BR-13</td><td>Document numbering</td><td>System-generated codes are unique, sequential per document type and never reused.</td></tr>
+<tr><td class="id">BR-14</td><td>Effective dates</td><td>A specification carries an effective date; an inspection always references the specification version effective at the time of testing.</td></tr>
+</tbody></table>
+
+<h2>10. Non-Functional Requirements</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:24%">Attribute</th><th>Requirement</th></tr></thead>
+<tbody>
+<tr><td class="id">NFR-01</td><td>Performance</td><td>List pages of 10,000 records render in under 2 seconds; save operations respond in under 1 second on the internal network.</td></tr>
+<tr><td class="id">NFR-02</td><td>Concurrency</td><td>At least 50 concurrent users without degradation; conflicting edits to the same record are detected, not silently overwritten.</td></tr>
+<tr><td class="id">NFR-03</td><td>Security</td><td>Server-side authorisation on every request (never menu-hiding alone); passwords hashed; session tokens time-limited; SQL injection and cross-site scripting protection by framework default.</td></tr>
+<tr><td class="id">NFR-04</td><td>Auditability</td><td>No destructive action without a logged actor and timestamp; audit records are append-only.</td></tr>
+<tr><td class="id">NFR-05</td><td>Availability</td><td>Available during working hours on a single-site deployment; planned maintenance outside business hours.</td></tr>
+<tr><td class="id">NFR-06</td><td>Backup</td><td>Daily database backup retained 30 days; uploaded files backed up with it.</td></tr>
+<tr><td class="id">NFR-07</td><td>Usability</td><td>Every displayed value is human-formatted (dates, names, statuses); no raw machine values, no empty placeholder cells; core tasks reachable in at most three clicks from the dashboard.</td></tr>
+<tr><td class="id">NFR-08</td><td>Consistency</td><td>One component library across all screens; identical table behaviour (search, filter, page size) everywhere.</td></tr>
+<tr><td class="id">NFR-09</td><td>Compatibility</td><td>Current versions of Chrome and Edge on desktop; layouts remain usable at tablet width.</td></tr>
+<tr><td class="id">NFR-10</td><td>Attachments</td><td>Drawings, sample photos and artwork supported up to 20 MB per file; accepted types enforced; stored outside the web root with access checked per request.</td></tr>
+<tr><td class="id">NFR-11</td><td>Localisability</td><td>Interface text is externalised so a second language can be added without code change (see OQ-03).</td></tr>
+<tr><td class="id">NFR-12</td><td>Maintainability</td><td>Business rules centralised in services, not scattered in controllers or screens; automated tests cover the workflow state machine.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">11. Information Architecture and Screen Inventory</h2>
+<p>Navigation follows the process, one entry per module, no duplicated sub-menus. The screen list below is derived from the flowchart stages; layout details belong to the FSD.</p>
+<table>
+<thead><tr><th style="width:22%">Module</th><th style="width:26%">Screen</th><th style="width:12%">Stage</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td rowspan="4"><b>Dashboard</b></td><td>My work</td><td>—</td><td>Items awaiting the signed-in user's decision, sorted by age.</td></tr>
+<tr><td>Project overview</td><td>—</td><td>All active projects with branch and current stage.</td></tr>
+<tr><td>Overdue</td><td>—</td><td>Stages past planned date with owner.</td></tr>
+<tr><td>Notifications</td><td>—</td><td>Inbox of system notifications.</td></tr>
+<tr><td rowspan="4"><b>NPD projects</b></td><td>Project list</td><td>—</td><td>Search, filter, open.</td></tr>
+<tr><td>Create / edit concept &amp; brief</td><td>NPD-01, NPD-02</td><td>Concept, COGS, target market, product summary form.</td></tr>
+<tr><td>Timeline</td><td>NPD-03</td><td>Gantt of stages with owners and dates.</td></tr>
+<tr><td>Project detail (two branches)</td><td>NPD-04</td><td>Side-by-side branch progress; stage entry points.</td></tr>
+<tr><td rowspan="2"><b>Approvals</b></td><td>Approval worklist</td><td>P-01, P-07, S-06, S-07</td><td>Documents awaiting decision; approve, reject, view detail.</td></tr>
+<tr><td>Approval history</td><td>—</td><td>All decisions with actor, date, comment.</td></tr>
+<tr><td rowspan="4"><b>Packaging development</b></td><td>Technical drawings</td><td>P-01, S-01</td><td>Create, version, submit for approval.</td></tr>
+<tr><td>Sample review (dummy / mould)</td><td>P-03</td><td>Review rounds and verdicts.</td></tr>
+<tr><td>Master product &amp; standards</td><td>P-06, S-08</td><td>Official standards with version history.</td></tr>
+<tr><td>Scale up</td><td>P-08, S-10</td><td>Record scale-up events per branch.</td></tr>
+<tr><td rowspan="3"><b>QC</b></td><td>Inspections T0/T1/T2</td><td>P-04, S-03</td><td>Parameter checklist with pass/fail and evidence.</td></tr>
+<tr><td>Application &amp; transport tests</td><td>P-04, S-03</td><td>Test records with findings and recommendation.</td></tr>
+<tr><td>Colour standards / artwork circulation</td><td>S-07</td><td>Sequence tracking QC&rarr;QA&rarr;R&amp;D&rarr;MKT.</td></tr>
+<tr><td rowspan="3"><b>Supplier (portal)</b></td><td>My pitching &amp; samples</td><td>S-02, P-03</td><td>Submit capability, blank samples, dummy photos.</td></tr>
+<tr><td>My quotations</td><td>P-05, S-05</td><td>Enter price, MOQ, lead time; see outcome.</td></tr>
+<tr><td>Artwork &amp; proofprint requests</td><td>S-07, S-09</td><td>Receive requests, upload artwork and proofprints, read revisions.</td></tr>
+<tr><td rowspan="3"><b>SCM</b></td><td>Supplier master</td><td>P-02</td><td>Supplier records and ratings.</td></tr>
+<tr><td>Quotation review</td><td>P-05, S-05</td><td>Compare, accept, reject.</td></tr>
+<tr><td>Supply-service evaluation</td><td>P-02</td><td>Score quality and delivery; view track record.</td></tr>
+<tr><td rowspan="2"><b>Master data</b></td><td>Packaging items</td><td>NPD-04</td><td>Item list with category, material, active state.</td></tr>
+<tr><td>Packaging categories</td><td>NPD-04</td><td>Primary/Secondary/Tertiary with live item counts.</td></tr>
+<tr><td rowspan="3"><b>Admin</b></td><td>Users</td><td>—</td><td>Create, edit, deactivate, reset password.</td></tr>
+<tr><td>Roles &amp; access matrix</td><td>—</td><td>Edit the feature &times; role grid and save.</td></tr>
+<tr><td>Audit log &amp; announcements</td><td>—</td><td>Activity review and broadcast.</td></tr>
+<tr><td><b>Reports</b></td><td>Report centre</td><td>—</td><td>Project, inspection, supplier, approval exports.</td></tr>
+</tbody></table>
+
+<h2>12. Conceptual Data Model</h2>
+<p>Entities and their relationships at a business level. Attributes, types and indexes are specified in the FSD and the schema in the TSD.</p>
+<table>
+<thead><tr><th style="width:22%">Entity</th><th style="width:34%">Key attributes (conceptual)</th><th>Relationships</th></tr></thead>
+<tbody>
+<tr><td class="id">Project</td><td>code, name, concept, target COGS, target market, deadline, status, owner</td><td>1 &rarr; N PackagingAssignment, Timeline, Attachment, Decision</td></tr>
+<tr><td class="id">PackagingAssignment</td><td>packaging item, branch (A/B), current stage, status</td><td>belongs to Project and PackagingItem; 1 &rarr; N StageRecord, Inspection, Quotation, ApprovalForm, Standard</td></tr>
+<tr><td class="id">PackagingCategory</td><td>name (Primary/Secondary/Tertiary), description</td><td>1 &rarr; N PackagingItem</td></tr>
+<tr><td class="id">PackagingItem</td><td>name, category, material type, active</td><td>belongs to Category; 1 &rarr; N Specification, Drawing</td></tr>
+<tr><td class="id">Specification (SBK)</td><td>document number, effective date, material name, material type, prepared/checked/approved</td><td>belongs to PackagingItem; 1 &rarr; N SpecificationParameter</td></tr>
+<tr><td class="id">SpecificationParameter</td><td>group, parameter, specification, method of analysis</td><td>drives Inspection checklist (FR-1102)</td></tr>
+<tr><td class="id">StageRecord</td><td>stage id, branch, status, owner, planned/actual dates, outcome</td><td>belongs to PackagingAssignment; 1 &rarr; N Decision</td></tr>
+<tr><td class="id">Document</td><td>Drawing, ApprovalForm, Artwork, Proofprint, Standard, Quotation, Evaluation — each versioned</td><td>belongs to PackagingAssignment/Item/Supplier; 1 &rarr; N ApprovalInstance</td></tr>
+<tr><td class="id">ApprovalInstance / Step</td><td>document, sequence, role, action (check/approve), decision, comment, acted at</td><td>implements the §7.4 status model and BR-01..BR-04</td></tr>
+<tr><td class="id">Inspection</td><td>trial level, result, performed by, date</td><td>1 &rarr; N InspectionResult (parameter, expected, measured, pass/fail), N Attachment</td></tr>
+<tr><td class="id">Supplier</td><td>name, contact, categories, capacity, ratings, active, user account</td><td>1 &rarr; N Quotation, SampleSubmission, Artwork, Evaluation</td></tr>
+<tr><td class="id">User / Role / Permission</td><td>identity, role assignment, feature grants</td><td>supports AC-01..AC-06</td></tr>
+<tr><td class="id">Notification / AuditLog</td><td>recipient, type, read state / actor, action, target, before-after</td><td>system-wide</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">13. Generated Documents</h2>
+<h3>13.1 Form Approval Bahan Kemas</h3>
+<p>Generated from stored data in the official layout: document identity; packaging and project identification; the sample verdict checkboxes ("sample acceptable" / "sample not acceptable") and notes; and three signature blocks — prepared by, checked by, approved by (Quality Control Manager, SCM Manager, QA Manager) — each populated from real in-system decisions with name, role and date. The template convention "strike out what does not apply" is reproduced on the printed form (FR-1603).</p>
+<h3>13.2 Spesifikasi Bahan Pengemas (SBK)</h3>
+<p>Generated in the official layout with the organisation header, issuing departments, document number and effective date, the prepared / checked / approved blocks with names and dates, packaging material name, material type, and the parameter table grouped as physical examination, dimensions, weight, leak test, strength test, and design/marking conformity — each row carrying specification, measured value and method of analysis (FR-1703, FR-1704).</p>
+<div class="note"><b>Layout fidelity is an acceptance criterion.</b> Both documents must be reviewed against the current paper originals before UAT sign-off; a generated document that a department would not sign is a defect, not a preference.</div>
+
+<h2>14. Integrations</h2>
+<table>
+<thead><tr><th style="width:22%">Integration</th><th style="width:14%">Direction</th><th>Requirement</th></tr></thead>
+<tbody>
+<tr><td>Email (SMTP)</td><td>Outbound</td><td>Password reset, notifications, document links. Local development must not send to real recipients.</td></tr>
+<tr><td>Existing specification spreadsheets</td><td>Inbound, one-off</td><td>The packaging material specification data already held in spreadsheet form (approximately 77 component rows) must be importable into master data with validation and a reported error list.</td></tr>
+<tr><td>File storage</td><td>Read/write</td><td>Drawings, sample photos, artwork, proofprints and generated PDFs.</td></tr>
+<tr><td>ERP / procurement</td><td>None in this release</td><td>Explicitly out of scope (§5.2).</td></tr>
+</tbody></table>
+
+<h2>15. Delivery Approach and Milestones</h2>
+<p>Formal SDLC with sign-off gates. Development does not begin on a section whose specification is unapproved.</p>
+<table>
+<thead><tr><th style="width:10%">Gate</th><th style="width:24%">Artifact</th><th style="width:22%">Approver</th><th>Exit condition</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><b>PRD</b> (this document)</td><td>Product Owner + user representatives</td><td>Scope, process model and requirement set accepted; all open questions in §18 resolved.</td></tr>
+<tr><td class="num">2</td><td><b>FSD</b></td><td>Product Owner + QC/QA leads</td><td>Every screen, field, validation, state transition and permission defined and traceable to a PRD requirement ID.</td></tr>
+<tr><td class="num">3</td><td><b>TSD</b></td><td>Technical lead</td><td>Architecture, schema, workflow engine, PDF generation and test strategy accepted.</td></tr>
+<tr><td class="num">4</td><td>Build &amp; UAT</td><td>User representatives</td><td>Acceptance criteria in §16 met; no open severity-1/2 defects.</td></tr>
+</tbody></table>
+<h3>15.1 Build phases after TSD approval</h3>
+<table>
+<thead><tr><th style="width:10%">Phase</th><th style="width:30%">Contents</th><th>Value delivered</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>Foundation: authentication, users, roles and access matrix, application shell, packaging master data, specification import</td><td>People can log in, see only what they should, and master data exists in one place.</td></tr>
+<tr><td class="num">2</td><td>Process core: projects, concept and brief, BOD evaluation, timeline, sourcing and branch assignment, stage state machine</td><td>The flowchart becomes a live tracker; the first measurable answer to "where is it stuck".</td></tr>
+<tr><td class="num">3</td><td>Approval engine and Form Approval Bahan Kemas with PDF output; approval worklist and history</td><td>Attributable decisions and the official document, generated not re-typed.</td></tr>
+<tr><td class="num">4</td><td>QC module: specification-driven T0/T1/T2 inspection, application and transport tests, colour standards</td><td>Structured inspection data and parameter trends.</td></tr>
+<tr><td class="num">5</td><td>Supplier portal: pitching, blank samples, dummy uploads, quotations, artwork and proofprint exchange</td><td>Supplier interaction recorded and comparable.</td></tr>
+<tr><td class="num">6</td><td>Master product and standards, scale up, reports and exports, notifications and audit polish</td><td>Closes both branches end to end.</td></tr>
+</tbody></table>
+
+<h2>16. Acceptance Criteria</h2>
+<table>
+<thead><tr><th style="width:9%">ID</th><th style="width:30%">Given / When / Then</th><th>Links</th></tr></thead>
+<tbody>
+<tr><td class="id">AC-C1</td><td>Given a concept is submitted, when BOD has not recorded a decision, then no branch stage can be opened and the project shows as awaiting BOD.</td><td>FR-403, BR-09</td></tr>
+<tr><td class="id">AC-C2</td><td>Given a packaging item is assigned, when its category is Primary, then it enters Branch A; when Secondary or Tertiary, then Branch B.</td><td>BS-01</td></tr>
+<tr><td class="id">AC-C3</td><td>Given a drawing awaiting three approvers, when two approve and one rejects with a reason, then the document is Rejected and returns to the author as a new version with the reason visible.</td><td>BR-02, BR-03, §7.5</td></tr>
+<tr><td class="id">AC-C4</td><td>Given an inspection at T1, when T0 has not passed, then T1 cannot be recorded as passed.</td><td>FR-1105, BR-05</td></tr>
+<tr><td class="id">AC-C5</td><td>Given an approval form, when it is generated, then each signature block shows the actual decision-maker's name, role and decision date, and no signature name can be typed by hand.</td><td>FR-1604</td></tr>
+<tr><td class="id">AC-C6</td><td>Given a supplier account, when it lists quotations, then only its own quotations are visible.</td><td>AC-06, BR-10</td></tr>
+<tr><td class="id">AC-C7</td><td>Given a packaging category, when items are added or deactivated, then the displayed item count changes accordingly.</td><td>FR-603</td></tr>
+<tr><td class="id">AC-C8</td><td>Given any list screen, when it is displayed, then dates, names and statuses are formatted for a human and no raw machine value appears.</td><td>NFR-07</td></tr>
+<tr><td class="id">AC-C9</td><td>Given a branch, when an earlier stage is still open, then scale up cannot be recorded.</td><td>FR-1802, BR-08</td></tr>
+<tr><td class="id">AC-C10</td><td>Given any approval decision, when it is made, then actor, role, timestamp, decision and comment are permanently retrievable by every entitled party.</td><td>FR-1905, NFR-04</td></tr>
+</tbody></table>
+
+<h2>17. Assumptions, Constraints, Dependencies, Risks</h2>
+<h3>17.1 Assumptions</h3>
+<ol>
+<li>The flowchart represents the process as it should run, not merely as it once ran.</li>
+<li>One user holds one primary role for workflow purposes; multi-role users resolve to the union of their grants.</li>
+<li>Both branches of a project concern the same product but different packaging items, so they can close independently.</li>
+<li>Suppliers can be given accounts and are willing to submit samples and quotations through the portal rather than by email.</li>
+<li>Existing specification data is available in a usable electronic form for import.</li>
+</ol>
+<h3>17.2 Constraints</h3>
+<ol>
+<li>Technology stack is fixed by the stakeholder: PHP Laravel with React front end and MySQL database.</li>
+<li>Runs on the organisation's existing local development and hosting environment (Laragon/Windows toolchain available on the delivery machine).</li>
+<li>Documents must remain printable on the existing A4 stationery and be signable by hand.</li>
+<li>No budget assumed for third-party signature, storage or integration services.</li>
+</ol>
+<h3>17.3 Dependencies</h3>
+<ol>
+<li>Confirmation of the five under-specified roles (§6.1 gap) before the FSD fixes permissions.</li>
+<li>Provision of current paper originals of both generated documents for layout comparison.</li>
+<li>Mail delivery configuration for notifications and password reset.</li>
+<li>A named product owner with authority to arbitrate flowchart-versus-Excel conflicts.</li>
+</ol>
+<h3>17.4 Risks</h3>
+<table>
+<thead><tr><th style="width:8%">ID</th><th style="width:28%">Risk</th><th style="width:9%">Impact</th><th style="width:9%">Likelihood</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td class="id">R-01</td><td>Requirement basis contested again after FSD starts (flowchart vs. Excel)</td><td class="num pri-h">High</td><td class="num pri-m">Med</td><td>Source hierarchy in §1.2 is made explicit and signed at this gate; every requirement carries a source.</td></tr>
+<tr><td class="id">R-02</td><td>Access matrix incomplete for five roles</td><td class="num pri-h">High</td><td class="num pri-h">High</td><td>Resolve OQ-04 before FSD; permissions are configuration, not code, so late change is contained.</td></tr>
+<tr><td class="id">R-03</td><td>Supplier adoption — suppliers revert to email</td><td class="num pri-m">Med</td><td class="num pri-m">Med</td><td>Keep portal tasks to three or fewer actions; allow internal staff to enter on a supplier's behalf with attribution.</td></tr>
+<tr><td class="id">R-04</td><td>Process reality deviates from the flowchart at some sites</td><td class="num pri-m">Med</td><td class="num pri-m">Med</td><td>Stage definitions are configuration; deviations are recorded as change requests, not silent workarounds.</td></tr>
+<tr><td class="id">R-05</td><td>Scope growth from adjacent processes (EPD, substitution)</td><td class="num pri-m">Med</td><td class="num pri-h">High</td><td>§5.2 exclusions are signed at this gate; additions require a new PRD.</td></tr>
+<tr><td class="id">R-06</td><td>Document layout rejected late by a department</td><td class="num pri-m">Med</td><td class="num pri-l">Low</td><td>Layout comparison is an acceptance criterion in §13 and is scheduled in phase 3, not at the end.</td></td>
+<tr><td class="id">R-07</td><td>Specification data import quality</td><td class="num pri-l">Low</td><td class="num pri-m">Med</td><td>Import produces a validation report; master data is reviewable before activation.</td></tr>
+</tbody></table>
+
+<h2 class="pagebreak">18. Open Questions &mdash; resolved</h2>
+<p>All nine open questions were put to the Product Owner on 21 November 2026 using the one-page approval brief. <span class="id">OQ-01</span>, <span class="id">OQ-04</span> and <span class="id">OQ-05</span> were blocking; the remaining six carry their stated default forward into the FSD and can still be overturned there at no architectural cost.</p>
+<table>
+<thead><tr><th style="width:7%">ID</th><th style="width:24%">Question</th><th style="width:8%">Status</th><th style="width:34%">Decision recorded 2026-11-21</th><th>Effect on this baseline</th></tr></thead>
+<tbody>
+<tr><td class="id">OQ-01</td><td>Who signs the Form Approval Bahan Kemas &mdash; the rejected Excel chain, or the Word form own blocks?</td><td class="num pri-h">RESOLVED</td><td><b>The four signature blocks of the Word form</b>: Dibuat Oleh (Packaging Development Staff), Diperiksa Oleh (QC Supervisor), Disetujui Oleh (Quality Control Manager, SCM Manager, QA Manager), retaining the "strike out what does not apply" convention.</td><td>FR-1603 and FR-1604 stand as written. The Excel Author &rarr; Checker &rarr; 3 Approvers chain is reused only as the <i>shape</i> of the workflow engine, never as a separate approval object.</td></tr>
+<tr><td class="id">OQ-04</td><td>Which features may R&amp;D, SCM Staff, QC Supervisor, QC Manager and QA Supervisor access? The source matrix left these five columns empty.</td><td class="num pri-h">RESOLVED</td><td><b>Grant them exactly the duties the flowchart assigns</b>, as set out in &sect;6.1. These grants are now approved requirements, not inference.</td><td>The five &sect;6.1 rows are promoted from assumption to baseline. The FSD permission matrix marks them as approved source.</td></tr>
+<tr><td class="id">OQ-05</td><td>Must every packaging item pass T0, T1 and T2, or does it depend on pack type?</td><td class="num pri-h">RESOLVED</td><td><b>All three trial rounds are mandatory for every packaging item, in both branches.</b> This <i>overrides</i> the drafting assumption (all three for primary, two for secondary/tertiary).</td><td>FR-1105, BR-05 and the exit conditions of <span class="id">P-04</span> and <span class="id">S-03</span> amended in this revision. Downstream gates <span class="id">P-05</span> and <span class="id">S-05</span> now require T2 passed.</td></tr>
+<tr><td class="id">OQ-02</td><td>Is the packaging-material substitution process still needed?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; dropped from this release.</td><td>Remains out of scope (&sect;5.2). A future request needs its own PRD.</td></tr>
+<tr><td class="id">OQ-03</td><td>Interface language?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; Indonesian interface with English technical terms. Specification documents stay in English.</td><td>NFR-11 retained.</td></tr>
+<tr><td class="id">OQ-06</td><td>Can one project hold several items in the same branch, each with its own approval and scale-up record?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; yes, approval and standard are per packaging item.</td><td>Confirms PackagingAssignment (&sect;12) as the unit of workflow.</td></tr>
+<tr><td class="id">OQ-07</td><td>Who may create supplier accounts?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; Admin creates, SCM Manager assigns.</td><td>Reflected in the FSD permission matrix.</td></tr>
+<tr><td class="id">OQ-08</td><td>Printed form: signature image, typed name, or typed name for manual signing?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; typed name, role and decision date, signed by hand.</td><td>Consistent with &sect;13.1 and the exclusion of certified e-signatures.</td></tr>
+<tr><td class="id">OQ-09</td><td>Retention period; may cancelled projects be deleted?</td><td class="num pri-m">DEFAULT</td><td>Not raised; default stands &mdash; retain indefinitely; no deletion of records referenced by an approval.</td><td>Consistent with BR-04 and BR-11.</td></tr>
+</tbody></table>
+
+<h2>19. Approval and Sign-off</h2>
+<p>By signing, the approvers confirm that &sect;5 (scope), &sect;7 (process model) and &sect;18 (open questions, all now resolved) represent the requirement baseline from which the FSD is written. Changes after this point are handled as versioned change requests. <b>The Product Owner authorised work to proceed to the FSD on 21 November 2026; the signatures below are retained for the departmental file and may be collected in parallel with FSD drafting.</b></p>
+<table class="sign">
+<thead><tr><th style="width:26%">Role</th><th style="width:26%">Name</th><th style="width:26%">Signature</th><th>Date</th></tr></thead>
+<tbody>
+<tr><td>Product Owner</td><td></td><td></td><td></td></tr>
+<tr><td>BOD representative</td><td></td><td></td><td></td></tr>
+<tr><td>Marketing representative</td><td></td><td></td><td></td></tr>
+<tr><td>QC / QA representative</td><td></td><td></td><td></td></tr>
+<tr><td>SCM representative</td><td></td><td></td><td></td></tr>
+<tr><td>R&amp;D / Packaging Development</td><td></td><td></td><td></td></tr>
+</tbody></table>
+
+<div class="foot">PRD-PDS-001 v0.2 · Packaging Development System — NPD Workflow Management · Approved baseline · 21 November 2026 · Primary source: NPD process flowchart</div>
+
+</body>
+</html>
