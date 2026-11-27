@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    TSD-PDS-003 §13. Tests run against MySQL (pds_test), not sqlite: the schema
+    relies on CHECK constraints, STORED generated columns and JSON, so an
+    in-memory sqlite suite would prove nothing about the guards.
+    Credentials come from .env; only the schema name is overridden here.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="APP_TIMEZONE" value="Asia/Jakarta"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="pds_test"/>
+        <env name="DB_URL" value=""/>
+        <!--
+            V-101, so that the suite can sign its own actors in. The first entry
+            is the domain the UserFactory therefore writes (config is read at
+            instantiation, not at definition time); npd-ppm.local is listed
+            because the seeded bootstrap administrator holds that address and a
+            test that seeds F2 must be able to log in as it.
+        -->
+        <env name="PDS_CORPORATE_EMAIL_DOMAINS" value="ppm.test,npd-ppm.local"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <!--
+            FSD-105 is a claim about rows in the sessions table, and an array
+            driver would make every one of those tests vacuously true. The suite
+            therefore uses the same driver production uses; RefreshDatabase
+            truncates it between tests.
+        -->
+        <env name="SESSION_DRIVER" value="database"/>
+        <env name="SESSION_LIFETIME" value="30"/>
+        <env name="SESSION_IDLE_WARNING_MINUTES" value="25"/>
+        <env name="FILESYSTEM_DISK" value="testing"/>
+        <env name="PDF_ENGINE" value="dompdf"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
+    </php>
+</phpunit>
